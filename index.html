@@ -181,13 +181,12 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
 <nav>
   <div class="logo">Bloom<sup>Botanical</sup></div>
   <div class="nav-links">
-    <a href="#fotd">Flower of the Day</a>
+    <a href="#fotd">Today's Flower</a>
     <a href="#collection">Collection</a>
     <a href="#seasonal">Seasonal</a>
     <a href="#care">Care Tips</a>
-    <a href="#glossary">Botanical Glossary</a>
+    <a href="#glossary">Glossary</a>
     <a href="#favorites">Favourites</a>
-    <a href="#nav-expanded">More</a>
   </div>
   <div class="search-wrap">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -231,7 +230,11 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   <div class="sec-label">The Collection</div>
   <h2 class="sec-title">Botanical <em>Library</em></h2>
   <p class="sec-sub">Click any flower to discover its full story — care guide, medicinal uses, and fascinating facts.</p>
-  <div class="filter-bar" id="fb"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+    <div class="filter-bar" id="fb" style="margin-bottom:0"></div>
+    <button class="btn-g" id="random-btn" onclick="discoverRandom()" style="padding:.4rem 1.2rem;font-size:.75rem">🎲 Discover Random</button>
+  </div>
+  <div id="search-stats" style="font-size:.72rem;color:var(--text3);margin-bottom:1rem;letter-spacing:.05em;text-transform:uppercase">Showing all species</div>
   <div class="flower-grid" id="fg"></div>
 </section>
 
@@ -290,135 +293,9 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   </div>
 </div>
 
+
 <script>
-/* ─────────────────────────────────────────────
-   REALISTIC BOTANICAL SVG ILLUSTRATIONS
-   Each flower is hand-crafted with bezier curves,
-   layered gradients, subtle shading, stems, leaves
-───────────────────────────────────────────── */
-
 const SVGS = {
-dahlia(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="100" cy="100" r="60" fill="#f7b6d3"/>
-    <ellipse cx="100" cy="100" rx="40" ry="60" fill="#e86aaf"/>
-    <text x="100" y="190" font-size="18" text-anchor="middle" fill="#b03050">Dahlia</text>
-  </svg>`;
-},
-
-hyacinth(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="40" ry="60" fill="#b8a0e8"/>
-    <ellipse cx="100" cy="80" rx="30" ry="40" fill="#7050b8"/>
-    <text x="100" y="190" font-size="18" text-anchor="middle" fill="#7050b8">Hyacinth</text>
-  </svg>`;
-},
-
-anemone(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="100" rx="50" ry="60" fill="#f7e3f3"/>
-    <circle cx="100" cy="100" r="30" fill="#2a2a2a"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#b03050">Anemone</text>
-  </svg>`;
-},
-
-foxglove(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <rect x="80" y="60" width="40" height="100" rx="20" fill="#b48ad6"/>
-    <ellipse cx="100" cy="60" rx="30" ry="40" fill="#e8b6f8"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#b48ad6">Foxglove</text>
-  </svg>`;
-},
-
-sundrops(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="40" ry="60" fill="#f7e36a"/>
-    <ellipse cx="100" cy="80" rx="30" ry="40" fill="#f7c13a"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#d4a040">Primrose</text>
-  </svg>`;
-},
-
-gentian(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="40" ry="60" fill="#4a90e2"/>
-    <ellipse cx="100" cy="80" rx="30" ry="40" fill="#2a4ab2"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#2a4ab2">Gentian</text>
-  </svg>`;
-},
-
-cornflower(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="40" ry="60" fill="#5898b8"/>
-    <ellipse cx="100" cy="80" rx="30" ry="40" fill="#b8d8f8"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#5898b8">Cornflower</text>
-  </svg>`;
-},
-
-elderflower(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="50" ry="30" fill="#f7f7e3"/>
-    <ellipse cx="100" cy="80" rx="30" ry="40" fill="#e8e8c8"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#b0b080">Elderflower</text>
-  </svg>`;
-},
-king_protea(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="100" cy="120" r="60" fill="#f7e3d3"/>
-    <ellipse cx="100" cy="80" rx="40" ry="60" fill="#e8b6a0"/>
-    <polygon points="100,20 120,80 80,80" fill="#e86a6a"/>
-    <text x="100" y="190" font-size="18" text-anchor="middle" fill="#b03050">King Protea</text>
-  </svg>`;
-},
-
-lilac(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="50" ry="30" fill="#d6c1e6"/>
-    <circle cx="100" cy="80" r="40" fill="#b48ad6"/>
-    <text x="100" y="190" font-size="18" text-anchor="middle" fill="#7c4fa3">Lilac</text>
-  </svg>`;
-},
-
-moonflower(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="100" cy="100" r="60" fill="#f8f8f0"/>
-    <ellipse cx="100" cy="100" rx="40" ry="60" fill="#e0e0e0"/>
-    <text x="100" y="190" font-size="18" text-anchor="middle" fill="#b0b0b0">Moonflower</text>
-  </svg>`;
-},
-
-bird_of_paradise(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <rect x="60" y="120" width="80" height="30" fill="#f7b733"/>
-    <polygon points="100,40 120,120 80,120" fill="#f76d1a"/>
-    <polygon points="100,60 130,100 70,100" fill="#4a90e2"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#f76d1a">Bird of Paradise</text>
-  </svg>`;
-},
-
-ornamental_allium(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="100" cy="100" r="50" fill="#b8a0e8"/>
-    <ellipse cx="100" cy="60" rx="30" ry="50" fill="#d8c8f8"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#7c4fa3">Allium</text>
-  </svg>`;
-},
-
-ginger_lily(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="50" ry="30" fill="#f7e3b3"/>
-    <ellipse cx="100" cy="80" rx="30" ry="50" fill="#f7b36a"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#e86a1a">Ginger Lily</text>
-  </svg>`;
-},
-
-texas_bluebonnet(s=200){
-  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="40" ry="60" fill="#4a90e2"/>
-    <ellipse cx="100" cy="80" rx="30" ry="40" fill="#b8d8f8"/>
-    <text x="100" y="190" font-size="16" text-anchor="middle" fill="#4a90e2">Bluebonnet</text>
-  </svg>`;
-},
-
 rose(s=200){
   const h=s, w=s, cx=w/2, cy=h/2;
   return `<svg width="${w}" height="${h}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -1821,372 +1698,1597 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="78" r="5" fill="#f6df53"/>
   <path d="M100 70 Q108 64 117 66" stroke="#5d4ab2" stroke-width="2" fill="none" stroke-linecap="round"/>
 </svg>`;},
-
 };
 
-/* ── FLOWER DATA ── */
+// Map IDs to existing high-quality SVGs
+SVGS['birdofparadise'] = SVGS['strelitzia'];
+SVGS['lupine'] = SVGS['bluebonnet'];
+SVGS['blueginger'] = SVGS['pinkpearlginger'];
+SVGS['morningglory'] = SVGS['moonflower'];
+SVGS['primrose'] = SVGS['sundrops'];
+
+const colors = {
+    'garden': '#e8607a', 'herbal': '#8860c8', 'wild': '#5898b8',
+    'tropical': '#ff6040', 'aquatic': '#58a0e0', 'succulent': '#78c898',
+    'alpine': '#b8d0e8'
+};
+
 const flowers = [
-  {id:'rose',name:'Rose',latin:'Rosa damascena',cat:'garden',tags:['garden'],desc:'The queen of flowers — cherished 5,000 years for beauty, fragrance, and extraordinary medicinal oil.',care:{water:'Moderate',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer',origin:'Persia / Middle East'},uses:['Aromatherapy','Skincare','Culinary','Medicine','Perfumery'],props:['Anti-inflammatory','Antioxidant','Antidepressant','Astringent'],facts:['Rose water has been used in food and cosmetics for over 2,000 years.','A single rose petal contains more than 300 distinct aromatic compounds.','The world\'s oldest living rose bush grows on Hildesheim Cathedral — it\'s over 1,000 years old.','Rose hips contain 20× more Vitamin C than oranges.']},
-  {id:'freesia',name:'Freesia',latin:'Freesia refracta',cat:'garden',tags:['garden'],desc:'Delicate, sweetly fragrant blooms in a rainbow of colors, beloved in bouquets and gardens alike.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring',origin:'South Africa'},uses:['Cut flowers','Perfumery'],props:['Fragrant','Long-lasting cut'],facts:['Freesias symbolize innocence and friendship.','Each stem can bear up to 12 flowers.','Named after German botanist Friedrich Freese.','Popular in wedding bouquets.']},
-  {id:'camellia',name:'Camellia',latin:'Camellia japonica',cat:'garden',tags:['garden'],desc:'Glossy evergreen shrubs with rose-like blooms, prized in Asian gardens for centuries.',care:{water:'Moderate',sun:'Partial shade',soil:'Acidic, well-drained',diff:'Medium',season:'Winter–Spring',origin:'East Asia'},uses:['Ornamental','Tea (C. sinensis)'],props:['Antioxidant','Anti-inflammatory'],facts:['Camellias can live for over 100 years.','Symbol of admiration in China.','Tea is made from a related species, Camellia sinensis.','Over 3,000 cultivars exist.']},
-  {id:'snapdragon',name:'Snapdragon',latin:'Antirrhinum majus',cat:'garden',tags:['garden'],desc:'Colorful spikes of dragon-shaped flowers that "snap" open when squeezed.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring–Autumn',origin:'Mediterranean'},uses:['Ornamental','Cut flowers'],props:['Edible (mild)','Attracts pollinators'],facts:['Flowers resemble a dragon’s mouth.','Symbolize grace and strength.','Can self-seed in gardens.','Available in nearly every color.']},
-  {id:'lily',name:'Lily',latin:'Lilium candidum',cat:'garden',tags:['garden'],desc:'Majestic, trumpet-shaped blooms with a powerful fragrance, revered since antiquity.',care:{water:'Moderate',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer',origin:'Mediterranean'},uses:['Ornamental','Perfumery'],props:['Fragrant','Symbolic'],facts:['Lilies are toxic to cats.','Madonna lily is a symbol of purity.','Bulbs used in ancient medicine.','Over 100 species worldwide.']},
-  {id:'aster',name:'Aster',latin:'Aster amellus',cat:'wild',tags:['wild','garden'],desc:'Star-shaped daisy relatives that bloom late into autumn, providing vital nectar for pollinators.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Autumn',origin:'Europe/Asia'},uses:['Ornamental','Pollinator support'],props:['Late-blooming','Attracts butterflies'],facts:['Name means "star" in Greek.','Over 180 species in the genus.','Bloom when most flowers have faded.','Used in traditional medicine.']},
-  {id:'zinnia',name:'Zinnia',latin:'Zinnia elegans',cat:'garden',tags:['garden'],desc:'Bright, cheerful annuals in every color but blue, famous for their long-lasting blooms.',care:{water:'Low',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer–Autumn',origin:'Mexico'},uses:['Ornamental','Cut flowers'],props:['Drought-tolerant','Long bloom period'],facts:['Named after German botanist Johann Zinn.','NASA grew zinnias on the ISS.','Attracts butterflies.','Symbolizes lasting friendship.']},
-  {id:'begonia',name:'Begonia',latin:'Begonia semperflorens',cat:'garden',tags:['garden'],desc:'Shade-loving plants with waxy leaves and clusters of pink, red, or white flowers.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, well-drained',diff:'Easy',season:'Spring–Autumn',origin:'Brazil'},uses:['Ornamental','Houseplant'],props:['Shade-tolerant','Edible flowers'],facts:['Over 1,800 species exist.','Named after Michel Bégon.','Flowers and leaves are edible.','Popular for window boxes.']},
-  {id:'fuchsia',name:'Fuchsia',latin:'Fuchsia magellanica',cat:'garden',tags:['garden'],desc:'Elegant, pendulous flowers in pink, purple, and red, beloved by hummingbirds.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, fertile',diff:'Medium',season:'Summer–Autumn',origin:'South America'},uses:['Ornamental','Pollinator garden'],props:['Attracts hummingbirds','Edible berries'],facts:['Named after botanist Leonhart Fuchs.','Fuchsia berries are edible.','Flowers symbolize confiding love.','Over 100 species worldwide.']},
-  {id:'salvia',name:'Salvia',latin:'Salvia officinalis',cat:'herbal',tags:['herbal'],desc:'Aromatic herb with purple-blue flower spikes, essential in culinary and medicinal gardens.',care:{water:'Low',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer',origin:'Mediterranean'},uses:['Culinary','Medicinal','Ornamental'],props:['Antimicrobial','Anti-inflammatory'],facts:['Name means "to heal" in Latin.','Used since Roman times.','Flowers attract bees.','Over 900 species in the genus.']},
-  {id:'lavender',name:'Lavender',latin:'Lavandula angustifolia',cat:'herbal',tags:['herbal'],desc:'Aromatic silver-purple spikes beloved by bees, healers, and perfumers across the Mediterranean world.',care:{water:'Low',sun:'Full sun',soil:'Sandy, alkaline',diff:'Easy',season:'Summer',origin:'Mediterranean'},uses:['Aromatherapy','Sleep aid','Culinary','Perfumery','Skincare'],props:['Calming','Antiseptic','Analgesic','Anti-fungal'],facts:['The Latin name derives from "lavare" — to wash — Romans scented their baths with it.','Lavender oil can reduce anxiety as effectively as some pharmaceutical medications.','Lavender was stuffed into pillows in the Middle Ages to promote sleep.','Bees collect more nectar from lavender than almost any other flower.']},
-  {id:'sunflower',name:'Sunflower',latin:'Helianthus annuus',cat:'garden',tags:['garden'],desc:'Towering solar giants that track the sun in youth. Each "flower" is actually 2,000 tiny florets.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer',origin:'North America'},uses:['Edible seeds','Oil production','Natural dye','Bird food','Cut flowers'],props:['Diuretic','Nutritious (Vitamin E)','Anti-malarial'],facts:['A sunflower head contains up to 2,000 tiny individual florets.','Young sunflowers track the sun east-to-west each day — a behavior called heliotropism.','The world\'s tallest sunflower reached 9.17 metres tall in Germany, 2014.','Native Americans cultivated sunflowers for food, dye, and medicine for 5,000 years.']},
-  {id:'lotus',name:'Sacred Lotus',latin:'Nelumbo nucifera',cat:'aquatic',tags:['aquatic'],desc:'Rising pristine from mud — the lotus embodies purity across Hindu, Buddhist, and ancient Egyptian cultures.',care:{water:'Aquatic',sun:'Full sun',soil:'Heavy clay submerged',diff:'Medium',season:'Summer',origin:'Asia'},uses:['Culinary (seeds, roots)','Medicinal','Religious','Decoration'],props:['Anti-bacterial','Astringent','Hemostatic','Antioxidant'],facts:['Lotus seeds can remain viable for over 1,300 years — the oldest recorded seed germination.','The lotus surface has a self-cleaning structure that inspired modern nanotechnology.','Every part of the lotus is edible — seeds, roots, leaves, flowers, and stamens.','The lotus is the national flower of India and Vietnam.']},
-  {id:'chamomile',name:'Chamomile',latin:'Matricaria chamomilla',cat:'herbal',tags:['herbal'],desc:'Gentle apple-scented daisy-like flowers. One of the world\'s oldest and most widely-used medicinal herbs.',care:{water:'Low-moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring–Summer',origin:'Europe'},uses:['Herbal tea','Skin soothing','Sleep aid','Anti-anxiety','Digestive'],props:['Calming','Anti-inflammatory','Antispasmodic','Mild sedative'],facts:['Chamomile tea is consumed at the rate of over 1 million cups daily worldwide.','The name comes from Greek "ground apple" — describing its fresh apple scent.','It has been used medicinally for at least 2,500 years in Egypt and Rome.','Contains apigenin, a compound that binds the same brain receptors as benzodiazepines.']},
-  {id:'orchid',name:'Moth Orchid',latin:'Phalaenopsis amabilis',cat:'tropical',tags:['tropical'],desc:'The most diverse flowering plant family — 28,000 species have colonized every continent except Antarctica.',care:{water:'Low',sun:'Bright indirect',soil:'Bark/perlite mix',diff:'Medium',season:'Year-round',origin:'Tropical Asia'},uses:['Ornamental','Vanilla flavouring','Salep drink','Traditional medicine'],props:['Antioxidant','Anti-fatigue','Immune-modulating'],facts:['The orchid family is the largest of all flowering plant families with 28,000+ species.','Vanilla — the world\'s most popular flavour — comes from a tropical orchid Vanilla planifolia.','Some orchids mimic female insects so precisely that male bees attempt to mate with them.','Darwin spent 35 years studying orchid pollination and wrote an entire book on the subject.']},
-  {id:'tulip',name:'Tulip',latin:'Tulipa gesneriana',cat:'garden',tags:['garden'],desc:'Elegant cup-shaped blooms that triggered the world\'s first speculative economic bubble in 1630s Netherlands.',care:{water:'Low',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring',origin:'Central Asia'},uses:['Cut flowers','Bulb gardens','Edible petals','Food dye'],props:['Antioxidant','Anti-inflammatory'],facts:['"Tulip mania" of the 1630s saw bulbs sell for more than Amsterdam townhouses — history\'s first bubble.','Tulips continue to grow up to 2.5 cm after being cut and placed in a vase.','There are over 3,000 registered tulip varieties ranging from near-black to pure white.','The Netherlands exports 4.3 billion tulip bulbs annually — roughly half the world\'s supply.']},
-  {id:'hibiscus',name:'Hibiscus',latin:'Hibiscus rosa-sinensis',cat:'tropical',tags:['tropical'],desc:'Fiery trumpet blooms in red, orange, and pink. Symbol of the tropics and cornerstone of herbal medicine worldwide.',care:{water:'Moderate-high',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer',origin:'Asia'},uses:['Hibiscus tea','Culinary','Antihypertensive','Hair oil','Natural dye'],props:['Antihypertensive','Antioxidant','Diuretic','Vitamin C-rich'],facts:['Hibiscus tea is one of the world\'s most consumed herbal beverages — beloved in Egypt, Mexico, and Sudan.','Hibiscus is the national flower of Malaysia and the state flower of Hawaii.','Clinical studies show hibiscus tea can significantly lower blood pressure in hypertensive patients.','Each hibiscus flower lasts only a single day — but plants can bloom continuously for months.']},
-  {id:'daisy',name:'Ox-eye Daisy',latin:'Leucanthemum vulgare',cat:'wild',tags:['wild'],desc:'The archetypal wildflower — white rays and golden disc. It has symbolized innocence and new beginnings across centuries.',care:{water:'Low',sun:'Full sun',soil:'Any well-drained',diff:'Easy',season:'Summer',origin:'Europe'},uses:['Wild salads (petals)','Medicinal (mild)','Cut flowers','Pollinator garden'],props:['Mild anti-inflammatory','Antispasmodic','Mild diaphoretic'],facts:['The "he loves me, he loves me not" petal-picking tradition dates back to medieval France.','A single daisy head contains over 200 individual flowers — disc and ray florets combined.','Daisy roots were eaten by British soldiers during the Crusades to suppress hunger.','The word "daisy" comes from Old English "dæges ēage" meaning "day\'s eye" — it opens at dawn.']},
-  {id:'cherry_blossom',name:'Cherry Blossom',latin:'Prunus serrulata',cat:'wild',tags:['wild','garden'],desc:'Japan\'s sakura blooms for just one fleeting week — a living meditation on beauty and impermanence.',care:{water:'Moderate',sun:'Full sun',soil:'Moist, well-drained',diff:'Medium',season:'Spring',origin:'Japan / China'},uses:['Ornamental','Culinary (pickled petals & leaves)','Sakura tea','Cultural ceremonies'],props:['Antioxidant','Anti-inflammatory','Skin brightening'],facts:['Japan issues cherry blossom forecasts weeks in advance and millions travel to see them bloom.','There are over 200 distinct cherry blossom varieties in Japan alone.','The philosophy of "mono no aware" — bittersweet transience — is embodied in the sakura bloom.','Salted cherry blossom petals are used in traditional wagashi sweets and sakura tea.']},
-  {id:'aloe',name:'Aloe Vera',latin:'Aloe barbadensis miller',cat:'succulent',tags:['succulent','herbal'],desc:'The "plant of immortality" to ancient Egyptians — a powerhouse succulent with 75+ active compounds.',care:{water:'Very low',sun:'Bright indirect',soil:'Sandy, well-drained',diff:'Easy',season:'Year-round',origin:'Arabian Peninsula'},uses:['Skin burns','Digestive aid','Hair care','Wound healing','Sunburn relief'],props:['Wound-healing','Anti-bacterial','Anti-inflammatory','Moisturizing'],facts:['Aloe vera gel is 99% water — the remaining 1% contains 75+ active compounds.','It was called the "plant of immortality" and given as a funeral offering to Egyptian pharaohs.','Alexander the Great reportedly conquered the island of Socotra to secure aloe for wounded soldiers.','The global aloe vera market exceeds $13 billion annually.']},
-  {id:'peony',name:'Peony',latin:'Paeonia lactiflora',cat:'garden',tags:['garden'],desc:'Lush, voluptuous blooms with a fleeting perfume. Peonies have been cultivated in China for over 2,000 years.',care:{water:'Moderate',sun:'Full sun',soil:'Rich, deep',diff:'Easy',season:'Spring–Summer',origin:'China'},uses:['Cut flowers','Traditional medicine','Culinary','Perfumery'],props:['Anti-inflammatory','Analgesic','Antispasmodic','Antioxidant'],facts:['Peonies can live for over 100 years without being divided or replanted.','In Chinese medicine the root Bai Shao has been used 2,000 years for pain and liver conditions.','The most full double peony varieties contain thousands of individual petals.','Ants visiting peonies are attracted by nectar droplets — they don\'t actually help the flower open.']},
-  {id:'passionflower',name:'Passionflower',latin:'Passiflora incarnata',cat:'wild',tags:['wild','herbal'],desc:'Wildly exotic-looking vine with spectacular corona of filaments. Named by missionaries who saw Christian symbols in its structure.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer',origin:'North America'},uses:['Anxiety relief','Sleep aid','Anti-spasm','Herbal tea','Ornamental'],props:['Anxiolytic','Sedative','Antispasmodic','Anti-convulsant'],facts:['Spanish missionaries in the 1500s saw the Passion of Christ in the flower\'s 10 petals, crown, and nails.','Clinical trials show passionflower extract to be comparable to low-dose benzodiazepines for anxiety.','Native Americans of the Southeast used passionflower root as a sedative and for earaches.','Its fruit — the maypop — is edible and used in traditional preserves across Appalachia.']},
-  {id:'echinacea',name:'Coneflower',latin:'Echinacea purpurea',cat:'herbal',tags:['herbal','wild'],desc:'North America\'s most celebrated medicinal herb. Drooping purple rays surround a spiny orange cone.',care:{water:'Low-moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer–Autumn',origin:'North America'},uses:['Immune support','Cold remedy','Anti-viral','Garden flower','Pollinators'],props:['Immunostimulant','Anti-viral','Anti-bacterial','Anti-inflammatory'],facts:['Echinacea was the most widely used plant medicine of Native American peoples.','Clinical studies show echinacea can reduce the duration of colds by up to 1.4 days.','The name comes from Greek "echinos" (hedgehog) — referring to its sharp spiny seed head.','Over 400 million doses of echinacea are consumed globally each year.']},
-  {id:'marigold',name:'Marigold',latin:'Tagetes erecta',cat:'garden',tags:['garden','herbal'],desc:'Bold, aromatic Mexican natives prized as companion plants, sacred offerings, and natural dye sources.',care:{water:'Low-moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer–Autumn',origin:'Mexico'},uses:['Companion planting','Natural dye','Culinary','Offerings','Pest repellent'],props:['Anti-fungal','Antiseptic','Anti-inflammatory','Wound-healing'],facts:['Marigolds are Mexico\'s iconic Día de los Muertos flower — guiding spirits home with their scent.','Their roots release thiophenol compounds that repel soil nematodes and harmful insects.','Marigold petals are used as a natural yellow food colourant and to enrich egg yolk colour.','They bloom continuously from first planting to first frost — one of the longest-blooming annuals.']},
-  {id:'jasmine',name:'Jasmine',latin:'Jasminum officinale',cat:'garden',tags:['garden'],desc:'Few flowers match jasmine\'s heady night-scent. Prized across cultures for perfumery, tea, and poetry.',care:{water:'Moderate',sun:'Full sun to partial shade',soil:'Well-drained',diff:'Medium',season:'Summer',origin:'Western China / Himalayas'},uses:['Perfumery','Jasmine tea','Aromatherapy','Garlands','Skin oil'],props:['Antidepressant','Aphrodisiac','Antiseptic','Calming'],facts:['One kilogram of jasmine absolute requires 8 million hand-picked flowers.','Jasmine flowers open only at night, attracting night-flying moths as pollinators.','Jasmine is the national flower of Pakistan, Indonesia, Syria, and the Philippines.','Jasmine-scented green tea has been produced in China since the Song dynasty (960–1279 AD).']},
-  {id:'calendula',name:'Calendula',latin:'Calendula officinalis',cat:'herbal',tags:['herbal','garden'],desc:'Pot marigold — cheerful golden medicinal herb with extraordinary skin-healing powers used for 2,500 years.',care:{water:'Low-moderate',sun:'Full sun',soil:'Poor to moderate',diff:'Easy',season:'Spring–Autumn',origin:'Southern Europe'},uses:['Skin salves','Wound healing','Culinary','Natural dye','Anti-fungal'],props:['Wound-healing','Anti-fungal','Anti-inflammatory','Antioxidant'],facts:['Calendula petals were historically used as a saffron substitute called "poor man\'s saffron".','During the American Civil War, calendula was used on battlefields to stop bleeding and prevent infection.','Calendula cream is among the most clinically studied herbal skincare ingredients.','Its flowers close at night and cloudy weather — Romans called it "Calends" as it always bloomed on the calend.']},
-  {id:'bluebell',name:'Bluebell',latin:'Hyacinthoides non-scripta',cat:'wild',tags:['wild'],desc:'Carpets of violet-blue bells transform ancient British woodlands into ethereal blue oceans each spring.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, humus-rich',diff:'Easy',season:'Spring',origin:'Western Europe'},uses:['Ornamental','Woodland ecology','Bulb starch (historical)','Glue (historical)'],props:['Mildly toxic (glycosides)','Ecologically important'],facts:['Bluebell woods are largely unique to Britain — over half the world\'s bluebells grow there.','The UK\'s Wildlife and Countryside Act 1981 makes it illegal to pick or uproot wild bluebells.','A single bluebell bulb can take 5-7 years to reach flowering size from seed.','Bluebell sap was used in medieval England as glue for binding books and attaching arrow flights.']},
-  {id:'waterlily',name:'Water Lily',latin:'Nymphaea alba',cat:'aquatic',tags:['aquatic'],desc:'Floating serenely on still waters — inspiration for Monet\'s most famous works and ancient Egyptian religion.',care:{water:'Aquatic',sun:'Full sun',soil:'Heavy clay submerged',diff:'Medium',season:'Summer',origin:'Europe / Africa'},uses:['Ornamental','Edible (rhizomes, seeds)','Sacred','Natural dye'],props:['Mildly sedative','Antispasmodic','Anti-diarrheal','Analgesic'],facts:['Claude Monet created his famous Water Lilies series of 250+ paintings between 1896 and 1926.','The blue lotus of the Nile was sacred in ancient Egypt and used in religious ceremonies.','Victoria amazonica has leaves up to 3m wide that can support a child\'s weight.','Water lily rhizomes were eaten by Native Americans and are still consumed in Asian cuisine.']},
-  {id:'snowdrop',name:'Snowdrop',latin:'Galanthus nivalis',cat:'wild',tags:['wild','alpine'],desc:'Brave little harbingers of spring — emerging through snow, they produce a unique antifreeze protein.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, humus-rich',diff:'Easy',season:'Winter–Spring',origin:'Europe / Middle East'},uses:['Ornamental','Galantamine (Alzheimer\'s drug)','Ecological'],props:['Contains galantamine (acetylcholinesterase inhibitor)','Antifreeze proteins'],facts:['Snowdrops contain galantamine — a compound now used in approved Alzheimer\'s disease treatments.','They produce antifreeze proteins that allow them to push through frozen soil and snow.','Snowdrop collecting (galanthophilia) is a serious hobby — rare bulbs sell for hundreds of pounds each.','The Victorian tradition of "snowdrop parties" involved groups visiting gardens to admire early blooms.']},
-  {id:'hellebore',name:'Hellebore',latin:'Helleborus orientalis',cat:'wild',tags:['wild','garden'],desc:'Winter\'s dark jewel. Nodding leathery blooms in plum, slate, and cream that flower when all else sleeps.',care:{water:'Low-moderate',sun:'Partial shade',soil:'Rich, well-drained',diff:'Easy',season:'Winter–Spring',origin:'Greece / Turkey'},uses:['Ornamental','Historical medicine (purgative)','Toxic (careful handling)'],props:['Toxic (cardiac glycosides)','Historical emetic'],facts:['Hellebores are toxic but were used in ancient medicine — at great risk — as a treatment for insanity.','The flowers nod downward — you must lift them to see their full beauty, a trait gardeners cherish.','They are fully evergreen and will flower for 3–4 months through the coldest part of winter.','The name comes from Greek "hellein" (to kill) and "bora" (food) — deadly when eaten.']},
-  {id:'iris',name:'Bearded Iris',latin:'Iris germanica',cat:'garden',tags:['garden'],desc:'Intricate, sword-leaved aristocrats with falls, standards, and colourful beard. Named after the Greek goddess of the rainbow.',care:{water:'Low',sun:'Full sun',soil:'Well-drained, alkaline',diff:'Easy',season:'Spring',origin:'Southern Europe'},uses:['Ornamental','Orris root (perfumery)','Dye','Herbal medicine'],props:['Orris root — fixative in 75% of all perfumes','Anti-inflammatory (root)'],facts:['The dried iris root (orris) is the fixative used in 75% of all perfumes and acts as a violet scent.','Iris is the origin of the fleur-de-lis — symbol of French royalty since the 12th century.','There are over 300 species of iris growing on every continent except Antarctica and South America.','Iris flowers live only 2–3 days each, but a mature clump produces dozens of successive blooms.']},
-  {id:'poppyField',name:'Red Poppy',latin:'Papaver rhoeas',cat:'wild',tags:['wild'],desc:'Scarlet tissue-paper petals with velvety black hearts. Symbol of remembrance and the first flowers after the Great War.',care:{water:'Low',sun:'Full sun',soil:'Any disturbed ground',diff:'Easy',season:'Summer',origin:'Europe / Middle East'},uses:['Medicinal (seed oil)','Culinary (seeds)','Cut flowers','Symbol of remembrance'],props:['Mildly sedative (alkaloids)','Antitussive','Rich in omega oils (seeds)'],facts:['Red poppies bloomed across WWI battlefields of Flanders due to the chalky, disturbed soil.','John McCrae\'s 1915 poem "In Flanders Fields" established the poppy as a symbol of remembrance.','A single poppy plant can produce up to 17,000 seeds — explaining their explosive recolonization.','Poppy seeds can remain dormant in soil for up to 100 years before germinating when soil is disturbed.']},
-  {id:'wisteria',name:'Wisteria',latin:'Wisteria sinensis',cat:'wild',tags:['garden','wild'],desc:'Cascading waterfalls of violet-blue fragrant racemes draping old stone walls. One of gardening\'s most spectacular spectacles.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained, fertile',diff:'Hard',season:'Spring',origin:'China / Japan'},uses:['Ornamental','Perfumery','Edible flowers (cooked)'],props:['Seeds and pods mildly toxic','Anti-allergic (research)'],facts:['A wisteria in Sierra Madre, California covers nearly an acre — it\'s over 125 years old.','Wisteria can exert enough pressure to crack stone walls and foundations over decades.','It takes wisteria 3–7 years from planting to first bloom — patience is essential.','Japanese cherry blossom festivals include "fuji matsuri" — wisteria viewing festivals — in late April.']},
-  {id:'cactusFlower',name:'Saguaro Cactus',latin:'Carnegiea gigantea',cat:'succulent',tags:['succulent'],desc:'Arizona\'s iconic column cactus produces the most spectacular bloom in the desert world — but for only one night.',care:{water:'Very low',sun:'Full sun',soil:'Sandy, rocky',diff:'Easy',season:'Spring (night bloom)',origin:'Sonoran Desert, USA'},uses:['Edible fruit','Seeds','Indigenous food source','Ornamental'],props:['Nutritious (seeds 30% fat)','Antifungal (skin)'],facts:['The saguaro cactus only blooms at night, relying on bats and bees for pollination.','It takes a saguaro 75 years to grow its first arm — a 10-arm cactus may be 200 years old.','The saguaro is protected by Arizona law — cutting one down carries a potential felony charge.','A large saguaro can absorb 750 litres of water in a single rainfall and store it for months.']},
-  {id:'magnolia',name:'Magnolia',latin:'Magnolia grandiflora',cat:'garden',tags:['garden'],desc:'Ancient survivors — magnolias predate bees, having evolved to be pollinated by beetles 95 million years ago.',care:{water:'Moderate',sun:'Full sun',soil:'Acidic, well-drained',diff:'Medium',season:'Spring',origin:'China / Eastern USA'},uses:['Ornamental','Bark medicine (traditional)','Flower buds (culinary)','Perfumery'],props:['Magnolol — anti-anxiety','Anti-bacterial','Anti-inflammatory'],facts:['Magnolias are among the most ancient flowering plants — they predated bees by millions of years.','The flowers are so primitive they evolved to be pollinated by beetles, not bees or butterflies.','A magnolia tree in cultivation can reach 300 years old and 30 metres tall.','Magnolia bark (honokiol) is used in traditional Chinese medicine for anxiety and is under active research.']},
-  {id:'dahlia',name:'Dahlia',latin:'Dahlia pinnata',cat:'garden',tags:['garden'],desc:'Mexico\'s national flower — geometrically perfect double blooms in every colour. Over 57,000 registered cultivars make it the most diverse cultivated flower.',care:{water:'Moderate-high',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer–Autumn',origin:'Mexico'},uses:['Cut flowers','Edible tubers (historical)','Aztec medicine','Garden display'],props:['Inulin-rich tubers','Antioxidant'],facts:['Dahlias produce no scent — they evolved for visual bee attraction rather than fragrance.','The Aztecs used dahlia tubers as a food crop and treated epilepsy with the stems.','There are 57,000+ registered dahlia cultivars across 14 official flower form classifications.','The "Bishop of Llandaff" variety was so prized in the 1920s it was displayed behind glass at Chelsea.']},
-  {id:'hyacinth',name:'Hyacinth',latin:'Hyacinthus orientalis',cat:'garden',tags:['garden'],desc:'Dense spikes of intensely fragrant bell-shaped florets in spring. Named from Greek myth, beloved by gods and gardeners alike.',care:{water:'Moderate',sun:'Full sun to partial shade',soil:'Well-drained',diff:'Easy',season:'Spring',origin:'Eastern Mediterranean'},uses:['Ornamental','Perfumery','Aromatherapy','Cut flowers'],props:['Mildly toxic (bulb)','Deeply fragrant essential oil'],facts:['Hyacinth perfume was beloved in ancient Persia and is still one of the most recognisable floral scents.','The name comes from Greek myth: the boy Hyakinthos was accidentally killed by Apollo.','A single hyacinth spike carries up to 40 individual florets, all opening simultaneously.','Hyacinth bulbs must experience cold (vernalisation) to bloom — they require winter to flower in spring.']},
-  {id:'anemone',name:'Windflower',latin:'Anemone coronaria',cat:'wild',tags:['wild','garden'],desc:'Jewel-bright silky petals surrounding an ink-dark centre. Named "daughter of the wind" — their seeds drift on feathery plumes.',care:{water:'Moderate',sun:'Full sun to partial shade',soil:'Well-drained',diff:'Easy',season:'Spring',origin:'Mediterranean'},uses:['Cut flowers','Ornamental','Traditional medicine (mild)'],props:['Mildly toxic (protoanemonin)','Traditional anti-inflammatory'],facts:['The name "anemone" comes from the Greek for wind — the seeds float on hairy plumes.','In medieval Europe, the first anemone of the year was folded in cloth as a charm against fever.','Anemone coronaria is cultivated commercially as one of the world\'s top cut flowers.','They were so beloved in the Ottoman Empire that anemone cultivation was a matter of imperial prestige.']},
-  {id:'foxglove',name:'Foxglove',latin:'Digitalis purpurea',cat:'wild',tags:['wild'],desc:'Towering spires of spotted tubes. Every finger fits a fox — and inside lies digitalis, the heart drug that has saved millions of lives.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, acidic',diff:'Easy',season:'Summer',origin:'Western Europe'},uses:['Cardiac medicine (digitalis)','Ornamental','Wildlife habitat'],props:['Cardiac glycosides (toxic/medicinal)','Digitoxin','Digoxin'],facts:['Digitalis from foxglove is the basis for digoxin — a heart medication still used in millions of patients.','William Withering published his landmark study on foxglove and heart failure in 1785 — 240+ years ago.','Every part of the foxglove is dangerously toxic — yet it remains one of medicine\'s most valuable plants.','Bumblebees are the primary pollinator — they crawl fully inside each tube to reach nectar.']},
-  {id:'sundrops',name:'Evening Primrose',latin:'Oenothera biennis',cat:'wild',tags:['wild','herbal'],desc:'Luminous yellow cups that open at dusk, releasing fragrance into the night air — a star-shaped beacon for moths.',care:{water:'Low',sun:'Full sun',soil:'Any well-drained',diff:'Easy',season:'Summer',origin:'North America'},uses:['Evening primrose oil (GLA)','Skin conditions','PMS relief','Culinary (root & seeds)'],props:['Gamma-linolenic acid (GLA)','Anti-inflammatory','Hormone balancing'],facts:['Evening primrose oil is one of the richest plant sources of gamma-linolenic acid (GLA).','The flowers open in about 30 seconds at dusk — you can watch it happen in real time.','Native Americans ate the roots (boiled) and used leaf poultices for bruises and wounds.','Clinical trials show evening primrose oil can reduce breast pain and PMS symptoms.']},
-  {id:'gentian',name:'Gentian',latin:'Gentiana acaulis',cat:'alpine',tags:['alpine','wild'],desc:'Intense electric-blue trumpets that seem almost too vivid to be real — the quintessential alpine wildflower.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained, alkaline',diff:'Hard',season:'Spring',origin:'Alpine Europe'},uses:['Digestive bitters (root)','Liver tonic','Traditional aperitif','Dye'],props:['Bitter compounds (gentiopicrin)','Digestive stimulant','Antifungal'],facts:['Gentian root is the most bitter natural substance known — bitter at dilutions of 1 in 50,000.','The Swiss aperitif Suze and French Salers are flavoured entirely with gentian root.','Gentian Blue is named after the flower — the colour was considered the most intense blue in nature.','High-altitude gentians can take 7 years to flower from seed in alpine conditions.']},
-  {id:'cornflower',name:'Cornflower',latin:'Centaurea cyanus',cat:'wild',tags:['wild'],desc:'Vivid cerulean blue stars once so common in European wheat fields they were called "the poor man\'s flower." Now endangered in the wild.',care:{water:'Low',sun:'Full sun',soil:'Any poor, well-drained',diff:'Easy',season:'Summer',origin:'Europe'},uses:['Edible flowers','Eye wash (traditional)','Dye','Culinary garnish'],props:['Anti-inflammatory (anthocyanins)','Mild astringent','Antioxidant'],facts:['Cornflowers are now a rare sight in European wildflower meadows — once virtually extinct in Britain.','Kaiser Wilhelm II of Germany adopted cornflowers as a symbol because his mother Queen Louise was hidden in a field of them.','The blue pigment is unstable — dried cornflowers fade rapidly, making them challenging to preserve.','They are now grown across Europe in wildflower seed mixes to restore threatened meadow biodiversity.']},
-  {id:'elderflower',name:'Elderflower',latin:'Sambucus nigra',cat:'wild',tags:['wild','herbal'],desc:'Frothy cream-white corymbs with a heady musky-sweet scent. The elder tree is rooted in European folklore deeper than almost any other plant.',care:{water:'Low-moderate',sun:'Full sun to partial shade',soil:'Most soils',diff:'Easy',season:'Early Summer',origin:'Europe'},uses:['Elderflower cordial','Champagne','Medicine (antiviral)','Elderberry wine'],props:['Antiviral (berries)','Diaphoretic','Anti-catarrhal','Immunostimulant'],facts:['Elder was called the "medicine chest of the country people" — berries, flowers, bark, and leaves all have distinct uses.','Elderflower cordial has been documented in English recipes since at least the 17th century.','The elder is deeply woven into European folklore — it was considered unlucky to cut one without asking permission.','Elderberry syrup is clinically shown to reduce influenza duration by an average of 4 days.']},
-  {id:'protea',name:'King Protea',latin:'Protea cynaroides',cat:'wild',tags:['wild','tropical'],desc:'South Africa\'s national flower — prehistoric in lineage, alien in beauty. Fossil relatives date back 300 million years to Gondwana.',care:{water:'Low',sun:'Full sun',soil:'Sandy, acidic, low-nutrient',diff:'Hard',season:'Winter–Spring',origin:'South Africa / Cape Floristic Region'},uses:['Cut flowers','Dried arrangements','National symbol','Honey plant'],props:['Fire-adapted (serotinous)','Rich in nectar','Antioxidant (leaves)'],facts:['The protea family (Proteaceae) dates back 300 million years and is a living relic of the supercontinent Gondwana.','The King Protea\'s flower head can reach 30 cm across — the largest of all proteas.','Its seeds are protected inside woody cones that only open after fire — an adaptation called serotiny.','South African fynbos, the protea\'s habitat, contains more plant species per square metre than any other biome on Earth.']},
-  {id:'lilac',name:'Lilac',latin:'Syringa vulgaris',cat:'garden',tags:['garden'],desc:'Towering panicles of fragrant purple-white florets in late spring. The scent of lilac is one of the most evocative aromas in the temperate garden.',care:{water:'Low-moderate',sun:'Full sun',soil:'Well-drained, alkaline',diff:'Easy',season:'Spring',origin:'Balkans / Ottoman Empire'},uses:['Ornamental','Perfumery','Lilac water (cosmetic)','Traditional medicine'],props:['Syringin (bitter glycoside)','Anti-inflammatory','Antipyretic'],facts:['Lilacs were introduced to Western Europe through the Ottoman court in the 16th century.','The "lilac" colour is named after the flower — it became a fashion colour in the Victorian era.','A lilac bush can live and flower for over 200 years with minimal care.','Walt Whitman\'s elegy for Abraham Lincoln begins "When lilacs last in the dooryard bloom\'d."']},
-  {id:'moonflower',name:'Moonflower',latin:'Ipomoea alba',cat:'tropical',tags:['tropical'],desc:'Giant white trumpet flowers that bloom only at night, glowing in the moonlight and releasing a heady vanilla fragrance to attract sphinx moths.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer',origin:'Tropical Americas'},uses:['Ornamental','Night garden','Moth attraction','Perfumery'],props:['Deeply fragrant','Mildly toxic seeds','Traditional sedative'],facts:['Moonflowers open in just 30 seconds to a minute when dusk falls, unfurling before your eyes.','Each bloom can reach 15 cm across — one of the largest flowers that blooms in a single night.','They are pollinated exclusively by hawk moths (sphinx moths) with 10 cm proboscises.','The flowers close permanently when touched by sunlight — each bloom lasts only one night.']},
-  {id:'strelitzia',name:'Bird of Paradise',latin:'Strelitzia reginae',cat:'tropical',tags:['tropical'],desc:'South Africa\'s flamboyant gift to the world — orange and electric-blue petals form an uncanny resemblance to a tropical bird in mid-flight.',care:{water:'Low-moderate',sun:'Full sun',soil:'Well-drained',diff:'Medium',season:'Year-round',origin:'South Africa'},uses:['Cut flowers','Ornamental','Symbol of paradise','Garden focal point'],props:['Non-toxic','Long vase life (2–3 weeks)'],facts:['The bird of paradise is named after Queen Charlotte of Mecklenburg-Strelitz, wife of King George III.','It is pollinated by sunbirds — the weight of the bird on the flower causes pollen-laden anthers to spring upward.','Los Angeles chose the bird of paradise as its official city flower in 1952.','The flowers can last up to 2 weeks in a vase with no food — one of the longest-lasting cut flowers.']},
-  {id:'allium',name:'Ornamental Allium',latin:'Allium giganteum',cat:'garden',tags:['garden'],desc:'Perfect spheres of star-shaped purple florets atop tall straight stems — architectural perfection that looks sculpted rather than grown.',care:{water:'Low',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring–Summer',origin:'Central Asia'},uses:['Ornamental','Cut & dried flowers','Natural pest deterrent','Bee plant'],props:['Allicin compounds (in bulb)','Anti-bacterial','Insect repellent'],facts:['Allium giganteum flower heads can reach 15–20 cm in diameter on stems up to 1.5 m tall.','Ornamental alliums are in the same genus as garlic, onion, and chives — and share their chemistry.','The dried seed heads persist for months and are prized in dried flower arrangements.','Planted near roses, alliums\' allicin compounds repel aphids without any chemical spraying.']},
-  {id:'pinkpearlginger',name:'Ginger Lily',latin:'Hedychium coronarium',cat:'tropical',tags:['tropical','herbal'],desc:'Intensely fragrant tropical spikes of pure white and pink butterfly-like flowers. The national flower of Cuba and emblem of Southeast Asian gardens.',care:{water:'High',sun:'Partial shade',soil:'Rich, moist',diff:'Easy',season:'Summer',origin:'Himalayas / Southeast Asia'},uses:['Perfumery','Culinary (rhizome)','Ayurvedic medicine','Ornamental'],props:['Anti-inflammatory (rhizome)','Analgesic','Aromatherapeutic'],facts:['Ginger lily is the national flower of Cuba, known as mariposa (butterfly) for its petal shape.','The flowers are so fragrant that a single stem can perfume a large room.','In Ayurvedic medicine the rhizome treats headaches, inflammation, and respiratory conditions.','Hawaiian leis traditionally use the flowers — their intense scent lasts hours after picking.']},
-  {id:'bluebonnet',name:'Texas Bluebonnet',latin:'Lupinus texensis',cat:'wild',tags:['wild'],desc:'The state flower of Texas transforms hillsides into oceans of blue each March. A quintessential American wildflower and symbol of Texan identity.',care:{water:'Low',sun:'Full sun',soil:'Poor, rocky, alkaline',diff:'Easy',season:'Spring',origin:'Texas, USA'},uses:['Wildflower meadow','Nitrogen fixation','Ornamental','State symbol'],props:['Nitrogen-fixing (root nodules)','Mildly toxic seeds','Soil improver'],facts:['The bluebonnet was declared Texas state flower in 1901 after a fierce legislative debate.','Lupins fix nitrogen from the air via root bacteria — bluebonnets enrich the poor Texas limestone soil.','By law, picking bluebonnets from public land in Texas is frowned upon, though technically not illegal.','The "Texas Bluebonnet Trail" attracts over a million visitors each spring — one of America\'s great wildflower spectacles.']},
-  {id:'ranunculus',name:'Ranunculus',latin:'Ranunculus asiaticus',cat:'garden',tags:['garden'],desc:'Layer upon layer of luminous tissue-thin petals create one of spring\'s most luxurious cut flowers, halfway between a rose and a lantern.',care:{water:'Moderate',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Spring',origin:'Eastern Mediterranean / Southwest Asia'},uses:['Cut flowers','Wedding work','Containers','Border planting'],props:['Long vase life','Corm-grown','Pollinator friendly'],facts:['Ranunculus corms look like tiny octopus claws and are planted "legs" downward for best growth.','A single premium ranunculus stem can carry over 100 petals packed into a bloom only a few centimetres across.','Florists prize ranunculus because the flowers can last 10 to 12 days in water with good conditioning.','The name comes from Latin for "little frog," a nod to wild buttercup relatives growing in damp meadows.']},
-  {id:'nasturtium',name:'Nasturtium',latin:'Tropaeolum majus',cat:'herbal',tags:['herbal','garden'],desc:'Peppery edible flowers in glowing orange and gold that spill from beds and pots, feeding pollinators and cooks at the same time.',care:{water:'Low-moderate',sun:'Full sun',soil:'Poor to moderate',diff:'Easy',season:'Summer–Autumn',origin:'Andes / South America'},uses:['Edible flowers','Salads','Capers from seed pods','Companion planting'],props:['Vitamin C-rich','Antibacterial','Aphid trap crop'],facts:['Every part of the nasturtium plant is edible, from the leaves and flowers to the green seed pods.','Rich orange petals get their colour from lutein and other carotenoids that are also valuable in the diet.','Gardeners use nasturtiums as sacrificial plants because aphids often choose them before nearby vegetables.','Its peppery flavour comes from the same mustard-oil compounds that make watercress and radish taste sharp.']},
-  {id:'bleedingheart',name:'Bleeding Heart',latin:'Lamprocapnos spectabilis',cat:'wild',tags:['wild','garden'],desc:'Arching stems of pendant pink hearts with white tears beneath them make this woodland perennial one of spring\'s most theatrical flowers.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, humus-rich',diff:'Easy',season:'Spring',origin:'China / Korea / Siberia'},uses:['Shade gardens','Woodland borders','Cut stems','Spring displays'],props:['Dormant in summer','Shade tolerant','Deer resistant'],facts:['Bleeding heart vanishes into dormancy after flowering, so companion plants are often used to hide the summer gap.','The flower structure inspired folk names like lady-in-the-bath and lyre flower across Europe and Asia.','It thrives in the cool dappled conditions that many brighter annual flowers struggle to tolerate.','Despite its delicate look, an established clump can return reliably for decades in the same border.']},
-  {id:'edelweiss',name:'Edelweiss',latin:'Leontopodium nivale',cat:'alpine',tags:['alpine','wild'],desc:'Silvery woolly stars adapted to glare, wind, and thin mountain soils, carrying an almost mythic reputation across the European Alps.',care:{water:'Low',sun:'Full sun',soil:'Gritty, sharply drained',diff:'Hard',season:'Summer',origin:'Alps / Carpathians'},uses:['Rock gardens','Dried arrangements','Heritage symbol','Traditional mountain medicine'],props:['UV-resistant hairs','Drought tolerant','Alpine specialist'],facts:['The flower\'s white look comes from dense hairs that reflect ultraviolet radiation and help reduce moisture loss.','Edelweiss became a symbol of courage because historically it required dangerous alpine climbs to collect.','It is protected in many regions of Europe, where wild picking is restricted or banned.','Researchers study the plant\'s fuzzy bracts as a natural model for UV-protective surface design.']},
-  {id:'plumeria',name:'Plumeria',latin:'Plumeria rubra',cat:'tropical',tags:['tropical'],desc:'Thick-petaled pinwheel blooms with a buttery centre and perfume that seems to intensify in evening warmth, iconic in tropical gardens and leis.',care:{water:'Low-moderate',sun:'Full sun',soil:'Fast-draining',diff:'Medium',season:'Summer',origin:'Central America / Caribbean'},uses:['Leis','Perfumery','Temple gardens','Container specimen'],props:['Highly fragrant','Drought tolerant once established','Latex-bearing'],facts:['Plumeria fragrance peaks at dusk because the flowers evolved to attract sphinx moths as pollinators.','The branches store water, allowing mature plants to sail through hot dry spells with minimal stress.','Although often called frangipani, that name originally referred to an Italian perfume whose scent resembled the flower.','Fresh flowers can remain vivid for days off the plant, which made them ideal for leis across the Pacific.']},
-  {id:'waterhyacinth',name:'Water Hyacinth',latin:'Eichhornia crassipes',cat:'aquatic',tags:['aquatic','tropical'],desc:'Glossy floating rosettes topped with lilac flower spikes create an almost unreal mirror-garden effect on still warm water.',care:{water:'Aquatic',sun:'Full sun',soil:'Free-floating / nutrient-rich water',diff:'Easy',season:'Summer',origin:'Amazon Basin'},uses:['Pond display','Phytoremediation','Compost (managed)','Craft fibre'],props:['Fast growing','Water-cleansing','Floating petioles'],facts:['Its swollen leaf stalks act like built-in flotation bladders, keeping the entire plant buoyant on open water.','Water hyacinth can double its population in a matter of weeks in warm nutrient-rich conditions.','The species is both admired as an ornamental and controlled aggressively because of its invasive potential in many climates.','Scientists use managed water hyacinth systems to absorb excess nutrients and some heavy metals from wastewater.']},
+  {
+    "id": "rose",
+    "name": "Rose",
+    "latin": "Rosa damascena",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "The queen of flowers, known for its layered petals and classic fragrance.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich, well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Persia"
+    }
+  },
+  {
+    "id": "lavender",
+    "name": "Lavender",
+    "latin": "Lavandula angustifolia",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Aromatic silver-purple spikes prized for their calming scent and medicinal properties.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Sandy, well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mediterranean"
+    }
+  },
+  {
+    "id": "sunflower",
+    "name": "Sunflower",
+    "latin": "Helianthus annuus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Statuesque yellow blooms that track the sun across the sky.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Any",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "lotus",
+    "name": "Lotus",
+    "latin": "Nelumbo nucifera",
+    "cat": "aquatic",
+    "tags": [
+      "aquatic"
+    ],
+    "desc": "Sacred aquatic plant with striking symmetry, symbolizing purity and rebirth.",
+    "care": {
+      "water": "Aquatic",
+      "sun": "Full sun",
+      "soil": "Muddy",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Asia"
+    }
+  },
+  {
+    "id": "chamomile",
+    "name": "Chamomile",
+    "latin": "Matricaria chamomilla",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Daisy-like flowers used for centuries in soothing teas and herbal remedies.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "orchid",
+    "name": "Orchid",
+    "latin": "Orchidaceae",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Diverse family of intricate blooms with exotic patterns and long-lasting flowers.",
+    "care": {
+      "water": "Low",
+      "sun": "Indirect light",
+      "soil": "Bark mix",
+      "diff": "Hard",
+      "season": "Year-round",
+      "origin": "Global Tropics"
+    }
+  },
+  {
+    "id": "tulip",
+    "name": "Tulip",
+    "latin": "Tulipa",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Bold spring bulbs in every color imaginable, famously associated with the Netherlands.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Sandy",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Central Asia"
+    }
+  },
+  {
+    "id": "hibiscus",
+    "name": "Hibiscus",
+    "latin": "Hibiscus rosa-sinensis",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Large, trumpet-shaped blooms with prominent stamens, synonymous with tropical paradises.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "East Asia"
+    }
+  },
+  {
+    "id": "daisy",
+    "name": "Daisy",
+    "latin": "Bellis perennis",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Cheerful white-and-yellow wildflowers that close their petals at night.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "cherry_blossom",
+    "name": "Cherry Blossom",
+    "latin": "Prunus serrulata",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Fleeting pink clouds of blossoms that mark the arrival of spring in Japan.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Moist",
+      "diff": "Medium",
+      "season": "Spring",
+      "origin": "Japan"
+    }
+  },
+  {
+    "id": "aloe",
+    "name": "Aloe Vera",
+    "latin": "Aloe barbadensis",
+    "cat": "succulent",
+    "tags": [
+      "succulent",
+      "herbal"
+    ],
+    "desc": "Succulent with thick, spiky leaves containing a cooling medicinal gel.",
+    "care": {
+      "water": "Low",
+      "sun": "Bright light",
+      "soil": "Cactus mix",
+      "diff": "Easy",
+      "season": "Year-round",
+      "origin": "Arabian Peninsula"
+    }
+  },
+  {
+    "id": "peony",
+    "name": "Peony",
+    "latin": "Paeonia",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Lush, many-petaled blooms with a rich history in art and medicine.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich, moist",
+      "diff": "Medium",
+      "season": "Early Summer",
+      "origin": "Asia"
+    }
+  },
+  {
+    "id": "passionflower",
+    "name": "Passionflower",
+    "latin": "Passiflora incarnata",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Extraordinary complex blooms with a fringe of filaments and medicinal properties.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Americas"
+    }
+  },
+  {
+    "id": "echinacea",
+    "name": "Echinacea",
+    "latin": "Echinacea purpurea",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Cone-shaped purple flowers known for their immune-boosting properties.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Dry",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "marigold",
+    "name": "Marigold",
+    "latin": "Tagetes",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Bright orange and yellow annuals often used as companion plants in gardens.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mexico"
+    }
+  },
+  {
+    "id": "jasmine",
+    "name": "Jasmine",
+    "latin": "Jasminum",
+    "cat": "tropical",
+    "tags": [
+      "tropical",
+      "herbal"
+    ],
+    "desc": "Heavily scented white flowers widely used in teas and perfumery.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Tropical Asia"
+    }
+  },
+  {
+    "id": "calendula",
+    "name": "Calendula",
+    "latin": "Calendula officinalis",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Pot marigolds with bright petals used in healing salves and skin care.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Southern Europe"
+    }
+  },
+  {
+    "id": "bluebell",
+    "name": "Bluebell",
+    "latin": "Hyacinthoides non-scripta",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Drooping blue bells that create vast carpets in ancient woodland.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Dappled shade",
+      "soil": "Humus-rich",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Western Europe"
+    }
+  },
+  {
+    "id": "waterlily",
+    "name": "Water Lily",
+    "latin": "Nymphaeaceae",
+    "cat": "aquatic",
+    "tags": [
+      "aquatic"
+    ],
+    "desc": "Float-leaved aquatic plants that bloom in still waters and ponds.",
+    "care": {
+      "water": "Aquatic",
+      "sun": "Full sun",
+      "soil": "Pond silt",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Global"
+    }
+  },
+  {
+    "id": "snowdrop",
+    "name": "Snowdrop",
+    "latin": "Galanthus nivalis",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Brave white bells that often bloom through the winter snow.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Moist",
+      "diff": "Easy",
+      "season": "Late Winter",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "hellebore",
+    "name": "Hellebore",
+    "latin": "Helleborus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "The 'Lenten Rose', blooming in late winter with nodding, cup-shaped flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Rich, moist",
+      "diff": "Easy",
+      "season": "Winter/Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "iris",
+    "name": "Iris",
+    "latin": "Iris germanica",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Named after the Greek goddess of the rainbow for its many colors.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Late Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "poppyField",
+    "name": "Field Poppy",
+    "latin": "Papaver rhoeas",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "The iconic red wildflower of agricultural fields and remembrance.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Poor, dry",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "wisteria",
+    "name": "Wisteria",
+    "latin": "Wisteria sinensis",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Cascading racemes of purple or white flowers on woody climbing vines.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Hard",
+      "season": "Spring",
+      "origin": "East Asia"
+    }
+  },
+  {
+    "id": "cactusFlower",
+    "name": "Cactus Flower",
+    "latin": "Cactaceae",
+    "cat": "succulent",
+    "tags": [
+      "succulent"
+    ],
+    "desc": "Fleeting, often vibrant blooms from resilient, desert-dwelling succulents.",
+    "care": {
+      "water": "Very Low",
+      "sun": "Full sun",
+      "soil": "Sand/Grit",
+      "diff": "Medium",
+      "season": "Variable",
+      "origin": "Americas"
+    }
+  },
+  {
+    "id": "magnolia",
+    "name": "Magnolia",
+    "latin": "Magnolia grandiflora",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Ancient flower lineage with large, fragrant, leathery petals.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Acidic",
+      "diff": "Medium",
+      "season": "Spring/Summer",
+      "origin": "Asia/Americas"
+    }
+  },
+  {
+    "id": "waterhyacinth",
+    "name": "Water Hyacinth",
+    "latin": "Pontederia crassipes",
+    "cat": "aquatic",
+    "tags": [
+      "aquatic"
+    ],
+    "desc": "Floating aquatic plant with beautiful lavender flowers, known for rapid growth.",
+    "care": {
+      "water": "Aquatic",
+      "sun": "Full sun",
+      "soil": "Water",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "South America"
+    }
+  },
+  {
+    "id": "freesia",
+    "name": "Freesia",
+    "latin": "Freesia x hybrida",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Highly fragrant, funnel-shaped blooms on one-sided spikes.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Spring",
+      "origin": "South Africa"
+    }
+  },
+  {
+    "id": "camellia",
+    "name": "Camellia",
+    "latin": "Camellia japonica",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Glossy evergreen shrubs with perfectly symmetrical, rose-like flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Acidic",
+      "diff": "Medium",
+      "season": "Winter/Spring",
+      "origin": "East Asia"
+    }
+  },
+  {
+    "id": "snapdragon",
+    "name": "Snapdragon",
+    "latin": "Antirrhinum majus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Tall spikes with flowers that look like a dragon's mouth when squeezed.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mediterranean"
+    }
+  },
+  {
+    "id": "aster",
+    "name": "Aster",
+    "latin": "Asteraceae",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Star-shaped flowers that provide vital nectar for pollinators in late autumn.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Autumn",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "zinnia",
+    "name": "Zinnia",
+    "latin": "Zinnia elegans",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Easy-to-grow annuals with long-lasting, brightly colored petals.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mexico"
+    }
+  },
+  {
+    "id": "begonia",
+    "name": "Begonia",
+    "latin": "Begonia x semperflorens",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Versatile plants prized for both their lush foliage and waxy flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Rich, moist",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Tropics"
+    }
+  },
+  {
+    "id": "fuchsia",
+    "name": "Fuchsia",
+    "latin": "Fuchsia magellanica",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Elegant, pendulous flowers resembling dancing ballerinas.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Moist",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "South America"
+    }
+  },
+  {
+    "id": "salvia",
+    "name": "Salvia",
+    "latin": "Salvia splendens",
+    "cat": "herbal",
+    "tags": [
+      "herbal",
+      "garden"
+    ],
+    "desc": "Diverse genus including culinary sage and vibrant ornamental flowers.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Global"
+    }
+  },
+  {
+    "id": "daffodil",
+    "name": "Daffodil",
+    "latin": "Narcissus pseudonarcissus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Cheerful yellow trumpets that herald the arrival of spring.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "chrysanthemum",
+    "name": "Chrysanthemum",
+    "latin": "Chrysanthemum morifolium",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Symbol of longevity and autumn, widely used in teas and festivals.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Autumn",
+      "origin": "China"
+    }
+  },
+  {
+    "id": "gerbera",
+    "name": "Gerbera Daisy",
+    "latin": "Gerbera jamesonii",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Vivid, multi-layered daisies among the world's most popular cut flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Sandy",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "South Africa"
+    }
+  },
+  {
+    "id": "saffron",
+    "name": "Saffron Crocus",
+    "latin": "Crocus sativus",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "An autumn-blooming crocus whose stigmas are the source of saffron.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Gritty",
+      "diff": "Medium",
+      "season": "Autumn",
+      "origin": "Greece"
+    }
+  },
+  {
+    "id": "morningglory",
+    "name": "Morning Glory",
+    "latin": "Ipomoea purpurea",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Fast-growing climbers with trumpet-shaped flowers that open at dawn.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mexico"
+    }
+  },
+  {
+    "id": "sweetpea",
+    "name": "Sweet Pea",
+    "latin": "Lathyrus odoratus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Quintessential cottage garden climber prized for its intense fragrance.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Rich, moist",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Sicily"
+    }
+  },
+  {
+    "id": "hydrangea",
+    "name": "Hydrangea",
+    "latin": "Hydrangea macrophylla",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Lush shrubs famous for their pH-dependent flower color changes.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Moist, rich",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Japan"
+    }
+  },
+  {
+    "id": "lilyofthevalley",
+    "name": "Lily of the Valley",
+    "latin": "Convallaria majalis",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Dainty white woodland bells with a powerful sweet fragrance.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full shade",
+      "soil": "Humus-rich",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "witchhazel",
+    "name": "Witch Hazel",
+    "latin": "Hamamelis virginiana",
+    "cat": "wild",
+    "tags": [
+      "wild",
+      "herbal"
+    ],
+    "desc": "Spidery yellow blooms appearing in the dead of winter.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Moist",
+      "diff": "Easy",
+      "season": "Winter",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "honeysuckle",
+    "name": "Honeysuckle",
+    "latin": "Lonicera periclymenum",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Night-scented climbers with tubular, nectar-rich flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "forgetmenot",
+    "name": "Forget-me-not",
+    "latin": "Myosotis sylvatica",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Tiny sky-blue flowers symbolizing true love and fidelity.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Moist",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "primrose",
+    "name": "Primrose",
+    "latin": "Primula vulgaris",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "One of the earliest and most delicate woodland spring flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Humus-rich",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "bluepoppy",
+    "name": "Blue Poppy",
+    "latin": "Meconopsis betonicifolia",
+    "cat": "alpine",
+    "tags": [
+      "alpine"
+    ],
+    "desc": "The legendary 'Himalayan Blue' \u2014 a rare and beautiful alpine treasure.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Acidic, cool",
+      "diff": "Hard",
+      "season": "Summer",
+      "origin": "Himalayas"
+    }
+  },
+  {
+    "id": "seaholly",
+    "name": "Sea Holly",
+    "latin": "Eryngium maritimum",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Architectural, thistle-like silver-blue blooms that tolerate salt spray.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Sandy",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "bougainvillea",
+    "name": "Bougainvillea",
+    "latin": "Bougainvillea spectabilis",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Thorny ornamental vines with vibrant, papery bracts.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Year-round",
+      "origin": "Brazil"
+    }
+  },
+  {
+    "id": "clematis",
+    "name": "Clematis",
+    "latin": "Clematis",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "The 'Queen of Climbers', known for its large, showy flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Global"
+    }
+  },
+  {
+    "id": "gardenia",
+    "name": "Gardenia",
+    "latin": "Gardenia jasminoides",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Waxy white flowers with an intense, intoxicating fragrance.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Acidic",
+      "diff": "Hard",
+      "season": "Summer",
+      "origin": "East Asia"
+    }
+  },
+  {
+    "id": "azalea",
+    "name": "Azalea",
+    "latin": "Rhododendron",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Shade-loving shrubs that burst into masses of spring color.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Acidic",
+      "diff": "Medium",
+      "season": "Spring",
+      "origin": "Asia"
+    }
+  },
+  {
+    "id": "blueginger",
+    "name": "Blue Ginger",
+    "latin": "Dichorisandra thyrsiflora",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Striking blue flowers on ginger-like stalks.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Autumn",
+      "origin": "Brazil"
+    }
+  },
+  {
+    "id": "callalily",
+    "name": "Calla Lily",
+    "latin": "Zantedeschia aethiopica",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Elegant, funnel-shaped spathes often used in floral arrangements.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Moist",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "South Africa"
+    }
+  },
+  {
+    "id": "peruvianlily",
+    "name": "Peruvian Lily",
+    "latin": "Alstroemeria",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Long-lasting, lily-like blooms with unique spotted patterns.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "South America"
+    }
+  },
+  {
+    "id": "cosmos",
+    "name": "Cosmos",
+    "latin": "Cosmos bipinnatus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Feathery-leaved annuals with simple, elegant daisy-like flowers.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Poor",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mexico"
+    }
+  },
+  {
+    "id": "parrotsbeak",
+    "name": "Parrot's Beak",
+    "latin": "Lotus berthelotii",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Trailing plant with silver foliage and flame-like flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Hard",
+      "season": "Spring",
+      "origin": "Canary Islands"
+    }
+  },
+  {
+    "id": "blackeyedsusan",
+    "name": "Black-eyed Susan",
+    "latin": "Rudbeckia hirta",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Cheerful yellow daisies with dark, prominent centers.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Any",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "foxglove",
+    "name": "Foxglove",
+    "latin": "Digitalis purpurea",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Tall, striking spikes of bell-shaped flowers with spotted throats.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Rich, moist",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "anemone",
+    "name": "Anemone",
+    "latin": "Anemone hupehensis",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Graceful 'Windflowers' that sway in the autumn breeze.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Autumn",
+      "origin": "China"
+    }
+  },
+  {
+    "id": "columbine",
+    "name": "Columbine",
+    "latin": "Aquilegia",
+    "cat": "alpine",
+    "tags": [
+      "alpine"
+    ],
+    "desc": "Intricate, spurred flowers that look like a cluster of doves.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Northern Hemisphere"
+    }
+  },
+  {
+    "id": "gladiolus",
+    "name": "Gladiolus",
+    "latin": "Gladiolus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Tall, sword-like spikes of colorful funnel-shaped flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "South Africa"
+    }
+  },
+  {
+    "id": "dahlia",
+    "name": "Dahlia",
+    "latin": "Dahlia pinnata",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Incredibly diverse blooms ranging from tiny pompons to giant dinner plates.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Summer/Autumn",
+      "origin": "Mexico"
+    }
+  },
+  {
+    "id": "protea",
+    "name": "Protea",
+    "latin": "Protea cynaroides",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Ancient flower family with large, prehistoric-looking bloom heads.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Acidic, gritty",
+      "diff": "Hard",
+      "season": "Winter/Spring",
+      "origin": "South Africa"
+    }
+  },
+  {
+    "id": "birdofparadise",
+    "name": "Bird of Paradise",
+    "latin": "Strelitzia reginae",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Unmistakable flowers that look like the head of a tropical bird.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Year-round",
+      "origin": "South Africa"
+    }
+  },
+  {
+    "id": "allium",
+    "name": "Allium",
+    "latin": "Allium",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Architectural globe-shaped flower heads on tall, straight stems.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Spring/Summer",
+      "origin": "Northern Hemisphere"
+    }
+  },
+  {
+    "id": "bleedingheart",
+    "name": "Bleeding Heart",
+    "latin": "Lamprocapnos spectabilis",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Heart-shaped pink and white flowers that dangle from arching stems.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Rich, moist",
+      "diff": "Medium",
+      "season": "Spring",
+      "origin": "East Asia"
+    }
+  },
+  {
+    "id": "lupine",
+    "name": "Lupine",
+    "latin": "Lupinus",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Tall, pea-like flower spikes that improve soil nitrogen.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Acidic",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Americas"
+    }
+  },
+  {
+    "id": "delphinium",
+    "name": "Delphinium",
+    "latin": "Delphinium",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Majestic spikes of true-blue flowers, a staple of cottage gardens.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Hard",
+      "season": "Summer",
+      "origin": "Northern Hemisphere"
+    }
+  },
+  {
+    "id": "poppyOriental",
+    "name": "Oriental Poppy",
+    "latin": "Papaver orientale",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Huge, papery blooms with a dark, velvet-like center.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Early Summer",
+      "origin": "Turkey"
+    }
+  },
+  {
+    "id": "plumeria",
+    "name": "Plumeria",
+    "latin": "Plumeria rubra",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Exquisitely fragrant flowers used to make traditional Hawaiian leis.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Central America"
+    }
+  },
+  {
+    "id": "ranunculus",
+    "name": "Ranunculus",
+    "latin": "Ranunculus asiaticus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Tightly swirled petals that resemble crepe paper or tissue.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Spring",
+      "origin": "Mediterranean"
+    }
+  },
+  {
+    "id": "sweetwilliam",
+    "name": "Sweet William",
+    "latin": "Dianthus barbatus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Clusters of small, spicy-scented flowers with fringed petals.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "stocks",
+    "name": "Stocks",
+    "latin": "Matthiola incana",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Highly fragrant spikes often grown for their spicy, clove-like scent.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Easy",
+      "season": "Spring/Summer",
+      "origin": "Mediterranean"
+    }
+  },
+  {
+    "id": "nasturtium",
+    "name": "Nasturtium",
+    "latin": "Tropaeolum majus",
+    "cat": "herbal",
+    "tags": [
+      "herbal",
+      "garden"
+    ],
+    "desc": "Edible flowers and leaves with a peppery kick and vibrant colors.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Poor",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Andes"
+    }
+  },
+  {
+    "id": "strawflower",
+    "name": "Strawflower",
+    "latin": "Xerochrysum bracteatum",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Flowers with papery bracts that retain their color even when dried.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Australia"
+    }
+  },
+  {
+    "id": "statice",
+    "name": "Statice",
+    "latin": "Limonium sinuatum",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Clusters of tiny, papery flowers prized for dried arrangements.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Sandy",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mediterranean"
+    }
+  },
+  {
+    "id": "yarrow",
+    "name": "Yarrow",
+    "latin": "Achillea millefolium",
+    "cat": "herbal",
+    "tags": [
+      "herbal",
+      "wild"
+    ],
+    "desc": "Flat-topped clusters of flowers with feathery foliage and healing lore.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Any",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Northern Hemisphere"
+    }
+  },
+  {
+    "id": "primrose_evening",
+    "name": "Evening Primrose",
+    "latin": "Oenothera biennis",
+    "cat": "herbal",
+    "tags": [
+      "herbal",
+      "wild"
+    ],
+    "desc": "Yellow flowers that bloom in the evening, used for their medicinal oil.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Sandy",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "North America"
+    }
+  }
 ];
 
-const cats = ['all','herbal','garden','wild','tropical','aquatic','succulent','alpine'];
-const seasonMeta = [
-  {name:'Spring', key:'sp', icon:'🌸'},
-  {name:'Summer', key:'su', icon:'☀️'},
-  {name:'Autumn', key:'au', icon:'🍂'},
-  {name:'Winter', key:'wi', icon:'❄️'}
-];
-let active = 'all';
-
-function svgFor(f, sz=180){
-  const fn = SVGS[f.id];
-  if(fn) return fn(sz);
-  // fallback simple
-  const c=f.color||'#a0c870';
-  return `<svg width="${sz}" height="${sz}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="60" fill="${c}" opacity=".3"/><text x="100" y="108" text-anchor="middle" font-size="48">🌸</text></svg>`;
-}
-
-function bgFor(f){
-  const bgs={rose:'#200810',lavender:'#160e2a',sunflower:'#1e1404',lotus:'#0e1a22',chamomile:'#141a08',orchid:'#160c28',tulip:'#1a0810',hibiscus:'#1e0606',daisy:'#141408',cherry_blossom:'#1c0e18',aloe:'#0a1a0e',peony:'#1e0a14',passionflower:'#100a22',echinacea:'#1a0c0c',marigold:'#1c1000',jasmine:'#141408',calendula:'#1c1000',bluebell:'#0c0e22',waterlily:'#0a1020',snowdrop:'#101414',hellebore:'#0c1018',iris:'#100e22',poppyField:'#1a0606',wisteria:'#100a20',cactusFlower:'#0c1008',magnolia:'#1a1008',ranunculus:'#241006',nasturtium:'#201004',bleedingheart:'#170a14',edelweiss:'#10161b',plumeria:'#1c1408',waterhyacinth:'#0b1820',dahlia:'#260a1a',hyacinth:'#140a22',anemone:'#220a20',foxglove:'#1a0c2a',sundrops:'#1e1404',gentian:'#0a1228',cornflower:'#0a1620',elderflower:'#141814',king_protea:'#2a1810',lilac:'#1a0e2c',moonflower:'#141820',bird_of_paradise:'#1e1004',ornamental_allium:'#140a28',ginger_lily:'#1e1008',texas_bluebonnet:'#0a1a28'};
-  return bgs[f.id]||'#121a14';
-}
-
-function dc(d){return d==='Easy'?'d-e':d==='Hard'?'d-h':'d-m'}
-
-function seasonsForFlower(f){
-  const season = (f.care.season || '').toLowerCase();
-  if (season.includes('year-round')) return seasonMeta.map(item => item.name);
-  return seasonMeta
-    .filter(item => season.includes(item.name.toLowerCase()))
-    .map(item => item.name);
-}
-
-function updateSummaryCopy(){
-  const statEls = document.querySelectorAll('.hero-stats .stat-n');
-  const factsTotal = flowers.reduce((sum, flower) => sum + flower.facts.length, 0);
-  if (statEls[0]) statEls[0].textContent = `${flowers.length}`;
-  if (statEls[1]) statEls[1].textContent = `${new Set(flowers.map(flower => flower.cat)).size}`;
-  if (statEls[2]) statEls[2].textContent = `${factsTotal}+`;
-
-  const heroSub = document.querySelector('.hero-sub');
-  if (heroSub) {
-    heroSub.textContent = `Explore ${flowers.length} illustrated botanical species across ${new Set(flowers.map(flower => flower.cat)).size} plant worlds, from medicinal herbs and alpine rarities to lush tropical bloomers.`;
-  }
-
-  const collectionSub = document.querySelector('#collection .sec-sub');
-  if (collectionSub) {
-    collectionSub.textContent = `Browse ${flowers.length} hand-illustrated flowers, then open any card for care notes, uses, and botanical lore.`;
-  }
-}
-
-function renderSeasonal(){
-  const grid = document.querySelector('#seasonal .season-grid');
-  if (!grid) return;
-  grid.innerHTML = seasonMeta.map(item => {
-    const names = flowers.filter(flower => seasonsForFlower(flower).includes(item.name)).map(flower => flower.name);
-    return `<div class="sc ${item.key}">
-      <div class="sc-top">
-        <div class="sc-icon">${item.icon}</div>
-        <div class="sc-count">${names.length} blooms</div>
-      </div>
-      <div class="sc-name">${item.name}</div>
-      <div class="sc-list">${names.slice(0, 10).join(' · ')}${names.length > 10 ? ' · …' : ''}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderGrid(){
-  const q=(document.getElementById('si').value||'').toLowerCase();
-  const g=document.getElementById('fg');
-  g.innerHTML='';
-  let matches = 0;
-  flowers.forEach((f,i)=>{
-    const mf=active==='all'||f.tags.includes(active)||f.cat===active;
-    const mq=!q||f.name.toLowerCase().includes(q)||f.latin.toLowerCase().includes(q)||f.desc.toLowerCase().includes(q);
-    if(!mf||!mq)return;
-    const d=document.createElement('div');
-    d.className='card reveal';
-    d.innerHTML=cardHTML(f,i);
-    g.appendChild(d);
-    matches += 1;
-  });
-  if(!matches){
-    g.innerHTML = `<div class="empty-state reveal in"><h3>No blooms matched</h3><p>Try a broader search or switch the category filter to uncover more flowers in the library.</p></div>`;
-    return;
-  }
-  observe();
-}
-
-function renderFilters(){
-  document.getElementById('fb').innerHTML=cats.map(c=>`<button class="fb ${c===active?'on':''}" onclick="setFilter('${c}')">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('');
-}
-
-function setFilter(f){active=f;renderFilters();renderGrid()}
-
-function openModal(i){
-  const f=flowers[i];
-  document.getElementById('mc').innerHTML=`
-    <div class="modal-hdr">
-      <div class="modal-ill" style="background:${bgFor(f)};width:220px;height:220px">${svgFor(f,200)}</div>
-      <div style="padding-top:.5rem">
-        <div class="modal-title">${f.name}</div>
-        <div class="modal-latin">${f.latin}</div>
-        <div class="modal-tags">${f.tags.map(t=>`<span class="tag tag-${t}">${t}</span>`).join('')}</div>
-        <p class="modal-desc">${f.desc}</p>
-      </div>
-    </div>
-    <div class="modal-grid">
-      <div class="ic">
-        <div class="ic-label">Care at a glance</div>
-        <div class="care-g">
-          <div class="cb"><div class="cb-icon">💧</div><div class="cb-l">Water</div><div class="cb-v">${f.care.water}</div></div>
-          <div class="cb"><div class="cb-icon">☀️</div><div class="cb-l">Sun</div><div class="cb-v">${f.care.sun}</div></div>
-          <div class="cb"><div class="cb-icon">🌱</div><div class="cb-l">Soil</div><div class="cb-v">${f.care.soil}</div></div>
-          <div class="cb"><div class="cb-icon">📅</div><div class="cb-l">Season</div><div class="cb-v">${f.care.season}</div></div>
-        </div>
-      </div>
-      <div class="ic">
-        <div class="ic-label">Key details</div>
-        <div class="info-row"><span class="ik">Difficulty</span><span class="iv">${f.care.diff}</span></div>
-        <div class="info-row"><span class="ik">Origin</span><span class="iv">${f.care.origin}</span></div>
-        <div class="info-row"><span class="ik">Category</span><span class="iv">${f.cat}</span></div>
-        <div class="info-row"><span class="ik">Uses recorded</span><span class="iv">${f.uses.length}+</span></div>
-      </div>
-      <div class="ic">
-        <div class="ic-label">Uses & applications</div>
-        <div class="uses-list">${f.uses.map(u=>`<span class="uc">${u}</span>`).join('')}</div>
-      </div>
-      <div class="ic">
-        <div class="ic-label">Properties</div>
-        <div class="uses-list">${f.props.map(p=>`<span class="prop" style="font-size:.72rem">${p}</span>`).join('')}</div>
-      </div>
-      <div class="ic ic-full">
-        <div class="ic-label">Fascinating facts</div>
-        <div class="facts">${f.facts.map(fc=>`<div class="fact"><span class="fi">✦</span><span>${fc}</span></div>`).join('')}</div>
-      </div>
-    </div>`;
-  document.getElementById('modal').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function closeModal(){
-  document.getElementById('modal').classList.remove('open');
-  document.body.style.overflow='';
-}
-function bgClose(e){
-  if(e.target===document.getElementById('modal'))closeModal();
-}
-document.addEventListener('keydown', e => {
-  if(e.key==='Escape') closeModal();
+flowers.forEach(f => {
+    if (!SVGS[f.id]) {
+        const c = colors[f.cat] || '#9fd878';
+        SVGS[f.id] = (s=200) => {
+            return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs><radialGradient id="grad-${f.id}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c}" stop-opacity="0.9"/><stop offset="100%" stop-color="${c}" stop-opacity="0.4"/></radialGradient></defs>
+                <circle cx="100" cy="100" r="40" fill="url(#grad-${f.id})"/>
+                <path d="M100 140 L100 190" stroke="#3a8038" stroke-width="3" stroke-linecap="round"/>
+            </svg>`;
+        };
+    }
 });
 
-// Hero floaters
-(function(){
-  const c=document.getElementById('hf');
-  const pos=[{t:'12%',l:'6%',s:100},{t:'18%',r:'8%',s:120},{t:'55%',l:'2%',s:80},{t:'60%',r:'4%',s:95},{t:'78%',l:'48%',s:70},{t:'25%',l:'40%',s:90}];
-  c.innerHTML=pos.map((p,i)=>{
-    const f=flowers[i%flowers.length];
-    const st=`position:absolute;top:${p.t||''};bottom:${p.b||''};left:${p.l||''};right:${p.r||''}`;
-    return `<div class="floater" style="${st}">${svgFor(f,p.s)}</div>`;
-  }).join('');
-})();
+let active = 'all';
+let favs = [];
+try { favs = JSON.parse(localStorage.getItem('bloom_favs') || '[]'); } catch(e) {}
 
-function observe(){
-  const els=document.querySelectorAll('.reveal:not(.in)');
-  const ob=new IntersectionObserver(entries=>{
-    entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*55);ob.unobserve(e.target)}});
-  },{threshold:.1});
-  els.forEach(el=>ob.observe(el));
+function saveFavs() { try { localStorage.setItem('bloom_favs', JSON.stringify(favs)); } catch(e) {} }
+
+function toggleFav(id, e) {
+    e.stopPropagation();
+    if(favs.includes(id)) favs = favs.filter(x => x !== id);
+    else favs.push(id);
+    saveFavs();
+    renderGrid();
+    renderFavs();
 }
 
-document.getElementById('si').addEventListener('input',()=>renderGrid());
-
-// ── FAVOURITES ──
-let favs = JSON.parse(localStorage.getItem('bloom_favs')||'[]');
-function saveFavs(){try{localStorage.setItem('bloom_favs',JSON.stringify(favs))}catch(e){}}
-function toggleFav(id,e){
-  e.stopPropagation();
-  if(favs.includes(id)) favs=favs.filter(x=>x!==id);
-  else favs.push(id);
-  saveFavs();
-  document.querySelectorAll(`.fav-btn[data-id="${id}"]`).forEach(b=>{
-    b.classList.toggle('active',favs.includes(id));
-    b.textContent=favs.includes(id)?'♥':'♡';
-  });
-  renderFavs();
-}
-function renderFavs(){
-  const g=document.getElementById('fav-grid');
-  const e=document.getElementById('fav-empty');
-  const favFlowers=flowers.filter(f=>favs.includes(f.id));
-  if(favFlowers.length===0){g.innerHTML='';e.style.display='block';return;}
-  e.style.display='none';
-  g.innerHTML='';
-  favFlowers.forEach((f,i)=>{
-    const idx=flowers.indexOf(f);
-    const d=document.createElement('div');
-    d.className='card reveal';
-    d.innerHTML=cardHTML(f,idx);
-    g.appendChild(d);
-  });
-  observe();
-}
-function cardHTML(f,i){
-  return `
-    <div class="card-ill" style="background:${bgFor(f)}">
-      ${svgFor(f,180)}
-      <div class="card-tags">${f.tags.map(t=>`<span class="tag tag-${t}">${t}</span>`).join('')}</div>
-      <button class="fav-btn ${favs.includes(f.id)?'active':''}" data-id="${f.id}" onclick="toggleFav('${f.id}',event)" title="Save to favourites">${favs.includes(f.id)?'♥':'♡'}</button>
-    </div>
-    <div class="card-body">
-      <div class="card-name">${f.name}</div>
-      <div class="card-latin">${f.latin}</div>
-      <div class="card-desc">${f.desc}</div>
-      <div class="card-props">${f.props.slice(0,3).map(p=>`<span class="prop">${p}</span>`).join('')}</div>
-    </div>
-    <div class="card-foot">
-      <div class="care-row">
-        <div class="ci"><div class="dot ${dc(f.care.diff)}"></div>${f.care.diff}</div>
-        <div class="ci">💧 ${f.care.water}</div>
-      </div>
-      <button class="card-btn" onclick="openModal(${i})">Explore →</button>
-    </div>`;
+function renderFavs() {
+    const g = document.getElementById('fav-grid');
+    const e = document.getElementById('fav-empty');
+    if(!g) return;
+    const favFlowers = flowers.filter(f => favs.includes(f.id));
+    if(favFlowers.length === 0) {
+        g.innerHTML = ''; if(e) e.style.display = 'block'; return;
+    }
+    if(e) e.style.display = 'none';
+    g.innerHTML = '';
+    favFlowers.forEach(f => {
+        const d = document.createElement('div');
+        d.className = 'card reveal in';
+        d.innerHTML = cardHTML(f, flowers.indexOf(f));
+        g.appendChild(d);
+    });
 }
 
-// ── FLOWER OF THE DAY ──
-const fotdIdx = new Date().getDate() % flowers.length;
-const fotdId = flowers[fotdIdx].id;
-(function renderFotd(){
-  const f=flowers[fotdIdx];
-  const bg=bgFor(f);
-  document.getElementById('fotd-ill').style.background=bg;
-  document.getElementById('fotd-ill').innerHTML=svgFor(f,220);
-  document.getElementById('fotd-name').textContent=f.name;
-  document.getElementById('fotd-latin').textContent=f.latin;
-  document.getElementById('fotd-desc').textContent=f.desc;
-  document.getElementById('fotd-fact').textContent='✦ '+f.facts[0];
-})();
-function openModalById(id){
-  const i=flowers.findIndex(f=>f.id===id);
-  if(i>=0) openModal(i);
+function svgFor(f, sz=180) { return SVGS[f.id] ? SVGS[f.id](sz) : ''; }
+function bgFor(f) { return '#1a2b1c'; }
+
+function renderGrid() {
+    const q = (document.getElementById('si').value || '').toLowerCase();
+    const g = document.getElementById('fg');
+    const stats = document.getElementById('search-stats');
+    if(!g) return;
+    g.innerHTML = '';
+    let matches = 0;
+    flowers.forEach((f, i) => {
+        const mf = active === 'all' || f.cat === active || (f.tags && f.tags.includes(active));
+        const mq = !q || f.name.toLowerCase().includes(q) || f.latin.toLowerCase().includes(q);
+        if(!mf || !mq) return;
+        const d = document.createElement('div');
+        d.className = 'card reveal in';
+        d.innerHTML = cardHTML(f, i);
+        g.appendChild(d);
+        matches++;
+    });
+    if(stats) stats.textContent = q ? `Found ${matches} match(es) for "${q}"` : `Showing ${matches} species`;
 }
 
-// ── GLOSSARY ──
-const glossary=[
-    {term:'Inflorescence',def:'A group or cluster of flowers arranged on a stem — the pattern can be a spike, raceme, umbel, or panicle.'},
-    {term:'Filament',def:'The slender stalk of a stamen that supports the anther.'},
-    {term:'Ovary',def:'The enlarged basal portion of the pistil where ovules are produced.'},
-    {term:'Ovule',def:'The structure within the ovary that develops into a seed after fertilization.'},
-    {term:'Pedicel',def:'The stalk that supports a single flower in an inflorescence.'},
-    {term:'Peduncle',def:'The main stalk supporting a cluster of flowers or a solitary flower.'},
-    {term:'Stipule',def:'A small leaf-like appendage at the base of a leaf stalk, often paired.'},
-    {term:'Axil',def:'The angle between the upper side of a leaf or stem and the supporting stem or branch.'},
-    {term:'Node',def:'The part of a plant stem from which leaves, branches, or flowers arise.'},
-    {term:'Internode',def:'The segment of a plant stem between two nodes.'},
-    {term:'Whorl',def:'An arrangement of leaves, petals, or other organs radiating from a single point and encircling the stem.'},
-    {term:'Rosette',def:'A circular arrangement of leaves or petals radiating from a short stem at ground level.'},
-    {term:'Umbellet',def:'A secondary umbel in a compound umbel, as seen in carrot or fennel flowers.'},
-    {term:'Carpel',def:'The basic unit of the female reproductive organ, consisting of ovary, style, and stigma.'},
-    {term:'Style',def:'The slender stalk in the pistil connecting the stigma and ovary.'},
-    {term:'Pappus',def:'A tuft of hairs or bristles on seeds, aiding in wind dispersal — common in dandelions and thistles.'},
-    {term:'Bracteole',def:'A small bract on the pedicel or flower stalk.'},
-    {term:'Catkin',def:'A slim, cylindrical flower cluster with inconspicuous or no petals, as in willows and birches.'},
-    {term:'Spadix',def:'A thick, fleshy spike of flowers, usually surrounded by a spathe, as in arum lilies.'},
-    {term:'Spathe',def:'A large bract that encloses or subtends a flower cluster, especially in arum lilies.'},
-  {term:'Corolla',def:'The collective term for all petals of a flower — the showy inner whorl that attracts pollinators.'},
-  {term:'Calyx',def:'The outermost ring of a flower, made up of sepals that protect the developing bud.'},
-  {term:'Sepal',def:'Individual leaf-like structures forming the calyx, usually green, enclosing the bud before it opens.'},
-  {term:'Stamen',def:'The male reproductive organ of a flower, consisting of a filament topped by an anther that produces pollen.'},
-  {term:'Pistil',def:'The female reproductive organ — comprising the stigma, style, and ovary — that receives pollen.'},
-  {term:'Anther',def:'The pollen-producing sac at the tip of the stamen. Its colour, shape, and timing are species-specific.'},
-  {term:'Stigma',def:'The sticky tip of the pistil that captures pollen grains, starting the fertilisation process.'},
-  {term:'Nectary',def:'Glands that produce nectar — the sugary reward that lures pollinators into the flower.'},
-  {term:'Bract',def:'A modified leaf at the base of a flower that may be colourful — what we call "petals" in poinsettias are actually bracts.'},
-  {term:'Raceme',def:'A flower cluster where individual flowers grow on short stalks along a central stem, like foxglove or bluebell.'},
-  {term:'Corymb',def:'A flat-topped flower cluster where all flowers reach the same height — like elder or yarrow.'},
-  {term:'Umbel',def:'An umbrella-shaped flower cluster where all stalks arise from one point — like wild carrot and fennel.'},
-  {term:'Panicle',def:'A loose, branched flower cluster — lilac and oat grass produce classic panicles.'},
-  {term:'Labellum',def:'The specialised lip petal of an orchid, uniquely shaped to guide pollinators to the reproductive organs.'},
-  {term:'Rhizome',def:'A horizontal underground stem that stores nutrients and spreads the plant — iris and ginger grow from rhizomes.'},
-  {term:'Tuber',def:'A swollen underground stem or root used for nutrient storage — dahlia and potato tubers are classic examples.'},
-  {term:'Corm',def:'A solid swollen stem base acting as a storage organ — crocus, gladiolus, and freesia grow from corms.'},
-  {term:'Heliotropism',def:'The ability of young plants (especially sunflowers) to track the sun\'s movement across the sky during the day.'},
-  {term:'Vernalisation',def:'The requirement for a cold winter period before flowering — mimicked artificially to force bulbs to bloom.'},
-  {term:'Deadheading',def:'Removing spent flower heads to redirect the plant\'s energy from seed production into further blooming.'},
-  {term:'Serotiny',def:'A seed-release strategy where cones or pods open only after fire — used by proteas and some pines.'},
-  {term:'Pollination Syndrome',def:'The suite of flower characteristics (colour, shape, scent) evolved to attract a specific type of pollinator.'},
-  {term:'Anthesis',def:'The period during which a flower is open and fully functional — this can last from hours to weeks.'},
-  {term:'Palmate',def:'Leaves or leaflets arranged in a hand-like pattern radiating from a central point, like lupins and horse-chestnut.'},
-];
-(function renderGlossary(){
-  const g=document.getElementById('glossary-grid');
-  g.innerHTML=glossary.map(item=>`
-    <div class="gl-card reveal">
-      <div class="gl-term">${item.term}</div>
-      <div class="gl-def">${item.def}</div>
-    </div>`).join('');
-})();
+function cardHTML(f, i) {
+    return `
+        <div class="card-ill" style="background:${bgFor(f)}">
+            ${svgFor(f, 180)}
+            <div class="card-tags">${(f.tags||[]).map(t => `<span class="tag tag-${t}">${t}</span>`).join('')}</div>
+            <button class="fav-btn ${favs.includes(f.id)?'active':''}" onclick="toggleFav('${f.id}', event)">${favs.includes(f.id)?'♥':'♡'}</button>
+        </div>
+        <div class="card-body">
+            <div class="card-name">${f.name}</div>
+            <div class="card-desc">${f.desc}</div>
+        </div>
+        <div class="card-foot">
+            <button class="card-btn" onclick="openModal(${i})">Explore →</button>
+        </div>`;
+}
 
-updateSummaryCopy();
-renderSeasonal();
-renderFilters();
-renderGrid();
-renderFavs();
+function openModal(i) {
+    const f = flowers[i];
+    if(!f) return;
+    const mc = document.getElementById('mc');
+    mc.innerHTML = `
+        <div class="modal-title">${f.name}</div>
+        <div style="font-style:italic;color:var(--text3);margin-bottom:1.5rem">${f.latin}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;margin-bottom:2rem">
+            <div><div style="font-size:.6rem;text-transform:uppercase;color:var(--text3)">Sun</div><div>${f.care.sun}</div></div>
+            <div><div style="font-size:.6rem;text-transform:uppercase;color:var(--text3)">Water</div><div>${f.care.water}</div></div>
+            <div><div style="font-size:.6rem;text-transform:uppercase;color:var(--text3)">Difficulty</div><div>${f.care.diff}</div></div>
+        </div>
+        <p>${f.desc}</p>
+    `;
+    document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function discoverRandom() { openModal(Math.floor(Math.random() * flowers.length)); }
+function setFilter(f) {
+    active = f;
+    document.querySelectorAll('.fb').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === f.toLowerCase()));
+    renderGrid();
+}
+
+window.onload = () => {
+    const fb = document.getElementById('fb');
+    if(fb) {
+        ['all','herbal','garden','wild','tropical','aquatic','succulent','alpine'].forEach(c => {
+            const b = document.createElement('button');
+            b.className = 'fb' + (c==='all'?' active':'');
+            b.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+            b.onclick = () => setFilter(c);
+            fb.appendChild(b);
+        });
+    }
+    renderGrid();
+    renderFavs();
+    const sc = document.querySelector('.hero-stats .stat-n');
+    if(sc) sc.textContent = flowers.length;
+    document.getElementById('si').addEventListener('input', renderGrid);
+};
 </script>
-</body>
-</html>
+</body></html>
