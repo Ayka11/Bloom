@@ -182,6 +182,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   <div class="logo">Bloom<sup>Botanical</sup></div>
   <div class="nav-links">
     <a href="#fotd">Flower of the Day</a>
+    <a href="#evolution">Evolution</a>
     <a href="#collection">Collection</a>
     <a href="#seasonal">Seasonal</a>
     <a href="#care">Care Tips</a>
@@ -194,6 +195,60 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
     <input type="text" placeholder="Search flowers…" id="si">
   </div>
 </nav>
+
+<style>
+/* EVOLUTION SANDBOX */
+.sandbox-grid { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; margin-top: 2rem; }
+.viewport { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r); height: 500px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.controls { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; }
+.control-group { margin-bottom: 1.5rem; }
+.control-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: .5rem; display: block; }
+.slider { width: 100%; appearance: none; height: 4px; background: var(--border2); border-radius: 2px; outline: none; }
+.slider::-webkit-slider-thumb { appearance: none; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; cursor: pointer; }
+.evo-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; font-size: .8rem; color: var(--text2); }
+.evo-btn { width: 100%; margin-top: 1rem; }
+.species-list { margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+.sp-mini-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rs); padding: .8rem; text-align: center; cursor: pointer; transition: all .2s; }
+.sp-mini-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.sp-name { font-size: .75rem; color: var(--text); margin-top: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+
+<section id="evolution" style="max-width:1340px;margin:0 auto">
+  <div class="sec-label">Procedural Evolution</div>
+  <h2 class="sec-title">Species <em>Sandbox</em></h2>
+  <p class="sec-sub">Simulate natural selection and genetic crossover to discover entirely new botanical species. Adjust environmental pressures to guide the evolutionary path.</p>
+
+  <div class="sandbox-grid">
+    <div class="viewport" id="evo-viewport">
+      <!-- Generated Plant SVG will go here -->
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label">Temperature</label>
+        <input type="range" class="slider" id="env-temp" min="0" max="100" value="50">
+      </div>
+      <div class="control-group">
+        <label class="control-label">Humidity</label>
+        <input type="range" class="slider" id="env-humid" min="0" max="100" value="50">
+      </div>
+      <div class="control-group">
+        <label class="control-label">Sunlight</label>
+        <input type="range" class="slider" id="env-sun" min="0" max="100" value="50">
+      </div>
+      <button class="btn-p evo-btn" id="run-evo">Simulate Step</button>
+      <button class="btn-g evo-btn" id="reset-evo">New Random Seed</button>
+
+      <div class="evo-stats">
+        <div>Generation: <span id="evo-gen">0</span></div>
+        <div>Species: <span id="evo-count">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="species-list" id="evo-species">
+    <!-- Mini cards for evolved species -->
+  </div>
+</section>
 
 <div class="hero">
   <div class="hero-bg"></div>
@@ -290,6 +345,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   </div>
 </div>
 
+<script src="bloom-evolution.js"></script>
+<script src="bloom-simulator.js"></script>
 <script>
 /* ─────────────────────────────────────────────
    REALISTIC BOTANICAL SVG ILLUSTRATIONS
@@ -2187,6 +2244,75 @@ renderSeasonal();
 renderFilters();
 renderGrid();
 renderFavs();
+
+// ── EVOLUTION SANDBOX INTEGRATION ──
+const simulator = new EcosystemSimulator();
+
+function initEvolution() {
+  // Add initial random species
+  for (let i = 0; i < 5; i++) {
+    simulator.addSpecies(new Species(null, new Genome()));
+  }
+  updateEvoUI();
+}
+
+function updateEvoUI() {
+  const viewport = document.getElementById('evo-viewport');
+  const speciesList = document.getElementById('evo-species');
+  const genEl = document.getElementById('evo-gen');
+  const countEl = document.getElementById('evo-count');
+
+  genEl.textContent = simulator.generation;
+  countEl.textContent = simulator.species.length;
+
+  if (simulator.species.length > 0) {
+    // Show the fittest species in viewport
+    const fittest = [...simulator.species].sort((a,b) => b.fitness - a.fitness)[0];
+    viewport.innerHTML = ProceduralSVG.generate(fittest.genome, 400) +
+      `<div style="position:absolute; bottom:1rem; text-align:center; width:100%">
+        <div style="font-size:1.2rem; color:var(--accent)">${fittest.name}</div>
+        <div style="font-size:.8rem; color:var(--text3)">Fitness: ${(fittest.fitness * 100).toFixed(1)}% | Pop: ${Math.floor(fittest.population)}</div>
+      </div>`;
+  }
+
+  speciesList.innerHTML = simulator.species.map(sp => `
+    <div class="sp-mini-card" onclick="viewSpecies('${sp.id}')">
+      <div style="height:60px; display:flex; align-items:center; justify-content:center">
+        ${ProceduralSVG.generate(sp.genome, 50)}
+      </div>
+      <div class="sp-name">${sp.name}</div>
+    </div>
+  `).join('');
+}
+
+window.viewSpecies = function(id) {
+  const sp = simulator.species.find(s => s.id === id);
+  if (sp) {
+    const viewport = document.getElementById('evo-viewport');
+    viewport.innerHTML = ProceduralSVG.generate(sp.genome, 400) +
+      `<div style="position:absolute; bottom:1rem; text-align:center; width:100%">
+        <div style="font-size:1.2rem; color:var(--accent)">${sp.name}</div>
+        <div style="font-size:.8rem; color:var(--text3)">Fitness: ${(sp.fitness * 100).toFixed(1)}% | Pop: ${Math.floor(sp.population)} | Gen: ${sp.generation}</div>
+      </div>`;
+  }
+};
+
+document.getElementById('run-evo').addEventListener('click', () => {
+  simulator.climate.temperature = document.getElementById('env-temp').value / 100;
+  simulator.climate.humidity = document.getElementById('env-humid').value / 100;
+  simulator.climate.sunlight = document.getElementById('env-sun').value / 100;
+
+  simulator.simulateStep();
+  updateEvoUI();
+});
+
+document.getElementById('reset-evo').addEventListener('click', () => {
+  simulator.species = [];
+  simulator.generation = 0;
+  initEvolution();
+});
+
+initEvolution();
 </script>
 </body>
 </html>
