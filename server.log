@@ -1,0 +1,12 @@
+127.0.0.1 - - [25/May/2026 09:20:36] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:20:36] "GET /bloom-data.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:20:36] "GET /bloom-app.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:20:36] "GET /bloom-style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:25:22] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:25:22] "GET /bloom-style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:25:22] "GET /bloom-data.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:25:22] "GET /bloom-app.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:26:58] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:26:58] "GET /bloom-style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:26:58] "GET /bloom-data.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 09:26:58] "GET /bloom-app.js HTTP/1.1" 200 -
