@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal();
     }
   });
+
+  initEcosystem();
 });
 
 let currentCategory = null;
@@ -197,4 +199,26 @@ function openModal(flower) {
 function closeModal() {
   document.getElementById("modal").classList.add("hidden");
   document.body.classList.remove("modal-open");
+}
+
+function initEcosystem() {
+  if (typeof bloomSimulator === "undefined") return;
+
+  bloomSimulator.addListener(state => {
+    document.getElementById("sim-season").textContent = state.climate.season;
+    document.getElementById("sim-temp").textContent = `${state.climate.temperature.toFixed(1)}°C`;
+    document.getElementById("sim-sun").textContent = `${(state.climate.sunlight * 100).toFixed(0)}%`;
+    document.getElementById("sim-rain").textContent = `${state.climate.rainfall.toFixed(1)}mm`;
+
+    document.getElementById("sim-nitro").textContent = state.soil.nitrogen.toFixed(2);
+    document.getElementById("sim-phos").textContent = state.soil.phosphorus.toFixed(2);
+    document.getElementById("sim-potas").textContent = state.soil.potassium.toFixed(2);
+    document.getElementById("sim-ph").textContent = state.soil.ph.toFixed(1);
+
+    document.getElementById("sim-biomass").textContent = `${state.growth.biomass.toFixed(2)} units`;
+    document.getElementById("sim-rate").textContent = `${state.growth.growthRate.toFixed(3)} units/s`;
+    document.getElementById("sim-stress").textContent = `${(state.growth.stress * 100).toFixed(0)}%`;
+  });
+
+  bloomSimulator.start();
 }
