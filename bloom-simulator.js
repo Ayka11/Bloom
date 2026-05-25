@@ -125,12 +125,62 @@ class PollinationSimulator {
     }
 }
 
+class HydrologySystem {
+    constructor() {
+        this.groundwater = 50; // mm
+        this.evaporation = 2;   // mm/step
+        this.waterFlow = 0;
+    }
+
+    update(climate, growth) {
+        // WaterFlow = Rainfall + Groundwater - Evaporation - PlantConsumption
+        // Simplified plant consumption based on biomass
+        const plantConsumption = growth.biomass * 0.01;
+        this.evaporation = 0.5 + (climate.temperature / 20);
+
+        this.waterFlow = climate.rainfall + this.groundwater - this.evaporation - plantConsumption;
+
+        // Update groundwater reservoir based on net balance
+        const balance = climate.rainfall - this.evaporation - plantConsumption;
+        this.groundwater = Math.max(10, Math.min(100, this.groundwater + balance * 0.05));
+
+        return this.waterFlow;
+    }
+}
+
+class PopulationDynamics {
+    constructor() {
+        this.populationSize = 100; // Baseline starting population
+        this.growthRate_r = 0.05;  // Intrinsic rate of increase
+        this.carryingCapacity_K = 1000;
+        this.dNdt = 0;
+    }
+
+    update(growth) {
+        // Logistic growth formula: dN/dt = rN(1 - N/K)
+        // Adjust intrinsic rate r based on biomass/growth state
+        const adjusted_r = this.growthRate_r * (growth.growthRate > 0 ? 1.2 : 0.8);
+
+        this.dNdt = adjusted_r * this.populationSize * (1 - this.populationSize / this.carryingCapacity_K);
+
+        // Update population size
+        this.populationSize += this.dNdt;
+
+        // Handle extinction/collapse
+        if (this.populationSize < 1) this.populationSize = 0;
+
+        return this.populationSize;
+    }
+}
+
 class EcosystemSimulator {
     constructor() {
         this.climate = new ClimateEngine();
         this.soil = new SoilChemistrySystem();
         this.growth = new GrowthSimulator();
         this.pollination = new PollinationSimulator();
+        this.hydrology = new HydrologySystem();
+        this.population = new PopulationDynamics();
         this.isRunning = false;
         this.listeners = [];
     }
@@ -152,6 +202,8 @@ class EcosystemSimulator {
         const growthImpact = this.growth.calculateGrowth(this.climate, this.soil);
         this.soil.update(Math.max(0, growthImpact));
         this.pollination.update(this.climate, this.growth);
+        this.hydrology.update(this.climate, this.growth);
+        this.population.update(this.growth);
 
         this.notify();
 
@@ -167,7 +219,9 @@ class EcosystemSimulator {
             climate: { ...this.climate },
             soil: { ...this.soil },
             growth: { ...this.growth },
-            pollination: { ...this.pollination }
+            pollination: { ...this.pollination },
+            hydrology: { ...this.hydrology },
+            population: { ...this.population }
         };
         this.listeners.forEach(cb => cb(state));
     }

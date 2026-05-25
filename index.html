@@ -301,6 +301,24 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
       <div class="info-row"><span class="ik">Pollination Success</span><span class="iv" id="sim-p-success">--</span></div>
       <div class="info-row"><span class="ik">Pollinator Density</span><span class="iv" id="sim-p-density">--</span></div>
     </div>
+    <div class="ic">
+      <div class="ic-label">Hydrology System</div>
+      <div class="info-row"><span class="ik">Groundwater Level</span><span class="iv" id="sim-h-ground">--</span></div>
+      <div class="info-row"><span class="ik">Net Water Flow</span><span class="iv" id="sim-h-flow">--</span></div>
+      <div class="info-row"><span class="ik">Evaporation Rate</span><span class="iv" id="sim-h-evap">--</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">World Generator</div>
+      <div class="info-row"><span class="ik">Regional Occurrences</span><span class="iv" id="sim-w-occ">--</span></div>
+      <div class="info-row"><span class="ik">Active Biome</span><span class="iv" id="sim-w-biome">--</span></div>
+      <div class="info-row"><span class="ik">Taxonomic Backbone</span><span class="iv">GBIF Backbone</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">Population Dynamics</div>
+      <div class="info-row"><span class="ik">Population Size</span><span class="iv" id="sim-pop-size">--</span></div>
+      <div class="info-row"><span class="ik">Growth Trend</span><span class="iv" id="sim-pop-trend">--</span></div>
+      <div class="info-row"><span class="ik">Capacity (K)</span><span class="iv" id="sim-pop-cap">--</span></div>
+    </div>
   </div>
 </section>
 
@@ -2237,6 +2255,14 @@ function initEcosystem() {
     const elPActivity = document.getElementById("sim-p-activity");
     const elPSuccess = document.getElementById("sim-p-success");
     const elPDensity = document.getElementById("sim-p-density");
+    const elHGround = document.getElementById("sim-h-ground");
+    const elHFlow = document.getElementById("sim-h-flow");
+    const elHEvap = document.getElementById("sim-h-evap");
+    const elWOcc = document.getElementById("sim-w-occ");
+    const elWBiome = document.getElementById("sim-w-biome");
+    const elPopSize = document.getElementById("sim-pop-size");
+    const elPopTrend = document.getElementById("sim-pop-trend");
+    const elPopCap = document.getElementById("sim-pop-cap");
 
     if (elSeason) elSeason.textContent = state.climate.season;
     if (elTemp) elTemp.textContent = `${state.climate.temperature.toFixed(1)}°C`;
@@ -2255,6 +2281,20 @@ function initEcosystem() {
     if (elPActivity) elPActivity.textContent = `${(state.pollination.pollinatorActivity * 100).toFixed(0)}%`;
     if (elPSuccess) elPSuccess.textContent = `${(state.pollination.pollinationSuccess * 100).toFixed(1)}%`;
     if (elPDensity) elPDensity.textContent = `${(state.pollination.pollinatorDensity * 100).toFixed(0)}%`;
+
+    if (elHGround) elHGround.textContent = `${state.hydrology.groundwater.toFixed(1)} mm`;
+    if (elHFlow) elHFlow.textContent = `${state.hydrology.waterFlow.toFixed(2)} mm/s`;
+    if (elHEvap) elHEvap.textContent = `${state.hydrology.evaporation.toFixed(2)} mm/s`;
+
+    if (elWOcc && typeof flowers !== "undefined") {
+        const regions = [...new Set(flowers.map(f => f.occurrence?.region).filter(Boolean))];
+        elWOcc.textContent = `${regions.length} Regions`;
+    }
+    if (elWBiome) elWBiome.textContent = state.climate.temperature > 25 ? "Tropical" : "Temperate";
+
+    if (elPopSize) elPopSize.textContent = `${state.population.populationSize.toFixed(0)} organisms`;
+    if (elPopTrend) elPopTrend.textContent = `${state.population.dNdt > 0 ? "📈" : "📉"} ${state.population.dNdt.toFixed(2)}/s`;
+    if (elPopCap) elPopCap.textContent = `${state.population.carryingCapacity_K} K`;
   });
 
   bloomSimulator.start();

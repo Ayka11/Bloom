@@ -218,6 +218,34 @@ function initEcosystem() {
     document.getElementById("sim-biomass").textContent = `${state.growth.biomass.toFixed(2)} units`;
     document.getElementById("sim-rate").textContent = `${state.growth.growthRate.toFixed(3)} units/s`;
     document.getElementById("sim-stress").textContent = `${(state.growth.stress * 100).toFixed(0)}%`;
+
+    if (state.pollination) {
+      document.getElementById("sim-p-activity").textContent = `${(state.pollination.pollinatorActivity * 100).toFixed(0)}%`;
+      document.getElementById("sim-p-success").textContent = `${(state.pollination.pollinationSuccess * 100).toFixed(1)}%`;
+      document.getElementById("sim-p-density").textContent = `${(state.pollination.pollinatorDensity * 100).toFixed(0)}%`;
+    }
+
+    if (state.hydrology) {
+      document.getElementById("sim-h-ground").textContent = `${state.hydrology.groundwater.toFixed(1)} mm`;
+      document.getElementById("sim-h-flow").textContent = `${state.hydrology.waterFlow.toFixed(2)} mm/s`;
+      document.getElementById("sim-h-evap").textContent = `${state.hydrology.evaporation.toFixed(2)} mm/s`;
+    }
+
+    const elWOcc = document.getElementById("sim-w-occ");
+    if (elWOcc && typeof FLOWERS !== "undefined") {
+      const regions = [...new Set(FLOWERS.map(f => f.occurrence?.region).filter(Boolean))];
+      elWOcc.textContent = `${regions.length} Regions`;
+    }
+    const elWBiome = document.getElementById("sim-w-biome");
+    if (elWBiome) {
+      elWBiome.textContent = state.climate.temperature > 25 ? "Tropical" : "Temperate";
+    }
+
+    if (state.population) {
+      document.getElementById("sim-pop-size").textContent = `${state.population.populationSize.toFixed(0)} organisms`;
+      document.getElementById("sim-pop-trend").textContent = `${state.population.dNdt > 0 ? "📈" : "📉"} ${state.population.dNdt.toFixed(2)}/s`;
+      document.getElementById("sim-pop-cap").textContent = `${state.population.carryingCapacity_K} K`;
+    }
   });
 
   bloomSimulator.start();
