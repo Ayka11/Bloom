@@ -186,6 +186,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
     <a href="#seasonal">Seasonal</a>
     <a href="#care">Care Tips</a>
     <a href="#glossary">Botanical Glossary</a>
+    <a href="#simulator">Growth Simulator</a>
     <a href="#favorites">Favourites</a>
     <a href="#nav-expanded">More</a>
   </div>
@@ -223,6 +224,56 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
       <div id="fotd-latin" style="font-size:.82rem;font-style:italic;color:var(--text3);margin-bottom:.8rem"></div>
       <div id="fotd-desc" style="font-size:.9rem;color:var(--text2);line-height:1.8;max-width:480px;margin-bottom:1.2rem"></div>
       <div id="fotd-fact" style="background:rgba(159,216,120,.08);border:1px solid rgba(159,216,120,.18);border-radius:10px;padding:.8rem 1rem;font-size:.8rem;color:var(--accent);font-style:italic;max-width:480px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANT GROWTH SIMULATOR -->
+<section id="simulator" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 2.5rem">
+  <div class="sec-label">Interactive Experience</div>
+  <h2 class="sec-title">Plant Growth <em>Simulator</em></h2>
+  <p class="sec-sub" style="max-width:600px">Experience life cycles in real-time. Adjust environmental factors and watch your specimens grow from seedlings to full bloom.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:2rem;margin-top:2rem">
+    <div id="garden-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;min-height:400px;background: radial-gradient(circle at 20% 20%, #1a3d20 0%, #0b1a0e 100%); border-radius:24px;padding:2.5rem;border:1px solid var(--border2); box-shadow: inset 0 0 60px rgba(0,0,0,0.5); position:relative; overflow:hidden;">
+      <!-- Subtle Bokeh light leak -->
+      <div style="position:absolute; top:-50px; right:-50px; width:200px; height:200px; background:var(--accent); filter:blur(100px); opacity:0.1; pointer-events:none;"></div>
+      <!-- Plants will be added here -->
+      <div id="garden-empty" style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);text-align:center">
+        <div style="font-size:3rem;margin-bottom:1rem">🌱</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem">Your Garden is Empty</div>
+        <p style="font-size:.85rem;max-width:280px">Choose species from the library below and click "Plant" to start your simulation.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1.5rem">
+      <div class="ic" style="background:var(--surface2)">
+        <div class="ic-label">Environmental Controls</div>
+        <div style="display:flex;flex-direction:column;gap:1.2rem;margin-top:1rem">
+          <div>
+            <div style="display:flex;justify-content:between;margin-bottom:.5rem">
+              <span style="font-size:.75rem;color:var(--text2)">Lighting Intensity</span>
+              <span id="light-val" style="font-size:.75rem;color:var(--accent);margin-left:auto">80%</span>
+            </div>
+            <input type="range" id="light-slider" min="0" max="100" value="80" style="width:100%;accent-color:var(--accent)" oninput="updateEnv('light',this.value)">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:between;margin-bottom:.5rem">
+              <span style="font-size:.75rem;color:var(--text2)">Mineralization</span>
+              <span id="mineral-val" style="font-size:.75rem;color:var(--accent);margin-left:auto">50%</span>
+            </div>
+            <input type="range" id="mineral-slider" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent)" oninput="updateEnv('mineral',this.value)">
+          </div>
+        </div>
+      </div>
+
+      <div class="ic" style="background:var(--surface2)">
+        <div class="ic-label">Simulator Status</div>
+        <div style="margin-top:.5rem">
+          <div style="font-size:.75rem;color:var(--text3);margin-bottom:.3rem">Engine: <span style="color:var(--accent)">Active</span></div>
+          <div style="font-size:.75rem;color:var(--text3)">Tick Rate: <span style="color:var(--text2)">2.0s</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -298,7 +349,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
 ───────────────────────────────────────────── */
 
 const SVGS = {
-dahlia(s=200){
+dahlia(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="100" r="60" fill="#f7b6d3"/>
     <ellipse cx="100" cy="100" rx="40" ry="60" fill="#e86aaf"/>
@@ -306,7 +357,7 @@ dahlia(s=200){
   </svg>`;
 },
 
-hyacinth(s=200){
+hyacinth(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="40" ry="60" fill="#b8a0e8"/>
     <ellipse cx="100" cy="80" rx="30" ry="40" fill="#7050b8"/>
@@ -314,7 +365,7 @@ hyacinth(s=200){
   </svg>`;
 },
 
-anemone(s=200){
+anemone(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="100" rx="50" ry="60" fill="#f7e3f3"/>
     <circle cx="100" cy="100" r="30" fill="#2a2a2a"/>
@@ -322,7 +373,7 @@ anemone(s=200){
   </svg>`;
 },
 
-foxglove(s=200){
+foxglove(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <rect x="80" y="60" width="40" height="100" rx="20" fill="#b48ad6"/>
     <ellipse cx="100" cy="60" rx="30" ry="40" fill="#e8b6f8"/>
@@ -330,7 +381,7 @@ foxglove(s=200){
   </svg>`;
 },
 
-sundrops(s=200){
+sundrops(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="40" ry="60" fill="#f7e36a"/>
     <ellipse cx="100" cy="80" rx="30" ry="40" fill="#f7c13a"/>
@@ -338,7 +389,7 @@ sundrops(s=200){
   </svg>`;
 },
 
-gentian(s=200){
+gentian(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="40" ry="60" fill="#4a90e2"/>
     <ellipse cx="100" cy="80" rx="30" ry="40" fill="#2a4ab2"/>
@@ -346,7 +397,7 @@ gentian(s=200){
   </svg>`;
 },
 
-cornflower(s=200){
+cornflower(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="40" ry="60" fill="#5898b8"/>
     <ellipse cx="100" cy="80" rx="30" ry="40" fill="#b8d8f8"/>
@@ -354,14 +405,14 @@ cornflower(s=200){
   </svg>`;
 },
 
-elderflower(s=200){
+elderflower(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="50" ry="30" fill="#f7f7e3"/>
     <ellipse cx="100" cy="80" rx="30" ry="40" fill="#e8e8c8"/>
     <text x="100" y="190" font-size="16" text-anchor="middle" fill="#b0b080">Elderflower</text>
   </svg>`;
 },
-king_protea(s=200){
+king_protea(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="120" r="60" fill="#f7e3d3"/>
     <ellipse cx="100" cy="80" rx="40" ry="60" fill="#e8b6a0"/>
@@ -370,7 +421,7 @@ king_protea(s=200){
   </svg>`;
 },
 
-lilac(s=200){
+lilac(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="50" ry="30" fill="#d6c1e6"/>
     <circle cx="100" cy="80" r="40" fill="#b48ad6"/>
@@ -378,7 +429,7 @@ lilac(s=200){
   </svg>`;
 },
 
-moonflower(s=200){
+moonflower(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="100" r="60" fill="#f8f8f0"/>
     <ellipse cx="100" cy="100" rx="40" ry="60" fill="#e0e0e0"/>
@@ -386,7 +437,7 @@ moonflower(s=200){
   </svg>`;
 },
 
-bird_of_paradise(s=200){
+bird_of_paradise(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <rect x="60" y="120" width="80" height="30" fill="#f7b733"/>
     <polygon points="100,40 120,120 80,120" fill="#f76d1a"/>
@@ -395,7 +446,7 @@ bird_of_paradise(s=200){
   </svg>`;
 },
 
-ornamental_allium(s=200){
+ornamental_allium(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="100" r="50" fill="#b8a0e8"/>
     <ellipse cx="100" cy="60" rx="30" ry="50" fill="#d8c8f8"/>
@@ -403,7 +454,7 @@ ornamental_allium(s=200){
   </svg>`;
 },
 
-ginger_lily(s=200){
+ginger_lily(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="50" ry="30" fill="#f7e3b3"/>
     <ellipse cx="100" cy="80" rx="30" ry="50" fill="#f7b36a"/>
@@ -411,7 +462,7 @@ ginger_lily(s=200){
   </svg>`;
 },
 
-texas_bluebonnet(s=200){
+texas_bluebonnet(s=200, stage=2){
   return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="100" cy="120" rx="40" ry="60" fill="#4a90e2"/>
     <ellipse cx="100" cy="80" rx="30" ry="40" fill="#b8d8f8"/>
@@ -419,65 +470,142 @@ texas_bluebonnet(s=200){
   </svg>`;
 },
 
-rose(s=200){
-  const h=s, w=s, cx=w/2, cy=h/2;
+rose(s=200, stage=2){
+  const h=s, w=s;
+  const scale = stage === 0 ? 0.4 : stage === 1 ? 0.7 : 1;
+  const bloomOpacity = stage === 2 ? 1 : 0;
+  const budOpacity = stage === 1 ? 1 : 0;
+
   return `<svg width="${w}" height="${h}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="rg1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#e8607a"/><stop offset="100%" stop-color="#8c1a2a"/></radialGradient>
-    <radialGradient id="rg2" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#f07888"/><stop offset="100%" stop-color="#b03050"/></radialGradient>
+    <radialGradient id="rg1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#cf3558"/><stop offset="100%" stop-color="#8c1a2a"/></radialGradient>
+    <radialGradient id="rg2" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ea6b88"/><stop offset="100%" stop-color="#b03050"/></radialGradient>
     <linearGradient id="rgstem" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2a6830"/><stop offset="100%" stop-color="#4a9040"/></linearGradient>
   </defs>
-  <!-- stem -->
-  <path d="M100 155 Q95 170 88 185" stroke="url(#rgstem)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- leaves -->
-  <path d="M96 165 Q80 158 74 145 Q86 148 96 165Z" fill="#3a8038" opacity=".9"/>
-  <path d="M98 172 Q114 165 118 152 Q106 157 98 172Z" fill="#2e6a2c" opacity=".85"/>
-  <!-- outer petals -->
-  <path d="M100 140 Q68 135 60 110 Q58 90 78 78 Q100 68 100 68 Q100 68 122 78 Q142 90 140 110 Q132 135 100 140Z" fill="#b83050" opacity=".8"/>
-  <!-- mid petals -->
-  <path d="M100 130 Q76 122 72 102 Q70 85 86 76 Q100 70 100 70 Q100 70 114 76 Q130 85 128 102 Q124 122 100 130Z" fill="url(#rg2)" opacity=".9"/>
-  <!-- inner spiral petals -->
-  <path d="M100 118 Q84 112 84 98 Q84 84 96 79 Q108 74 116 82 Q124 90 118 104 Q112 116 100 118Z" fill="url(#rg1)"/>
-  <path d="M100 110 Q90 104 91 95 Q92 87 100 84 Q108 81 113 88 Q118 96 112 105 Q106 112 100 110Z" fill="#d05070"/>
-  <path d="M100 102 Q95 98 96 93 Q97 88 102 87 Q108 86 109 92 Q110 98 105 101 Q102 103 100 102Z" fill="#f08090"/>
-  <!-- petal highlights -->
-  <path d="M86 95 Q82 102 84 112" stroke="#f0a0b0" stroke-width="1" fill="none" opacity=".5"/>
-  <path d="M114 95 Q118 102 116 112" stroke="#902040" stroke-width="1" fill="none" opacity=".4"/>
+  <g transform="scale(${scale}) translate(${100/scale - 100}, ${180/scale - 180})">
+    <!-- stem -->
+    <path d="M100 155 Q95 170 90 190" stroke="url(#rgstem)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M90 190 Q88 195 85 200" stroke="#1a4d10" stroke-width="4" fill="none" opacity="0.3"/>
+
+    <!-- thorns -->
+    <path d="M96 175 L90 172 L96 168Z" fill="#4a9040"/>
+    <path d="M102 165 L108 162 L102 158Z" fill="#3a8038"/>
+
+    <!-- leaves -->
+    <g>
+      <path d="M96 165 Q70 158 60 140 Q80 142 96 165Z" fill="#3a8038" opacity=".95"/>
+      <path d="M96 165 Q78 152 70 145" stroke="#225518" stroke-width="0.8" fill="none" opacity="0.6"/>
+      <path d="M98 172 Q125 165 135 145 Q115 150 98 172Z" fill="#2e6a2c" opacity=".9"/>
+      <path d="M98 172 Q115 162 122 155" stroke="#1a4a10" stroke-width="0.8" fill="none" opacity="0.5"/>
+    </g>
+
+    <!-- bud (stage 1) -->
+    <g opacity="${budOpacity}">
+       <path d="M100 155 Q85 145 88 125 Q100 110 112 125 Q115 145 100 155Z" fill="#4a9040"/>
+       <path d="M100 135 Q92 130 100 118 Q108 130 100 135Z" fill="#cf3558" opacity="0.8"/>
+       <path d="M100 155 L100 115" stroke="#2a6830" stroke-width="0.5" fill="none" opacity="0.3"/>
+    </g>
+
+    <!-- full bloom (stage 2) -->
+    <g opacity="${bloomOpacity}">
+      <!-- Scientific Lighting: Diffused natural daylight -->
+      <defs>
+         <filter id="f-glow"><feGaussianBlur stdDeviation="1.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+         <linearGradient id="g-petal-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,255,255,0.2)"/><stop offset="100%" stop-color="rgba(0,0,0,0.1)"/></linearGradient>
+      </defs>
+
+      <!-- outer petals with refined shapes for Rosa Gallica -->
+      <path d="M100 145 Q55 135 50 100 Q45 70 75 60 Q100 50 100 50 Q100 50 125 60 Q155 70 150 100 Q145 135 100 145Z" fill="#b83050" opacity=".9"/>
+      <path d="M100 145 Q55 135 50 100 Q45 70 75 60 Q100 50 100 50 Q100 50 125 60 Q155 70 150 100 Q145 135 100 145Z" fill="url(#g-petal-v)" opacity="0.3"/>
+
+      <!-- extreme petal detail: visible veins & natural variation -->
+      <g stroke="#701020" stroke-width="0.3" fill="none" opacity="0.4">
+        <path d="M70 85 Q66 100 78 120"/><path d="M75 80 Q70 100 85 125"/><path d="M130 85 Q134 100 122 120"/><path d="M125 80 Q130 100 115 125"/>
+        <path d="M100 60 Q98 90 100 140"/><path d="M90 65 Q92 95 95 135"/><path d="M110 65 Q108 95 105 135"/>
+      </g>
+
+      <!-- mid petals with gradient fidelity -->
+      <path d="M100 135 Q65 125 62 95 Q60 75 80 65 Q100 60 100 60 Q100 60 120 65 Q140 75 138 95 Q135 125 100 135Z" fill="url(#rg2)" opacity=".98"/>
+
+      <!-- inner spiral petals - High-res macro photography style -->
+      <path d="M100 122 Q78 115 78 95 Q78 75 94 70 Q110 65 120 75 Q130 85 122 105 Q114 120 100 122Z" fill="url(#rg1)"/>
+      <path d="M100 115 Q88 108 89 98 Q90 88 100 84 Q110 80 115 88 Q120 98 112 108 Q106 115 100 115Z" fill="#d05070"/>
+      <path d="M100 105 Q92 100 94 94 Q95 88 102 87 Q109 86 112 92 Q114 100 105 103 Q102 105 100 105Z" fill="#f08090" filter="url(#f-glow)"/>
+
+      <!-- stamen/pollen structure - extreme botanical detail -->
+      <g transform="translate(100, 95)">
+        ${[...Array(12)].map((_,i)=>{
+          const a=(i/12)*Math.PI*2; const r=3+Math.random()*4;
+          return `<line x1="0" y1="0" x2="${Math.cos(a)*r}" y2="${Math.sin(a)*r}" stroke="#f5d020" stroke-width="0.5" opacity="0.8"/><circle cx="${Math.cos(a)*r}" cy="${Math.sin(a)*r}" r="0.8" fill="#d4a010"/>`;
+        }).join('')}
+        <circle cx="0" cy="0" r="3" fill="#f5d020" opacity="0.6"/>
+      </g>
+
+      <!-- highlights and gradients -->
+      <path d="M80 90 Q75 100 80 115" stroke="#f6b0c1" stroke-width="0.8" fill="none" opacity=".4"/>
+      <path d="M120 90 Q125 100 120 115" stroke="#b03050" stroke-width="0.8" fill="none" opacity=".3"/>
+    </g>
+  </g>
 </svg>`;
 },
 
-lavender(s=200){
-return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+lavender(s=200, stage=2){
+  const scale = stage === 0 ? 0.4 : stage === 1 ? 0.8 : 1;
+  const bloomOpacity = stage === 2 ? 1 : 0;
+
+  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8860c8"/><stop offset="100%" stop-color="#5838a0"/></linearGradient>
-    <linearGradient id="lgstem" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a8040"/><stop offset="100%" stop-color="#6aaa58"/></linearGradient>
+    <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#9d78e8"/><stop offset="100%" stop-color="#5838a0"/></linearGradient>
+    <linearGradient id="lgstem" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3a6820"/><stop offset="100%" stop-color="#5a9040"/></linearGradient>
+    <filter id="f-lav"><feGaussianBlur stdDeviation="0.4" result="blur"/></filter>
   </defs>
-  <!-- main stem -->
-  <path d="M100 190 L100 80" stroke="url(#lgstem)" stroke-width="2.8" stroke-linecap="round"/>
-  <!-- small stems -->
-  <path d="M100 120 L88 105" stroke="#5a9048" stroke-width="1.5" fill="none"/>
-  <path d="M100 120 L112 105" stroke="#5a9048" stroke-width="1.5" fill="none"/>
-  <path d="M100 108 L90 95" stroke="#5a9048" stroke-width="1.5" fill="none"/>
-  <path d="M100 108 L110 95" stroke="#5a9048" stroke-width="1.5" fill="none"/>
-  <!-- leaves -->
-  <path d="M100 160 Q82 155 78 148 Q86 150 100 160Z" fill="#5a9048"/>
-  <path d="M100 160 Q118 155 122 148 Q114 150 100 160Z" fill="#4a7838"/>
-  <path d="M100 148 Q82 143 78 136 Q86 138 100 148Z" fill="#5a9048"/>
-  <path d="M100 148 Q118 143 122 136 Q114 138 100 148Z" fill="#4a7838"/>
-  <!-- flower clusters -->
-  ${[...Array(5)].map((_,i)=>{
-    const y = 80 + i*8; const x = 100;
-    return `<ellipse cx="${x-8}" cy="${y}" rx="5" ry="7" fill="url(#lg1)" opacity="${0.95-i*.05}" transform="rotate(-8 ${x-8} ${y})"/>
-    <ellipse cx="${x}" cy="${y-4}" rx="5" ry="7" fill="#7050b8" opacity="${0.9-i*.05}"/>
-    <ellipse cx="${x+8}" cy="${y}" rx="5" ry="7" fill="url(#lg1)" opacity="${0.95-i*.05}" transform="rotate(8 ${x+8} ${y})"/>`;
-  }).join('')}
-  <!-- tiny highlights -->
-  <ellipse cx="92" cy="79" rx="2" ry="3" fill="#b090e8" opacity=".6"/>
-  <ellipse cx="108" cy="79" rx="2" ry="3" fill="#b090e8" opacity=".6"/>
+  <g transform="scale(${scale}) translate(${100/scale - 100}, ${180/scale - 180})">
+    <!-- Main Woody Stem with texture -->
+    <path d="M100 190 Q98 140 100 80" stroke="url(#lgstem)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M100 185 Q101 160 100 130" stroke="rgba(0,0,0,0.2)" stroke-width="1.2" fill="none" opacity="0.3"/>
+
+    <!-- Linear textured leaves (Opposite/Whorled) -->
+    <g>
+      ${[165, 150, 135].map((y, i) => `
+        <path d="M100 ${y} Q75 ${y-10} 70 ${y-25}" stroke="#4a8038" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="${0.9-i*0.1}"/>
+        <path d="M100 ${y} Q125 ${y-10} 130 ${y-25}" stroke="#3a7030" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="${0.9-i*0.1}"/>
+        <path d="M70 ${y-25} Q85 ${y-15} 100 ${y}" fill="#5a9048" opacity="0.4"/>
+        <path d="M130 ${y-25} Q115 ${y-15} 100 ${y}" fill="#4a7838" opacity="0.4"/>
+      `).join('')}
+    </g>
+
+    <!-- Flower Spikes (Stage 2) -->
+    <g opacity="${bloomOpacity}">
+      <!-- Extreme cluster detail (Verticillasters) -->
+      ${[...Array(12)].map((_, i) => {
+        const y = 80 - i * 5;
+        const x = 100 + Math.sin(i) * 1.5;
+        const rot = Math.sin(i) * 20;
+        return `
+          <g transform="translate(${x}, ${y}) rotate(${rot})">
+            <ellipse cx="-4" cy="0" rx="3.5" ry="5.5" fill="url(#lg1)" opacity="0.9"/>
+            <ellipse cx="4" cy="0" rx="3.5" ry="5.5" fill="#7050b8" opacity="0.9"/>
+            <ellipse cx="0" cy="-3" rx="3.5" ry="6" fill="#8860c8" opacity="0.95"/>
+            <!-- Tiny floral structure details -->
+            <circle cx="0" cy="-6" r="0.8" fill="#e0c8ff" opacity="0.7"/>
+            <path d="M-2 -2 Q0 0 2 -2" stroke="rgba(255,255,255,0.2)" stroke-width="0.3" fill="none"/>
+          </g>
+        `;
+      }).join('')}
+      <!-- Topmost buds -->
+      <path d="M100 20 Q97 15 100 10 Q103 15 100 20Z" fill="#a588df" opacity="0.8" filter="url(#f-lav)"/>
+    </g>
+
+    <!-- Stage 1 Budding state -->
+    <g opacity="${stage === 1 ? 1 : 0}">
+       <path d="M100 80 L100 60" stroke="#5a9040" stroke-width="2" stroke-linecap="round"/>
+       <ellipse cx="100" cy="55" rx="3" ry="5" fill="#7050b8" opacity="0.6"/>
+    </g>
+  </g>
 </svg>`;
 },
 
-sunflower(s=200){
+sunflower(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="sfcenter" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4a2a08"/><stop offset="60%" stop-color="#2a1404"/><stop offset="100%" stop-color="#1a0c02"/></radialGradient>
@@ -516,7 +644,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-lotus(s=200){
+lotus(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="lotg" cx="50%" cy="80%" r="70%"><stop offset="0%" stop-color="#f090b0"/><stop offset="70%" stop-color="#d05888"/><stop offset="100%" stop-color="#a03060"/></radialGradient>
@@ -543,7 +671,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-chamomile(s=200){
+chamomile(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="chc" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f5d840"/><stop offset="50%" stop-color="#d8a820"/><stop offset="100%" stop-color="#a07010"/></radialGradient>
@@ -572,48 +700,65 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-orchid(s=200){
-return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+orchid(s=200, stage=2){
+  const scale = stage === 0 ? 0.4 : stage === 1 ? 0.75 : 1;
+  const bloomOpacity = stage === 2 ? 1 : 0;
+
+  return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="og1" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#f0d8f8"/><stop offset="100%" stop-color="#c8a0e0"/></radialGradient>
-    <radialGradient id="og2" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#e8c8f5"/><stop offset="100%" stop-color="#b080d0"/></radialGradient>
-    <linearGradient id="ostem" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a7840"/><stop offset="100%" stop-color="#6a9858"/></linearGradient>
+    <radialGradient id="og1" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#f8f0ff"/><stop offset="100%" stop-color="#c8a0e0"/></radialGradient>
+    <radialGradient id="ogLip" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffeb3b"/><stop offset="100%" stop-color="#e91e63"/></radialGradient>
+    <filter id="f-bloom"><feGaussianBlur stdDeviation="0.6" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
   </defs>
-  <!-- aerial root -->
-  <path d="M80 185 Q75 175 78 165 Q82 155 85 150" stroke="#8ab878" stroke-width="2" fill="none" opacity=".6" stroke-linecap="round"/>
-  <!-- stem/spike -->
-  <path d="M100 185 Q103 162 108 140 Q114 118 118 100" stroke="url(#ostem)" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- leaves - thick succulent -->
-  <path d="M98 182 Q70 175 62 162 Q68 158 80 165 Q88 172 98 182Z" fill="#3a6830" opacity=".9"/>
-  <path d="M100 182 Q128 175 136 162 Q130 158 118 165 Q110 172 100 182Z" fill="#2e5828" opacity=".85"/>
-  <!-- 3 flowers on spike -->
-  <!-- flower 1 - bottom -->
-  <path d="M118 100 Q105 88 92 90 Q86 100 92 110 Q105 118 118 108Z" fill="url(#og1)" opacity=".85"/>
-  <path d="M118 100 Q125 88 130 78 Q122 75 115 82 Q114 90 118 100Z" fill="#d0a8e8" opacity=".8"/>
-  <!-- labellum (lip petal) -->
-  <path d="M100 100 Q90 108 88 118 Q96 122 106 118 Q112 108 108 100Z" fill="#e0c0f0"/>
-  <path d="M100 103 Q96 110 96 116 Q100 118 104 116 Q106 110 104 103Z" fill="#c080d0" opacity=".7"/>
-  <!-- column -->
-  <ellipse cx="105" cy="100" rx="6" ry="8" fill="#f8f0ff"/>
-  <ellipse cx="105" cy="97" rx="4" ry="5" fill="#e0c0f0"/>
-  <circle cx="105" cy="94" r="3" fill="#f0a0d0"/>
-  <!-- flower 2 - mid -->
-  <path d="M112 128 Q99 116 86 118 Q80 128 86 138 Q99 146 112 136Z" fill="url(#og2)" opacity=".85"/>
-  <path d="M112 128 Q120 118 124 108 Q116 105 110 112 Q109 120 112 128Z" fill="#c898e0" opacity=".8"/>
-  <path d="M94 128 Q84 136 82 146 Q90 150 100 146 Q106 136 102 128Z" fill="#ddb8f0"/>
-  <path d="M94 131 Q90 138 90 144 Q94 146 98 144 Q100 138 98 131Z" fill="#b870c8" opacity=".7"/>
-  <ellipse cx="99" cy="128" rx="6" ry="8" fill="#f8f0ff"/>
-  <circle cx="99" cy="122" r="3" fill="#f0a0d0"/>
-  <!-- flower 3 bud -->
-  <path d="M108 158 Q102 148 96 150 Q93 157 98 165 Q104 168 110 162Z" fill="#d8b0e8" opacity=".75"/>
-  <!-- spots/markings -->
-  <circle cx="103" cy="103" r="1.5" fill="#9040a0" opacity=".5"/>
-  <circle cx="106" cy="107" r="1" fill="#9040a0" opacity=".4"/>
-  <circle cx="97" cy="131" r="1.5" fill="#9040a0" opacity=".5"/>
+  <g transform="scale(${scale}) translate(${100/scale - 100}, ${180/scale - 180})">
+    <!-- Aerial Roots with texture -->
+    <path d="M70 190 Q65 180 72 165" stroke="#90a48d" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M130 190 Q135 175 125 160" stroke="#8a9a88" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+
+    <!-- Thick Succulent Leathery Leaves (Phalaenopsis style) -->
+    <g>
+      <path d="M100 185 Q60 180 50 160 Q70 155 100 185Z" fill="#2d5a27"/>
+      <path d="M100 185 Q140 180 150 160 Q130 155 100 185Z" fill="#1e4d1a"/>
+      <path d="M100 185 Q80 170 100 140" stroke="rgba(255,255,255,0.1)" stroke-width="0.8" fill="none"/>
+    </g>
+
+    <!-- Flowering Spike -->
+    <path d="M100 180 Q105 140 115 80" stroke="#5a9b4d" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- High-Fidelity Orchid Bloom (Stage 2) -->
+    <g opacity="${bloomOpacity}" transform="translate(115, 80)">
+       <!-- Sepals -->
+       <ellipse cx="0" cy="-28" rx="14" ry="24" fill="url(#og1)" opacity="0.95" transform="rotate(0)"/>
+       <ellipse cx="22" cy="12" rx="14" ry="24" fill="#d0b8f0" opacity="0.9" transform="rotate(120)"/>
+       <ellipse cx="-22" cy="12" rx="14" ry="24" fill="#d0b8f0" opacity="0.9" transform="rotate(-120)"/>
+
+       <!-- Petals with realistic shading -->
+       <ellipse cx="28" cy="-12" rx="20" ry="28" fill="#f3e5f5" opacity="0.98" transform="rotate(10)"/>
+       <ellipse cx="-28" cy="-12" rx="20" ry="28" fill="#f3e5f5" opacity="0.98" transform="rotate(-10)"/>
+
+       <!-- The Labellum (Lip) - Extreme Detail -->
+       <g transform="translate(0, 15)">
+         <path d="M-10 0 Q-15 15 0 25 Q15 15 10 0Z" fill="url(#ogLip)"/>
+         <path d="M-6 2 Q-8 8 0 12 Q8 8 6 2Z" fill="#880e4f" opacity="0.6"/>
+         <!-- Callus/Column detail -->
+         <circle cx="0" cy="-5" r="4" fill="#ffffff" filter="url(#f-bloom)"/>
+         <circle cx="0" cy="-7" r="1.5" fill="#ffca28"/>
+       </g>
+
+       <!-- Nectar guides (spots) -->
+       ${[...Array(6)].map((_, i) => `<circle cx="${(Math.random()-0.5)*15}" cy="${(Math.random()-0.5)*10}" r="0.6" fill="#6a1b9a" opacity="0.4"/>`).join('')}
+    </g>
+
+    <!-- Stage 1 Bud -->
+    <g opacity="${stage === 1 ? 1 : 0}" transform="translate(108, 110)">
+       <path d="M0 0 Q-8 -10 0 -18 Q8 -10 0 0Z" fill="#b080d0" opacity="0.8"/>
+       <circle cx="0" cy="-18" r="1.5" fill="#5a9b4d"/>
+    </g>
+  </g>
 </svg>`;
 },
 
-tulip(s=200){
+tulip(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="tg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d03850"/><stop offset="50%" stop-color="#e85070"/><stop offset="100%" stop-color="#c02840"/></linearGradient>
@@ -642,7 +787,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-hibiscus(s=200){
+hibiscus(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="hg1" cx="30%" cy="70%" r="80%"><stop offset="0%" stop-color="#ff6040"/><stop offset="50%" stop-color="#e82030"/><stop offset="100%" stop-color="#a00818"/></radialGradient>
@@ -679,7 +824,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-daisy(s=200){
+daisy(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="dcenter" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f8e040"/><stop offset="60%" stop-color="#e0b818"/><stop offset="100%" stop-color="#b08010"/></radialGradient>
@@ -713,7 +858,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-cherry_blossom(s=200){
+cherry_blossom(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="cbg" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#fce8f0"/><stop offset="60%" stop-color="#f0b8d0"/><stop offset="100%" stop-color="#d88ab0"/></radialGradient>
@@ -750,7 +895,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-aloe(s=200){
+aloe(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="alg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#78c898"/><stop offset="50%" stop-color="#50a878"/><stop offset="100%" stop-color="#307850"/></linearGradient>
@@ -796,7 +941,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-peony(s=200){
+peony(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="pg1" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#f8c8d8"/><stop offset="70%" stop-color="#e890b0"/><stop offset="100%" stop-color="#c05878"/></radialGradient>
@@ -824,7 +969,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-passionflower(s=200){
+passionflower(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="pfg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f0f8ff"/><stop offset="100%" stop-color="#c0d8f8"/></radialGradient>
@@ -868,7 +1013,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-echinacea(s=200){
+echinacea(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="ecg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c86050"/><stop offset="50%" stop-color="#9a3030"/><stop offset="100%" stop-color="#6a1818"/></radialGradient>
@@ -902,7 +1047,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-marigold(s=200){
+marigold(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="mg1" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#f5c020"/><stop offset="60%" stop-color="#e08010"/><stop offset="100%" stop-color="#b05008"/></radialGradient>
@@ -926,7 +1071,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-jasmine(s=200){
+jasmine(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="jg" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#fffef5"/><stop offset="60%" stop-color="#f5f0d8"/><stop offset="100%" stop-color="#e0d8a0"/></radialGradient>
@@ -953,7 +1098,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-calendula(s=200){
+calendula(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="calg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#f59020"/><stop offset="60%" stop-color="#d86010"/><stop offset="100%" stop-color="#a03808"/></radialGradient>
@@ -985,7 +1130,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-bluebell(s=200){
+bluebell(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6878d8"/><stop offset="50%" stop-color="#4858c0"/><stop offset="100%" stop-color="#283898"/></linearGradient>
@@ -1018,7 +1163,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-waterlily(s=200){
+waterlily(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="wlg" cx="50%" cy="70%" r="70%"><stop offset="0%" stop-color="#f8f5ff"/><stop offset="50%" stop-color="#d8c8f8"/><stop offset="100%" stop-color="#a890d8"/></radialGradient>
@@ -1060,7 +1205,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-snowdrop(s=200){
+snowdrop(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="sdg" cx="50%" cy="20%" r="80%"><stop offset="0%" stop-color="#ffffff"/><stop offset="80%" stop-color="#f0f5f0"/><stop offset="100%" stop-color="#d8e8d8"/></radialGradient>
@@ -1091,7 +1236,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-hellebore(s=200){
+hellebore(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="heg" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#b8d0e8"/><stop offset="60%" stop-color="#8098c0"/><stop offset="100%" stop-color="#485880"/></radialGradient>
@@ -1119,7 +1264,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-iris(s=200){
+iris(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="irg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#9870e0"/><stop offset="50%" stop-color="#6840b8"/><stop offset="100%" stop-color="#401880"/></linearGradient>
@@ -1148,7 +1293,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-poppyField(s=200){
+poppyField(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="ppg" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ff5030"/><stop offset="60%" stop-color="#e02010"/><stop offset="100%" stop-color="#980808"/></radialGradient>
@@ -1180,7 +1325,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-wisteria(s=200){
+wisteria(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="wg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d0b8f0"/><stop offset="100%" stop-color="#9070c8"/></radialGradient>
@@ -1212,7 +1357,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-cactusFlower(s=200){
+cactusFlower(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="cfcact" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a8848"/><stop offset="50%" stop-color="#6aaa60"/><stop offset="100%" stop-color="#3a7838"/></linearGradient>
@@ -1246,7 +1391,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 </svg>`;
 },
 
-magnolia(s=200){
+magnolia(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="magnig" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#fff8f5"/><stop offset="50%" stop-color="#f8e0d8"/><stop offset="100%" stop-color="#e8b8a8"/></radialGradient>
@@ -1280,7 +1425,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 
 /* ── 15 MORE SPECIES ── */
 
-dahlia(s=200){
+dahlia(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="dhlg1" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#e85080"/><stop offset="60%" stop-color="#b82858"/><stop offset="100%" stop-color="#801038"/></radialGradient>
@@ -1300,7 +1445,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   ${[...Array(8)].map((_,i)=>{const a=(i/8)*360;const r=5;const x=100+r*Math.sin(a*Math.PI/180),y=100-r*Math.cos(a*Math.PI/180);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.8" fill="#f0d0a0"/>`;}).join('')}
 </svg>`},
 
-hyacinth(s=200){
+hyacinth(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="hyg" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#d0c0f8"/><stop offset="60%" stop-color="#9070d8"/><stop offset="100%" stop-color="#5040a0"/></radialGradient>
@@ -1334,7 +1479,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   }).join('')}
 </svg>`},
 
-anemone(s=200){
+anemone(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="ang" cx="40%" cy="40%" r="70%"><stop offset="0%" stop-color="#e05878"/><stop offset="70%" stop-color="#b82848"/><stop offset="100%" stop-color="#801030"/></radialGradient>
@@ -1363,7 +1508,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="128" r="4" fill="#101858"/>
 </svg>`},
 
-foxglove(s=200){
+foxglove(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="fxg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e090d0"/><stop offset="50%" stop-color="#c060b0"/><stop offset="100%" stop-color="#903080"/></linearGradient>
@@ -1399,7 +1544,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <path d="M115 44 Q112 40 114 36 Q118 32 116 32" fill="#b060a0" opacity=".7"/>
 </svg>`},
 
-sundrops(s=200){
+sundrops(s=200, stage=2){
 /* Oenothera — evening primrose */
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1424,7 +1569,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="104" cy="112" r="4" fill="#fff080"/>
 </svg>`},
 
-gentian(s=200){
+gentian(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="gtg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3858e0"/><stop offset="50%" stop-color="#1838c0"/><stop offset="100%" stop-color="#081890"/></linearGradient>
@@ -1450,7 +1595,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="135" r="4" fill="#90a8f8"/>
 </svg>`},
 
-cornflower(s=200){
+cornflower(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="cfbg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#5878e8"/><stop offset="60%" stop-color="#3050c8"/><stop offset="100%" stop-color="#182080"/></radialGradient>
@@ -1476,7 +1621,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="138" r="6" fill="#282880"/>
 </svg>`},
 
-elderflower(s=200){
+elderflower(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="efg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fffef0"/><stop offset="100%" stop-color="#f8f0c8"/></radialGradient>
@@ -1503,7 +1648,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   }).join('')}
 </svg>`},
 
-protea(s=200){
+protea(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="ptg" cx="50%" cy="60%" r="70%"><stop offset="0%" stop-color="#f0c8c0"/><stop offset="60%" stop-color="#d89090"/><stop offset="100%" stop-color="#a85060"/></radialGradient>
@@ -1534,7 +1679,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="145" r="8" fill="#f8f0e8"/>
 </svg>`},
 
-lilac(s=200){
+lilac(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="llg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#e0c8f8"/><stop offset="100%" stop-color="#b090d8"/></radialGradient>
@@ -1566,7 +1711,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   }).join('')}
 </svg>`},
 
-moonflower(s=200){
+moonflower(s=200, stage=2){
 /* Ipomoea alba - night-blooming large white trumpet */
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1600,7 +1745,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <path d="M66 135 Q64 128 66 124 Q70 120 72 124 Q70 130 68 136Z" fill="#d0e8c0"/>
 </svg>`},
 
-strelitzia(s=200){
+strelitzia(s=200, stage=2){
 /* Bird of Paradise */
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1633,7 +1778,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <path d="M122 90 Q120 84 120 78 Q122 74 124 78 Q124 84 122 90Z" fill="#f0f8ff" opacity=".6"/>
 </svg>`},
 
-allium(s=200){
+allium(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="allig" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d0a8e8"/><stop offset="100%" stop-color="#9060c0"/></radialGradient>
@@ -1662,7 +1807,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="78" r="6" fill="#4a8840"/>
 </svg>`},
 
-pinkpearlginger(s=200){
+pinkpearlginger(s=200, stage=2){
 /* Hedychium - Ginger Lily */
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1694,7 +1839,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
     </g>`).join('')}
 </svg>`},
 
-bluebonnet(s=200){
+bluebonnet(s=200, stage=2){
 /* Lupinus texensis - Texas Bluebonnet */
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1724,7 +1869,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
     </g>`).join('')}
 </svg>`},
 
-ranunculus(s=200){
+ranunculus(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="rngPetal" cx="50%" cy="40%" r="65%"><stop offset="0%" stop-color="#ffb188"/><stop offset="55%" stop-color="#ff7a4e"/><stop offset="100%" stop-color="#d94b22"/></radialGradient>
@@ -1743,7 +1888,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="92" r="9" fill="#f6d45c"/>
 </svg>`;},
 
-nasturtium(s=200){
+nasturtium(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="nasPetal" cx="50%" cy="30%" r="80%"><stop offset="0%" stop-color="#ffd067"/><stop offset="65%" stop-color="#ff9340"/><stop offset="100%" stop-color="#d9571e"/></radialGradient>
@@ -1761,7 +1906,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <path d="M101 90 Q120 100 134 128" stroke="#d94b22" stroke-width="2.4" fill="none" stroke-linecap="round"/>
 </svg>`;},
 
-bleedingheart(s=200){
+bleedingheart(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bhHeart" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffb0ca"/><stop offset="100%" stop-color="#d85f8d"/></linearGradient>
@@ -1776,7 +1921,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
     </g>`).join('')}
 </svg>`;},
 
-edelweiss(s=200){
+edelweiss(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="edPetal" cx="50%" cy="50%" r="75%"><stop offset="0%" stop-color="#fdfdfd"/><stop offset="100%" stop-color="#cad2d9"/></radialGradient>
@@ -1793,7 +1938,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
     <circle cx="${100+Math.cos(a*Math.PI/180)*10}" cy="${92+Math.sin(a*Math.PI/180)*10}" r="2.5" fill="#8b6a18"/>`).join('')}
 </svg>`;},
 
-plumeria(s=200){
+plumeria(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="plPetal" cx="50%" cy="52%" r="70%"><stop offset="0%" stop-color="#ffe377"/><stop offset="35%" stop-color="#fff3ce"/><stop offset="100%" stop-color="#f5f6f1"/></radialGradient>
@@ -1806,7 +1951,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
   <circle cx="100" cy="90" r="12" fill="#ffd35a"/>
 </svg>`;},
 
-waterhyacinth(s=200){
+waterhyacinth(s=200, stage=2){
 return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="whPetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d9c8ff"/><stop offset="100%" stop-color="#7b69d8"/></linearGradient>
@@ -1826,7 +1971,7 @@ return `<svg width="${s}" height="${s}" viewBox="0 0 200 200" xmlns="http://www.
 
 /* ── FLOWER DATA ── */
 const flowers = [
-  {id:'rose',name:'Rose',latin:'Rosa damascena',cat:'garden',tags:['garden'],desc:'The queen of flowers — cherished 5,000 years for beauty, fragrance, and extraordinary medicinal oil.',care:{water:'Moderate',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer',origin:'Persia / Middle East'},uses:['Aromatherapy','Skincare','Culinary','Medicine','Perfumery'],props:['Anti-inflammatory','Antioxidant','Antidepressant','Astringent'],facts:['Rose water has been used in food and cosmetics for over 2,000 years.','A single rose petal contains more than 300 distinct aromatic compounds.','The world\'s oldest living rose bush grows on Hildesheim Cathedral — it\'s over 1,000 years old.','Rose hips contain 20× more Vitamin C than oranges.']},
+  {id:'rose',name:'French Rose',latin:'Rosa gallica',cat:'garden',tags:['garden'],desc:'The Apothecary\'s Rose — an ultra-detailed scientific specimen of the ancient Rosa gallica, prized for its medicinal properties and intense crimson hue.',care:{water:'Moderate',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer',origin:'Central/Southern Europe'},uses:['Aromatherapy','Scientific Documentation','Medicine','Perfumery'],props:['Anti-inflammatory','High Vitamin C','Antioxidant'],facts:['Rosa gallica is one of the oldest species of roses, cultivated by the Greeks and Romans.','In the Middle Ages, it was known as the "Apothecary\'s Rose" for its medicinal uses.','Its petals retain their fragrance even when dried, unlike most other rose species.'], growthRate: 0.04, preferredLight: 85, preferredMinerals: 60},
   {id:'freesia',name:'Freesia',latin:'Freesia refracta',cat:'garden',tags:['garden'],desc:'Delicate, sweetly fragrant blooms in a rainbow of colors, beloved in bouquets and gardens alike.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring',origin:'South Africa'},uses:['Cut flowers','Perfumery'],props:['Fragrant','Long-lasting cut'],facts:['Freesias symbolize innocence and friendship.','Each stem can bear up to 12 flowers.','Named after German botanist Friedrich Freese.','Popular in wedding bouquets.']},
   {id:'camellia',name:'Camellia',latin:'Camellia japonica',cat:'garden',tags:['garden'],desc:'Glossy evergreen shrubs with rose-like blooms, prized in Asian gardens for centuries.',care:{water:'Moderate',sun:'Partial shade',soil:'Acidic, well-drained',diff:'Medium',season:'Winter–Spring',origin:'East Asia'},uses:['Ornamental','Tea (C. sinensis)'],props:['Antioxidant','Anti-inflammatory'],facts:['Camellias can live for over 100 years.','Symbol of admiration in China.','Tea is made from a related species, Camellia sinensis.','Over 3,000 cultivars exist.']},
   {id:'snapdragon',name:'Snapdragon',latin:'Antirrhinum majus',cat:'garden',tags:['garden'],desc:'Colorful spikes of dragon-shaped flowers that "snap" open when squeezed.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring–Autumn',origin:'Mediterranean'},uses:['Ornamental','Cut flowers'],props:['Edible (mild)','Attracts pollinators'],facts:['Flowers resemble a dragon’s mouth.','Symbolize grace and strength.','Can self-seed in gardens.','Available in nearly every color.']},
@@ -1836,11 +1981,11 @@ const flowers = [
   {id:'begonia',name:'Begonia',latin:'Begonia semperflorens',cat:'garden',tags:['garden'],desc:'Shade-loving plants with waxy leaves and clusters of pink, red, or white flowers.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, well-drained',diff:'Easy',season:'Spring–Autumn',origin:'Brazil'},uses:['Ornamental','Houseplant'],props:['Shade-tolerant','Edible flowers'],facts:['Over 1,800 species exist.','Named after Michel Bégon.','Flowers and leaves are edible.','Popular for window boxes.']},
   {id:'fuchsia',name:'Fuchsia',latin:'Fuchsia magellanica',cat:'garden',tags:['garden'],desc:'Elegant, pendulous flowers in pink, purple, and red, beloved by hummingbirds.',care:{water:'Moderate',sun:'Partial shade',soil:'Moist, fertile',diff:'Medium',season:'Summer–Autumn',origin:'South America'},uses:['Ornamental','Pollinator garden'],props:['Attracts hummingbirds','Edible berries'],facts:['Named after botanist Leonhart Fuchs.','Fuchsia berries are edible.','Flowers symbolize confiding love.','Over 100 species worldwide.']},
   {id:'salvia',name:'Salvia',latin:'Salvia officinalis',cat:'herbal',tags:['herbal'],desc:'Aromatic herb with purple-blue flower spikes, essential in culinary and medicinal gardens.',care:{water:'Low',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer',origin:'Mediterranean'},uses:['Culinary','Medicinal','Ornamental'],props:['Antimicrobial','Anti-inflammatory'],facts:['Name means "to heal" in Latin.','Used since Roman times.','Flowers attract bees.','Over 900 species in the genus.']},
-  {id:'lavender',name:'Lavender',latin:'Lavandula angustifolia',cat:'herbal',tags:['herbal'],desc:'Aromatic silver-purple spikes beloved by bees, healers, and perfumers across the Mediterranean world.',care:{water:'Low',sun:'Full sun',soil:'Sandy, alkaline',diff:'Easy',season:'Summer',origin:'Mediterranean'},uses:['Aromatherapy','Sleep aid','Culinary','Perfumery','Skincare'],props:['Calming','Antiseptic','Analgesic','Anti-fungal'],facts:['The Latin name derives from "lavare" — to wash — Romans scented their baths with it.','Lavender oil can reduce anxiety as effectively as some pharmaceutical medications.','Lavender was stuffed into pillows in the Middle Ages to promote sleep.','Bees collect more nectar from lavender than almost any other flower.']},
+  {id:'lavender',name:'True Lavender',latin:'Lavandula angustifolia',cat:'herbal',tags:['herbal'],desc:'A scientific illustration of True Lavender, showcasing its distinct verticillaster floral arrangement and silver-green foliage.',care:{water:'Low',sun:'Full sun',soil:'Sandy, alkaline',diff:'Easy',season:'Summer',origin:'Mediterranean Basin'},uses:['Scientific Illustration','Aromatherapy','Culinary'],props:['Calming','Antiseptic','Analgesic'],facts:['Lavender flowers are arranged in whorls called verticillasters.','The silver-green hue of the leaves is due to fine protective hairs.','Lavender has been documented in botanical texts for over 2,500 years.'], growthRate: 0.06, preferredLight: 90, preferredMinerals: 40},
   {id:'sunflower',name:'Sunflower',latin:'Helianthus annuus',cat:'garden',tags:['garden'],desc:'Towering solar giants that track the sun in youth. Each "flower" is actually 2,000 tiny florets.',care:{water:'Moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Summer',origin:'North America'},uses:['Edible seeds','Oil production','Natural dye','Bird food','Cut flowers'],props:['Diuretic','Nutritious (Vitamin E)','Anti-malarial'],facts:['A sunflower head contains up to 2,000 tiny individual florets.','Young sunflowers track the sun east-to-west each day — a behavior called heliotropism.','The world\'s tallest sunflower reached 9.17 metres tall in Germany, 2014.','Native Americans cultivated sunflowers for food, dye, and medicine for 5,000 years.']},
   {id:'lotus',name:'Sacred Lotus',latin:'Nelumbo nucifera',cat:'aquatic',tags:['aquatic'],desc:'Rising pristine from mud — the lotus embodies purity across Hindu, Buddhist, and ancient Egyptian cultures.',care:{water:'Aquatic',sun:'Full sun',soil:'Heavy clay submerged',diff:'Medium',season:'Summer',origin:'Asia'},uses:['Culinary (seeds, roots)','Medicinal','Religious','Decoration'],props:['Anti-bacterial','Astringent','Hemostatic','Antioxidant'],facts:['Lotus seeds can remain viable for over 1,300 years — the oldest recorded seed germination.','The lotus surface has a self-cleaning structure that inspired modern nanotechnology.','Every part of the lotus is edible — seeds, roots, leaves, flowers, and stamens.','The lotus is the national flower of India and Vietnam.']},
   {id:'chamomile',name:'Chamomile',latin:'Matricaria chamomilla',cat:'herbal',tags:['herbal'],desc:'Gentle apple-scented daisy-like flowers. One of the world\'s oldest and most widely-used medicinal herbs.',care:{water:'Low-moderate',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring–Summer',origin:'Europe'},uses:['Herbal tea','Skin soothing','Sleep aid','Anti-anxiety','Digestive'],props:['Calming','Anti-inflammatory','Antispasmodic','Mild sedative'],facts:['Chamomile tea is consumed at the rate of over 1 million cups daily worldwide.','The name comes from Greek "ground apple" — describing its fresh apple scent.','It has been used medicinally for at least 2,500 years in Egypt and Rome.','Contains apigenin, a compound that binds the same brain receptors as benzodiazepines.']},
-  {id:'orchid',name:'Moth Orchid',latin:'Phalaenopsis amabilis',cat:'tropical',tags:['tropical'],desc:'The most diverse flowering plant family — 28,000 species have colonized every continent except Antarctica.',care:{water:'Low',sun:'Bright indirect',soil:'Bark/perlite mix',diff:'Medium',season:'Year-round',origin:'Tropical Asia'},uses:['Ornamental','Vanilla flavouring','Salep drink','Traditional medicine'],props:['Antioxidant','Anti-fatigue','Immune-modulating'],facts:['The orchid family is the largest of all flowering plant families with 28,000+ species.','Vanilla — the world\'s most popular flavour — comes from a tropical orchid Vanilla planifolia.','Some orchids mimic female insects so precisely that male bees attempt to mate with them.','Darwin spent 35 years studying orchid pollination and wrote an entire book on the subject.']},
+  {id:'orchid',name:'Moth Orchid',latin:'Phalaenopsis amabilis',cat:'tropical',tags:['tropical'],desc:'An anatomical study of the Phalaenopsis orchid, highlighting the complex labellum (lip) and aerial root system.',care:{water:'Low',sun:'Bright indirect',soil:'Bark/perlite mix',diff:'Medium',season:'Year-round',origin:'Southeast Asia'},uses:['Botanical Study','Ornamental'],props:['Epiphytic adaptation','Long-lived blooms'],facts:['The labellum acts as a landing platform for specific pollinators.','Aerial roots are covered in velamen to absorb moisture from the air.','Phalaenopsis orchids can bloom for several months at a time.'], growthRate: 0.03, preferredLight: 60, preferredMinerals: 50},
   {id:'tulip',name:'Tulip',latin:'Tulipa gesneriana',cat:'garden',tags:['garden'],desc:'Elegant cup-shaped blooms that triggered the world\'s first speculative economic bubble in 1630s Netherlands.',care:{water:'Low',sun:'Full sun',soil:'Well-drained',diff:'Easy',season:'Spring',origin:'Central Asia'},uses:['Cut flowers','Bulb gardens','Edible petals','Food dye'],props:['Antioxidant','Anti-inflammatory'],facts:['"Tulip mania" of the 1630s saw bulbs sell for more than Amsterdam townhouses — history\'s first bubble.','Tulips continue to grow up to 2.5 cm after being cut and placed in a vase.','There are over 3,000 registered tulip varieties ranging from near-black to pure white.','The Netherlands exports 4.3 billion tulip bulbs annually — roughly half the world\'s supply.']},
   {id:'hibiscus',name:'Hibiscus',latin:'Hibiscus rosa-sinensis',cat:'tropical',tags:['tropical'],desc:'Fiery trumpet blooms in red, orange, and pink. Symbol of the tropics and cornerstone of herbal medicine worldwide.',care:{water:'Moderate-high',sun:'Full sun',soil:'Rich, well-drained',diff:'Medium',season:'Summer',origin:'Asia'},uses:['Hibiscus tea','Culinary','Antihypertensive','Hair oil','Natural dye'],props:['Antihypertensive','Antioxidant','Diuretic','Vitamin C-rich'],facts:['Hibiscus tea is one of the world\'s most consumed herbal beverages — beloved in Egypt, Mexico, and Sudan.','Hibiscus is the national flower of Malaysia and the state flower of Hawaii.','Clinical studies show hibiscus tea can significantly lower blood pressure in hypertensive patients.','Each hibiscus flower lasts only a single day — but plants can bloom continuously for months.']},
   {id:'daisy',name:'Ox-eye Daisy',latin:'Leucanthemum vulgare',cat:'wild',tags:['wild'],desc:'The archetypal wildflower — white rays and golden disc. It has symbolized innocence and new beginnings across centuries.',care:{water:'Low',sun:'Full sun',soil:'Any well-drained',diff:'Easy',season:'Summer',origin:'Europe'},uses:['Wild salads (petals)','Medicinal (mild)','Cut flowers','Pollinator garden'],props:['Mild anti-inflammatory','Antispasmodic','Mild diaphoretic'],facts:['The "he loves me, he loves me not" petal-picking tradition dates back to medieval France.','A single daisy head contains over 200 individual flowers — disc and ray florets combined.','Daisy roots were eaten by British soldiers during the Crusades to suppress hunger.','The word "daisy" comes from Old English "dæges ēage" meaning "day\'s eye" — it opens at dawn.']},
@@ -1893,9 +2038,9 @@ const seasonMeta = [
 ];
 let active = 'all';
 
-function svgFor(f, sz=180){
+function svgFor(f, sz=180, stage=2){
   const fn = SVGS[f.id];
-  if(fn) return fn(sz);
+  if(typeof fn === 'function') return fn(sz, stage);
   // fallback simple
   const c=f.color||'#a0c870';
   return `<svg width="${sz}" height="${sz}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="60" fill="${c}" opacity=".3"/><text x="100" y="108" text-anchor="middle" font-size="48">🌸</text></svg>`;
@@ -2019,6 +2164,7 @@ function openModal(i){
         <div class="ic-label">Fascinating facts</div>
         <div class="facts">${f.facts.map(fc=>`<div class="fact"><span class="fi">✦</span><span>${fc}</span></div>`).join('')}</div>
       </div>
+      <button class="btn-p" style="grid-column:1/-1;margin-top:.5rem" onclick="plantFlower('${f.id}');closeModal();">Plant in Simulator</button>
     </div>`;
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -2104,7 +2250,10 @@ function cardHTML(f,i){
         <div class="ci"><div class="dot ${dc(f.care.diff)}"></div>${f.care.diff}</div>
         <div class="ci">💧 ${f.care.water}</div>
       </div>
-      <button class="card-btn" onclick="openModal(${i})">Explore →</button>
+      <div style="display:flex;gap:.5rem">
+        <button class="card-btn" onclick="openModal(${i})">Info</button>
+        <button class="card-btn" style="border-color:var(--accent)" onclick="plantFlower('${f.id}')">Plant</button>
+      </div>
     </div>`;
 }
 
@@ -2187,6 +2336,140 @@ renderSeasonal();
 renderFilters();
 renderGrid();
 renderFavs();
+
+/* ── SIMULATION ENGINE ── */
+let garden = [];
+let lightLevel = 80;
+let mineralLevel = 50;
+let simInterval = null;
+
+function initSim() {
+  if (simInterval) clearInterval(simInterval);
+  simInterval = setInterval(tick, 2000);
+}
+
+function updateEnv(type, val) {
+  if (type === 'light') {
+    lightLevel = parseInt(val);
+    document.getElementById('light-val').textContent = val + '%';
+  } else {
+    mineralLevel = parseInt(val);
+    document.getElementById('mineral-val').textContent = val + '%';
+  }
+}
+
+function plantFlower(id) {
+  // Use non-strict equality to handle potential string/number mismatch
+  const f = flowers.find(x => String(x.id) === String(id));
+  if (!f) return;
+
+  const instance = {
+    ...f,
+    instanceId: Date.now() + Math.random(),
+    progress: 0,
+    stage: 0,
+    health: 100,
+    growthRate: f.growthRate || 0.05,
+    preferredLight: f.preferredLight || 80,
+    preferredMinerals: f.preferredMinerals || 50
+  };
+
+  garden.push(instance);
+  renderGarden();
+  document.getElementById('simulator').scrollIntoView({behavior:'smooth'});
+}
+
+function removePlant(iid) {
+  garden = garden.filter(p => p.instanceId !== iid);
+  renderGarden();
+}
+
+function tick() {
+  if (garden.length === 0) return;
+
+  garden.forEach(p => {
+    // Growth calculation
+    const lightEff = 1 - Math.abs(lightLevel - p.preferredLight) / 100;
+    const minEff = 1 - Math.abs(mineralLevel - p.preferredMinerals) / 100;
+
+    // Growth rate scaled for simulation speed
+    const increment = p.growthRate * lightEff * minEff * 10;
+    p.progress = Math.min(100, p.progress + Math.max(0, increment));
+
+    // Health update
+    if (lightEff < 0.3 || minEff < 0.2) p.health = Math.max(0, p.health - 2);
+    else p.health = Math.min(100, p.health + 0.5);
+
+    // Stage update
+    if (p.progress >= 100) p.stage = 2;
+    else if (p.progress >= 40) p.stage = 1;
+    else p.stage = 0;
+  });
+
+  renderGarden();
+}
+
+function renderGarden() {
+  const g = document.getElementById('garden-grid');
+  const empty = document.getElementById('garden-empty');
+
+  if (garden.length === 0) {
+    empty.style.display = 'flex';
+    // Remove existing plants if any
+    Array.from(g.children).forEach(child => {
+      if (child.id !== 'garden-empty') child.remove();
+    });
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  garden.forEach(p => {
+    let el = document.getElementById(`p-${p.instanceId}`);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = `p-${p.instanceId}`;
+      el.className = 'card reveal in';
+      el.style.background = 'rgba(30, 51, 34, 0.7)';
+      el.style.backdropFilter = 'blur(8px)';
+      el.style.border = '1px solid rgba(159, 216, 120, 0.2)';
+      g.appendChild(el);
+    }
+
+    const stageName = ['Seedling', 'Mature', 'Flowering'][p.stage];
+    const healthCol = p.health < 40 ? 'var(--rose)' : p.health < 70 ? 'var(--gold)' : 'var(--accent)';
+
+    el.innerHTML = `
+      <div style="padding:1.5rem;display:flex;gap:1rem;align-items:center">
+        <div style="background:rgba(0,0,0,.3);border-radius:12px;width:80px;height:80px;display:flex;align-items:center;justify-content:center">
+          ${svgFor(p, 70, p.stage)}
+        </div>
+        <div style="flex:1">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;line-height:1.2">${p.name}</div>
+          <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem">${stageName}</div>
+
+          <div style="height:4px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:.8rem;overflow:hidden">
+            <div style="height:100%;background:var(--accent);width:${p.progress}%;transition:width .5s ease"></div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;margin-top:.5rem">
+            <span style="font-size:.65rem;color:${healthCol}">Health: ${Math.round(p.health)}%</span>
+            <button onclick="removePlant(${p.instanceId})" style="background:none;border:none;color:var(--text3);font-size:.65rem;cursor:pointer;text-decoration:underline">Clear</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Remove plants that are no longer in the garden array
+  Array.from(g.children).forEach(child => {
+    if (child.id === 'garden-empty') return;
+    const iid = parseFloat(child.id.replace('p-', ''));
+    if (!garden.find(p => p.instanceId === iid)) child.remove();
+  });
+}
+
+initSim();
 </script>
 </body>
 </html>

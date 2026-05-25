@@ -1,0 +1,5 @@
+node_modules/
+*.log
+*.png
+.edge-profile/
+verify_final.js
