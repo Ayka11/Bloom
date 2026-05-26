@@ -1,0 +1,583 @@
+[
+  {
+    "id": "aloe",
+    "name": "Aloe Vera",
+    "latin": "Aloe barbadensis",
+    "cat": "succulent",
+    "tags": [
+      "succulent",
+      "herbal"
+    ],
+    "desc": "Succulent with thick, spiky leaves containing a cooling medicinal gel.",
+    "care": {
+      "water": "Low",
+      "sun": "Bright light",
+      "soil": "Cactus mix",
+      "diff": "Easy",
+      "season": "Year-round",
+      "origin": "Arabian Peninsula"
+    }
+  },
+  {
+    "id": "bleedingheart",
+    "name": "Bleeding Heart",
+    "latin": "Lamprocapnos spectabilis",
+    "cat": "wild",
+    "care": {
+      "sun": "Full sun",
+      "water": "Moderate"
+    },
+    "desc": "Detailed botanical description for Bleeding Heart."
+  },
+  {
+    "id": "bluepoppy",
+    "name": "Blue Poppy",
+    "latin": "Meconopsis betonicifolia",
+    "cat": "alpine",
+    "tags": [
+      "alpine",
+      "rare"
+    ],
+    "desc": "The legendary Himalayan Blue Poppy. Requires cool, acidic conditions.",
+    "care": {
+      "water": "High",
+      "sun": "Partial shade",
+      "soil": "Acidic",
+      "diff": "Hard",
+      "season": "Summer",
+      "origin": "Himalayas"
+    }
+  },
+  {
+    "id": "bluebell",
+    "name": "Bluebell",
+    "latin": "Hyacinthoides non-scripta",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Drooping blue bells that create vast carpets in ancient woodland.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Dappled shade",
+      "soil": "Humus-rich",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Western Europe"
+    }
+  },
+  {
+    "id": "cactusFlower",
+    "name": "Cactus Flower",
+    "latin": "Cactaceae",
+    "cat": "succulent",
+    "tags": [
+      "succulent"
+    ],
+    "desc": "Fleeting, often vibrant blooms from resilient, desert-dwelling succulents.",
+    "care": {
+      "water": "Very Low",
+      "sun": "Full sun",
+      "soil": "Sand/Grit",
+      "diff": "Medium",
+      "season": "Variable",
+      "origin": "Americas"
+    }
+  },
+  {
+    "id": "calendula",
+    "name": "Calendula",
+    "latin": "Calendula officinalis",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Pot marigolds with bright petals used in healing salves and skin care.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Southern Europe"
+    }
+  },
+  {
+    "id": "chamomile",
+    "name": "Chamomile",
+    "latin": "Matricaria chamomilla",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Daisy-like flowers used for centuries in soothing teas and herbal remedies.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "cherry_blossom",
+    "name": "Cherry Blossom",
+    "latin": "Prunus serrulata",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Fleeting pink clouds of blossoms that mark the arrival of spring in Japan.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Moist",
+      "diff": "Medium",
+      "season": "Spring",
+      "origin": "Japan"
+    }
+  },
+  {
+    "id": "daisy",
+    "name": "Daisy",
+    "latin": "Bellis perennis",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Cheerful white-and-yellow wildflowers that close their petals at night.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "echinacea",
+    "name": "Echinacea",
+    "latin": "Echinacea purpurea",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Cone-shaped purple flowers known for their immune-boosting properties.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Dry",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "edelweiss",
+    "name": "Edelweiss",
+    "latin": "Leontopodium nivale",
+    "cat": "wild",
+    "care": {
+      "sun": "Full sun",
+      "water": "Moderate"
+    },
+    "desc": "Detailed botanical description for Edelweiss."
+  },
+  {
+    "id": "poppyField",
+    "name": "Field Poppy",
+    "latin": "Papaver rhoeas",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "The iconic red wildflower of agricultural fields and remembrance.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Poor, dry",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "hellebore",
+    "name": "Hellebore",
+    "latin": "Helleborus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "The 'Lenten Rose', blooming in late winter with nodding, cup-shaped flowers.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Rich, moist",
+      "diff": "Easy",
+      "season": "Winter/Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "hibiscus",
+    "name": "Hibiscus",
+    "latin": "Hibiscus rosa-sinensis",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Large, trumpet-shaped blooms with prominent stamens, synonymous with tropical paradises.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "East Asia"
+    }
+  },
+  {
+    "id": "iris",
+    "name": "Iris",
+    "latin": "Iris germanica",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Named after the Greek goddess of the rainbow for its many colors.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Late Spring",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "jasmine",
+    "name": "Jasmine",
+    "latin": "Jasminum",
+    "cat": "tropical",
+    "tags": [
+      "tropical",
+      "herbal"
+    ],
+    "desc": "Heavily scented white flowers widely used in teas and perfumery.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Tropical Asia"
+    }
+  },
+  {
+    "id": "lavender",
+    "name": "Lavender",
+    "latin": "Lavandula angustifolia",
+    "cat": "herbal",
+    "tags": [
+      "herbal"
+    ],
+    "desc": "Aromatic silver-purple spikes prized for their calming scent and medicinal properties.",
+    "care": {
+      "water": "Low",
+      "sun": "Full sun",
+      "soil": "Sandy, well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mediterranean"
+    }
+  },
+  {
+    "id": "lotus",
+    "name": "Lotus",
+    "latin": "Nelumbo nucifera",
+    "cat": "aquatic",
+    "tags": [
+      "aquatic"
+    ],
+    "desc": "Sacred aquatic plant with striking symmetry, symbolizing purity and rebirth.",
+    "care": {
+      "water": "Aquatic",
+      "sun": "Full sun",
+      "soil": "Muddy",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Asia"
+    }
+  },
+  {
+    "id": "magnolia",
+    "name": "Magnolia",
+    "latin": "Magnolia grandiflora",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Ancient flower lineage with large, fragrant, leathery petals.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Acidic",
+      "diff": "Medium",
+      "season": "Spring/Summer",
+      "origin": "Asia/Americas"
+    }
+  },
+  {
+    "id": "marigold",
+    "name": "Marigold",
+    "latin": "Tagetes",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Bright orange and yellow annuals often used as companion plants in gardens.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "Mexico"
+    }
+  },
+  {
+    "id": "nasturtium",
+    "name": "Nasturtium",
+    "latin": "Tropaeolum majus",
+    "cat": "herbal",
+    "care": {
+      "sun": "Full sun",
+      "water": "Moderate"
+    },
+    "desc": "Detailed botanical description for Nasturtium."
+  },
+  {
+    "id": "orchid",
+    "name": "Orchid",
+    "latin": "Orchidaceae",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Diverse family of intricate blooms with exotic patterns and long-lasting flowers.",
+    "care": {
+      "water": "Low",
+      "sun": "Indirect light",
+      "soil": "Bark mix",
+      "diff": "Hard",
+      "season": "Year-round",
+      "origin": "Global Tropics"
+    }
+  },
+  {
+    "id": "passionflower",
+    "name": "Passionflower",
+    "latin": "Passiflora incarnata",
+    "cat": "tropical",
+    "tags": [
+      "tropical"
+    ],
+    "desc": "Extraordinary complex blooms with a fringe of filaments and medicinal properties.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Americas"
+    }
+  },
+  {
+    "id": "peony",
+    "name": "Peony",
+    "latin": "Paeonia",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Lush, many-petaled blooms with a rich history in art and medicine.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich, moist",
+      "diff": "Medium",
+      "season": "Early Summer",
+      "origin": "Asia"
+    }
+  },
+  {
+    "id": "plumeria",
+    "name": "Plumeria",
+    "latin": "Plumeria rubra",
+    "cat": "tropical",
+    "care": {
+      "sun": "Full sun",
+      "water": "Moderate"
+    },
+    "desc": "Detailed botanical description for Plumeria."
+  },
+  {
+    "id": "ranunculus",
+    "name": "Ranunculus",
+    "latin": "Ranunculus asiaticus",
+    "cat": "garden",
+    "care": {
+      "sun": "Full sun",
+      "water": "Moderate"
+    },
+    "desc": "Detailed botanical description for Ranunculus."
+  },
+  {
+    "id": "rosagallica",
+    "name": "Rosa gallica",
+    "latin": "Rosa gallica",
+    "cat": "garden",
+    "tags": [
+      "garden",
+      "herbal"
+    ],
+    "desc": "Ultra-realistic botanical illustration of the French Rose. Known for its deep pink petals and medicinal history.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "France"
+    }
+  },
+  {
+    "id": "rose",
+    "name": "Rose",
+    "latin": "Rosa damascena",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "The queen of flowers, known for its layered petals and classic fragrance.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich, well-drained",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Persia"
+    }
+  },
+  {
+    "id": "snowdrop",
+    "name": "Snowdrop",
+    "latin": "Galanthus nivalis",
+    "cat": "wild",
+    "tags": [
+      "wild"
+    ],
+    "desc": "Brave white bells that often bloom through the winter snow.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Partial shade",
+      "soil": "Moist",
+      "diff": "Easy",
+      "season": "Late Winter",
+      "origin": "Europe"
+    }
+  },
+  {
+    "id": "sunflower",
+    "name": "Sunflower",
+    "latin": "Helianthus annuus",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Statuesque yellow blooms that track the sun across the sky.",
+    "care": {
+      "water": "High",
+      "sun": "Full sun",
+      "soil": "Any",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "North America"
+    }
+  },
+  {
+    "id": "tulip",
+    "name": "Tulip",
+    "latin": "Tulipa",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Bold spring bulbs in every color imaginable, famously associated with the Netherlands.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Sandy",
+      "diff": "Easy",
+      "season": "Spring",
+      "origin": "Central Asia"
+    }
+  },
+  {
+    "id": "waterhyacinth",
+    "name": "Water Hyacinth",
+    "latin": "Pontederia crassipes",
+    "cat": "aquatic",
+    "tags": [
+      "aquatic"
+    ],
+    "desc": "Floating aquatic plant with beautiful lavender flowers, known for rapid growth.",
+    "care": {
+      "water": "Aquatic",
+      "sun": "Full sun",
+      "soil": "Water",
+      "diff": "Easy",
+      "season": "Summer",
+      "origin": "South America"
+    }
+  },
+  {
+    "id": "waterlily",
+    "name": "Water Lily",
+    "latin": "Nymphaeaceae",
+    "cat": "aquatic",
+    "tags": [
+      "aquatic"
+    ],
+    "desc": "Float-leaved aquatic plants that bloom in still waters and ponds.",
+    "care": {
+      "water": "Aquatic",
+      "sun": "Full sun",
+      "soil": "Pond silt",
+      "diff": "Medium",
+      "season": "Summer",
+      "origin": "Global"
+    }
+  },
+  {
+    "id": "wisteria",
+    "name": "Wisteria",
+    "latin": "Wisteria sinensis",
+    "cat": "garden",
+    "tags": [
+      "garden"
+    ],
+    "desc": "Cascading racemes of purple or white flowers on woody climbing vines.",
+    "care": {
+      "water": "Moderate",
+      "sun": "Full sun",
+      "soil": "Rich",
+      "diff": "Hard",
+      "season": "Spring",
+      "origin": "East Asia"
+    }
+  }
+]
