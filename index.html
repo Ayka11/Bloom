@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom — Botanical Universe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+/* Base Styles */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b1a0e;--bg2:#0f1f12;--bg3:#132118;
+  --surface:#192b1c;--surface2:#1e3322;
+  --border:#253c28;--border2:#3a5840;
+  --text:#dff0da;--text2:#8db88a;--text3:#5a8060;
+  --accent:#9fd878;--accent2:#c5f09a;
+  --gold:#d4a040;--rose:#d46878;--lav:#9878c8;--sky:#5898b8;
+  --r:14px;--rs:8px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,26,14,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;font-style:italic;color:var(--accent2);letter-spacing:.02em;cursor:pointer}
+.nav-links{display:flex;gap:1.8rem}
+.nav-links a{color:var(--text3);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:color .2s;cursor:pointer}
+.nav-links a:hover, .nav-links a.active{color:var(--accent)}
+
+/* View Containers */
+.view{display:none;padding-top:5rem;min-height:100vh}
+.view.active{display:block}
+
+/* Encyclopedia Styles */
+.hero{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 65%,#1a3d20 0%,var(--bg) 68%);z-index:-1}
+.flower-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.25rem;padding:2rem}
+.library-tools{padding:0 2rem 1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.85rem;align-items:end}
+.library-tools .control-group{margin-bottom:0}
+.library-tools button{height:38px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .3s}
+.card:hover{border-color:var(--border2);transform:translateY(-5px)}
+.card-ill{height:210px;display:flex;align-items:center;justify-content:center;background:#1a2b1c}
+.card-body{padding:1.2rem}
+.card-name{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--text)}
+
+/* Simulators */
+.sim-container{padding:2rem;max-width:1200px;margin:0 auto}
+.sim-header{margin-bottom:2rem;text-align:center}
+.sim-grid{display:grid;grid-template-columns:1fr 300px;gap:2rem}
+canvas{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);width:100%;height:600px}
+.canvas-caption{margin-top:.6rem;color:var(--text3);font-size:.75rem}
+.controls{background:var(--surface);padding:1.5rem;border-radius:var(--r);border:1px solid var(--border)}
+.method-note{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;color:var(--text2);font-size:.82rem;line-height:1.55;margin-top:1rem}
+.control-group{margin-bottom:1.5rem}
+.control-group label{display:flex;justify-content:space-between;gap:.5rem;font-size:.7rem;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.indicator-value{color:var(--accent2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.control-group input,.control-group select{width:100%;accent-color:var(--accent)}
+.control-group select,.control-group input[type="search"]{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem .7rem;border-radius:var(--rs);outline:none}
+.btn-p{background:var(--accent);color:var(--bg);border:none;padding:.6rem 1.2rem;border-radius:var(--rs);cursor:pointer;font-weight:500;width:100%}
+
+/* Growth Lab */
+.lab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;padding:2rem}
+.lab-panel{max-width:1200px;margin:0 auto;padding:0 2rem 1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.7rem;margin-top:1rem}
+.metric{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:.65rem}
+.metric b{display:block;color:var(--accent2);font-size:.78rem}
+.vital-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:10px}
+.vital-fill{height:100%;background:var(--accent);width:50%;transition:width 0.3s}
+
+/* Modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);z-index:500;align-items:center;justify-content:center;padding:1.5rem}
+.modal-ov.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:22px;max-width:800px;width:100%;padding:2rem;position:relative}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showView('home')">Bloom<sup>Unified</sup></div>
+  <div class="nav-links">
+    <a onclick="showView('home')" id="link-home" class="active">Encyclopedia</a>
+    <a onclick="showView('ecosystem')" id="link-ecosystem">Ecosystem</a>
+    <a onclick="showView('evolution')" id="link-evolution">Evolution</a>
+    <a onclick="showView('lab')" id="link-lab">Growth Lab</a>
+  </div>
+  <div class="search-wrap" id="search-container">
+    <input type="search" placeholder="Search species..." id="si" oninput="updateLibraryFilters()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.4rem .8rem;border-radius:var(--rs);outline:none">
+  </div>
+</nav>
+
+<!-- Encyclopedia View -->
+<div id="view-home" class="view active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <h1>Botanical <em>Library</em></h1>
+    <p id="hero-copy" style="max-width:600px;margin:1rem auto;color:var(--text2)">Explore imported botanical species with procedural illustrations and care guides.</p>
+  </div>
+  <div class="library-tools" aria-label="Encyclopedia filters">
+    <div class="control-group">
+      <label>Plant Type</label>
+      <select id="filterType" onchange="updateLibraryFilters()"></select>
+    </div>
+    <div class="control-group">
+      <label>Climate</label>
+      <select id="filterClimate" onchange="updateLibraryFilters()"></select>
+    </div>
+    <div class="control-group">
+      <label>Lifecycle</label>
+      <select id="filterLifecycle" onchange="updateLibraryFilters()"></select>
+    </div>
+    <div class="control-group">
+      <label>Family</label>
+      <select id="filterFamily" onchange="updateLibraryFilters()"></select>
+    </div>
+    <div class="control-group">
+      <label>Color</label>
+      <select id="filterColor" onchange="updateLibraryFilters()"></select>
+    </div>
+    <div class="control-group">
+      <label>Sort</label>
+      <select id="sortLibrary" onchange="updateLibraryFilters()">
+        <option value="name">Name A-Z</option>
+        <option value="family">Family</option>
+        <option value="climate">Climate</option>
+        <option value="type">Plant type</option>
+      </select>
+    </div>
+    <button class="btn-p" onclick="clearLibraryFilters()">Clear Filters</button>
+  </div>
+  <div id="library-status" style="padding:0 2rem;color:var(--text2);font-size:.85rem"></div>
+  <div class="flower-grid" id="library-grid"></div>
+</div>
+
+<!-- Ecosystem View -->
+<div id="view-ecosystem" class="view">
+  <div class="sim-container">
+    <div class="sim-header">
+      <h2>Ecosystem <em>Biosphere</em></h2>
+      <p>Real-time simulation of climate, soil, and population dynamics.</p>
+    </div>
+    <div class="sim-grid">
+      <div>
+        <canvas id="ecoCanvas"></canvas>
+        <div class="canvas-caption">Layered biome view: canopy, flowering individuals, soil profile, root zone, and pollination activity. Plant size and color reflect live fitness.</div>
+      </div>
+      <div class="controls">
+        <div class="control-group">
+          <label>Temperature <span class="indicator-value" id="ecoTempValue">22.0°C</span></label>
+          <input id="ecoTemp" type="range" min="0" max="40" value="22" oninput="updateClimate('temp', this.value)">
+        </div>
+        <div class="control-group">
+          <label>Humidity <span class="indicator-value" id="ecoHumValue">60%</span></label>
+          <input id="ecoHum" type="range" min="0" max="100" value="60" oninput="updateClimate('hum', this.value)">
+        </div>
+        <div class="control-group">
+          <label>Sunlight <span class="indicator-value" id="ecoSunValue">80%</span></label>
+          <input id="ecoSun" type="range" min="0" max="100" value="80" oninput="updateClimate('sun', this.value)">
+        </div>
+        <div class="control-group">
+          <label>Soil fertility <span class="indicator-value" id="ecoSoilValue">50%</span></label>
+          <input id="ecoSoil" type="range" min="0" max="100" value="50" oninput="updateClimate('soil', this.value)">
+        </div>
+        <div class="control-group">
+          <label>Seed Biosphere</label>
+          <select id="ecoSeedSelect" onchange="seedEcosystemFromSelection()"></select>
+        </div>
+        <div id="ecoStats" style="font-size:.8rem;color:var(--text2);line-height:1.6">
+          Population: 0<br>Biodiversity: 0%
+        </div>
+        <div class="method-note">
+          Method: species fitness is calculated from light, water, temperature, humidity, soil fertility, stress tolerance, and logistic carrying capacity. Biodiversity uses Shannon entropy over taxonomy groups.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Evolution View -->
+<div id="view-evolution" class="view">
+  <div class="sim-container">
+    <div class="sim-header">
+      <h2>Evolution <em>Sandbox</em></h2>
+      <p>Design custom genomes and simulate generational changes.</p>
+    </div>
+    <div class="sim-grid">
+      <div id="evo-display" style="display:flex;align-items:center;justify-content:center;background:var(--bg2);border-radius:var(--r);min-height:400px">
+         <!-- Procedural SVG here -->
+      </div>
+      <div class="controls">
+         <button class="btn-p" onclick="generateRandomSpecimen()">Mutate Genome</button>
+         <button class="btn-p" onclick="runEvolutionStep()" style="margin-top:.8rem">Run Selection Step</button>
+         <div id="genome-info" style="margin-top:1rem;font-size:.7rem;font-family:monospace;color:var(--text3);overflow-wrap:break-word"></div>
+         <div class="method-note">
+          Method: quantitative genes mutate and recombine, then selection keeps higher-fitness genomes under the current environment. Fitness is based on climate match, resource demand, pollination traits, and morphology costs.
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Growth Lab -->
+<div id="view-lab" class="view">
+  <div class="sim-header">
+    <h2>Growth <em>Lab</em></h2>
+    <p>Physiological simulation for any loaded plant, based on light, water, climate, nutrients, respiration, and stress.</p>
+  </div>
+  <div class="lab-panel">
+    <div class="control-group">
+      <label>Plant Species</label>
+      <select id="labSpeciesSelect" onchange="initLab()"></select>
+    </div>
+    <div class="control-group">
+      <label>Light <span class="indicator-value" id="labLightValue">80%</span></label>
+      <input id="labLight" type="range" min="0" max="100" value="80" oninput="syncLabEnvironment()">
+    </div>
+    <div class="control-group">
+      <label>Water <span class="indicator-value" id="labWaterValue">60%</span></label>
+      <input id="labWater" type="range" min="0" max="100" value="60" oninput="syncLabEnvironment()">
+    </div>
+    <div class="control-group">
+      <label>Temperature <span class="indicator-value" id="labTempValue">22°C</span></label>
+      <input id="labTemp" type="range" min="0" max="42" value="22" oninput="syncLabEnvironment()">
+    </div>
+    <div class="control-group">
+      <label>Nutrients <span class="indicator-value" id="labNutrientsValue">62%</span></label>
+      <input id="labNutrients" type="range" min="0" max="100" value="62" oninput="syncLabEnvironment()">
+    </div>
+  </div>
+  <div class="lab-grid" id="lab-grid">
+    <!-- Interactive plant items -->
+  </div>
+  <div class="sim-container">
+    <div class="method-note">
+      Method: growth uses a simplified net primary productivity model: photosynthesis from light, CO2, and chlorophyll, reduced by Liebig-style limiting resources, respiration, age stage, and stress.
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal">
+  <div class="modal">
+    <div id="modal-content"></div>
+    <button class="btn-p" onclick="closeModal()" style="margin-top:1rem;width:auto">Close</button>
+  </div>
+</div>
+
+<script src="bloom-artwork.js"></script>
+<script src="bloom-taxonomy.js"></script>
+<script src="bloom-evolution.js"></script>
+<script src="bloom-simulator.js"></script>
+<script src="bloom-growth.js"></script>
+<script>
+let speciesData = [];
+let activeMode = 'home';
+let evolutionLab = null;
+let libraryState = {
+    query: '',
+    type: 'all',
+    climate: 'all',
+    lifecycle: 'all',
+    family: 'all',
+    color: 'all',
+    sort: 'name'
+};
+
+async function init() {
+    try {
+        const core = await fetch('bloom-data.json').then(res => res.json());
+        const generated = await fetch('bloom-generated-species.json').then(res => res.json()).catch(() => []);
+        speciesData = [...core, ...generated].map(BloomTaxonomy.normalizedSpecies);
+        document.getElementById('hero-copy').textContent = `Explore ${speciesData.length.toLocaleString()} botanical species with procedural illustrations, care guides, and growth simulation.`;
+        populateLibraryFilters();
+        populateSpeciesControls();
+        if (window.setEcosystemSpeciesCatalog) setEcosystemSpeciesCatalog(speciesData);
+        renderLibrary();
+    } catch (e) {
+        console.error("Failed to load species data", e);
+    }
+}
+
+function showView(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('link-' + view).classList.add('active');
+    activeMode = view;
+
+    if(view === 'ecosystem') initEcosystem();
+    if(view === 'evolution') initEvolution();
+    if(view === 'lab') initLab();
+
+    // Toggle search visibility
+    document.getElementById('search-container').style.opacity = (view === 'home') ? '1' : '0';
+    document.getElementById('search-container').style.pointerEvents = (view === 'home') ? 'auto' : 'none';
+}
+
+function uniqueSorted(values) {
+    return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function fillSelect(id, label, values) {
+    const select = document.getElementById(id);
+    select.innerHTML = `<option value="all">All ${label}</option>` + values.map(value => `<option value="${value}">${value}</option>`).join('');
+}
+
+function populateLibraryFilters() {
+    fillSelect('filterType', 'types', uniqueSorted(speciesData.map(f => f.taxonomy.plant_type || f.cat)));
+    fillSelect('filterClimate', 'climates', uniqueSorted(speciesData.map(f => f.taxonomy.climate)));
+    fillSelect('filterLifecycle', 'lifecycles', uniqueSorted(speciesData.map(f => f.taxonomy.lifecycle)));
+    fillSelect('filterFamily', 'families', uniqueSorted(speciesData.map(f => f.taxonomy.family)));
+    fillSelect('filterColor', 'colors', uniqueSorted(speciesData.map(f => f.taxonomy.color)));
+}
+
+function readLibraryState() {
+    libraryState = {
+        query: document.getElementById('si').value.toLowerCase().trim(),
+        type: document.getElementById('filterType').value,
+        climate: document.getElementById('filterClimate').value,
+        lifecycle: document.getElementById('filterLifecycle').value,
+        family: document.getElementById('filterFamily').value,
+        color: document.getElementById('filterColor').value,
+        sort: document.getElementById('sortLibrary').value
+    };
+}
+
+function updateLibraryFilters() {
+    readLibraryState();
+    renderLibrary();
+}
+
+function clearLibraryFilters() {
+    document.getElementById('si').value = '';
+    ['filterType', 'filterClimate', 'filterLifecycle', 'filterFamily', 'filterColor'].forEach(id => {
+        document.getElementById(id).value = 'all';
+    });
+    document.getElementById('sortLibrary').value = 'name';
+    updateLibraryFilters();
+}
+
+function matchesLibraryFilters(f) {
+    const taxonomy = f.taxonomy || {};
+    const haystack = [
+        f.name,
+        f.latin,
+        f.cat,
+        f.desc,
+        taxonomy.family,
+        taxonomy.genus,
+        taxonomy.species,
+        taxonomy.climate,
+        taxonomy.lifecycle,
+        taxonomy.plant_type,
+        taxonomy.color,
+        ...(f.tags || [])
+    ].join(' ').toLowerCase();
+
+    return (!libraryState.query || haystack.includes(libraryState.query))
+        && (libraryState.type === 'all' || taxonomy.plant_type === libraryState.type || f.cat === libraryState.type)
+        && (libraryState.climate === 'all' || taxonomy.climate === libraryState.climate)
+        && (libraryState.lifecycle === 'all' || taxonomy.lifecycle === libraryState.lifecycle)
+        && (libraryState.family === 'all' || taxonomy.family === libraryState.family)
+        && (libraryState.color === 'all' || taxonomy.color === libraryState.color);
+}
+
+function sortLibraryResults(results) {
+    const accessors = {
+        name: f => f.name,
+        family: f => f.taxonomy.family,
+        climate: f => f.taxonomy.climate,
+        type: f => f.taxonomy.plant_type || f.cat
+    };
+    const accessor = accessors[libraryState.sort] || accessors.name;
+    return results.sort((a, b) => accessor(a).localeCompare(accessor(b)) || a.name.localeCompare(b.name));
+}
+
+function renderLibrary() {
+    const grid = document.getElementById('library-grid');
+    grid.innerHTML = '';
+
+    const filtered = sortLibraryResults(speciesData.filter(matchesLibraryFilters));
+    const visible = filtered.slice(0, 480);
+    const activeFilters = [libraryState.type, libraryState.climate, libraryState.lifecycle, libraryState.family, libraryState.color].filter(value => value !== 'all').length;
+    document.getElementById('library-status').textContent = `Showing ${visible.length.toLocaleString()} of ${filtered.length.toLocaleString()} matching species. ${activeFilters} filters active. Search covers common name, Latin name, genus, family, climate, lifecycle, color, and tags.`;
+
+    if (!visible.length) {
+        grid.innerHTML = `<div class="card"><div class="card-body"><div class="card-name">No matching species</div><div style="font-size:.8rem;color:var(--text3)">Clear filters or broaden the search.</div></div></div>`;
+        return;
+    }
+
+    visible.forEach(f => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => openModal(f);
+        card.innerHTML = `
+            <div class="card-ill">${BloomTaxonomy.renderSpeciesSvg(f, 150)}</div>
+            <div class="card-body">
+                <div class="card-name">${f.name}</div>
+                <div style="font-size:.7rem;color:var(--text3)">${f.latin}</div>
+                <div style="font-size:.68rem;color:var(--text3);margin-top:.35rem">${f.taxonomy.family} · ${f.taxonomy.climate} · ${f.taxonomy.lifecycle}</div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function openModal(f) {
+    const modal = document.getElementById('modal');
+    const content = document.getElementById('modal-content');
+    content.innerHTML = `
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--accent)">${f.name}</h2>
+        <p style="font-style:italic;margin-bottom:1rem;color:var(--text2)">${f.latin}</p>
+        <p style="margin-bottom:1.5rem">${f.desc}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;font-size:.85rem">
+            <div><strong style="color:var(--accent2)">Sun:</strong> ${f.care.sun}</div>
+            <div><strong style="color:var(--accent2)">Water:</strong> ${f.care.water}</div>
+            <div><strong style="color:var(--accent2)">Soil:</strong> ${f.care.soil || 'Standard'}</div>
+            <div><strong style="color:var(--accent2)">Difficulty:</strong> ${f.care.diff || 'Medium'}</div>
+            <div><strong style="color:var(--accent2)">Family:</strong> ${f.taxonomy.family}</div>
+            <div><strong style="color:var(--accent2)">Climate:</strong> ${f.taxonomy.climate}</div>
+        </div>
+    `;
+    modal.classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function populateSpeciesControls() {
+    const labSelect = document.getElementById('labSpeciesSelect');
+    const ecoSelect = document.getElementById('ecoSeedSelect');
+    const options = speciesData.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+    labSelect.innerHTML = options;
+    ecoSelect.innerHTML = `
+        <option value="mixed">Mixed starter biosphere</option>
+        <option value="temperate">Temperate species</option>
+        <option value="tropical">Tropical species</option>
+        <option value="arid">Arid species</option>
+        <option value="alpine">Alpine species</option>
+    `;
+}
+
+function getSelectedLabSpecies() {
+    const selectedId = document.getElementById('labSpeciesSelect')?.value;
+    return speciesData.find(s => s.id === selectedId) || speciesData[0];
+}
+
+function seedEcosystemFromSelection() {
+    const mode = document.getElementById('ecoSeedSelect').value;
+    const pool = mode === 'mixed'
+        ? speciesData.slice(0, 36)
+        : speciesData.filter(s => s.taxonomy.climate === mode).slice(0, 36);
+    seedEcosystem(pool.length ? pool : speciesData.slice(0, 36));
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
+function syncEcosystemIndicators(summary = null) {
+    setText('ecoTempValue', `${ecosystem.climate.temperature.toFixed(1)}°C`);
+    setText('ecoHumValue', `${ecosystem.climate.humidity.toFixed(0)}%`);
+    setText('ecoSunValue', `${(ecosystem.climate.sunlight * 100).toFixed(0)}%`);
+    setText('ecoSoilValue', `${(ecosystem.soil.fertility() * 100).toFixed(0)}%`);
+    const temp = document.getElementById('ecoTemp');
+    const hum = document.getElementById('ecoHum');
+    const sun = document.getElementById('ecoSun');
+    const soil = document.getElementById('ecoSoil');
+    if (temp) temp.value = ecosystem.climate.temperature;
+    if (hum) hum.value = ecosystem.climate.humidity;
+    if (sun) sun.value = Math.round(ecosystem.climate.sunlight * 100);
+    if (soil && summary) soil.value = Math.round(ecosystem.soil.fertility() * 100);
+}
+
+function drawBiomeBackground(ctx, width, height) {
+    const sky = ctx.createLinearGradient(0, 0, 0, height * 0.7);
+    sky.addColorStop(0, '#172d22');
+    sky.addColorStop(0.55, '#203d2a');
+    sky.addColorStop(1, '#1b2d1c');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = 'rgba(220, 190, 94, .32)';
+    ctx.beginPath();
+    ctx.arc(width - 86, 86, 38 + ecosystem.climate.sunlight * 22, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (let i = 0; i < 18; i++) {
+        const x = (i * 83) % width;
+        const y = height * (0.18 + ((i * 17) % 30) / 100);
+        ctx.fillStyle = `rgba(143, 189, 112, ${0.05 + (i % 4) * 0.015})`;
+        ctx.beginPath();
+        ctx.ellipse(x, y, 80 + (i % 4) * 26, 26, (i % 5) * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    const soilY = height * 0.72;
+    const soil = ctx.createLinearGradient(0, soilY, 0, height);
+    soil.addColorStop(0, '#31522e');
+    soil.addColorStop(0.38, '#3b2d20');
+    soil.addColorStop(1, '#21170f');
+    ctx.fillStyle = soil;
+    ctx.fillRect(0, soilY, width, height - soilY);
+    ctx.fillStyle = 'rgba(160, 116, 64, .24)';
+    for (let i = 0; i < 9; i++) {
+        const y = soilY + 18 + i * 18;
+        ctx.fillRect(0, y, width, 1);
+    }
+}
+
+function drawEcosystemPlant(ctx, plant, width, height) {
+    const taxonomy = plant.species.taxonomy || {};
+    const x = plant.x * width;
+    const soilY = height * 0.72;
+    const baseY = soilY + plant.y * 20;
+    const fitness = plant.fitness || plant.vitality;
+    const scale = 0.55 + fitness * 1.45;
+    const stemH = 34 + fitness * 76;
+    const bloomY = baseY - stemH;
+    const colorMap = { red: '#d94a4a', pink: '#ef7fa6', purple: '#9a6ad6', blue: '#72a6dc', yellow: '#e0c35a', orange: '#df8542', white: '#f2ead9' };
+    const petalColor = colorMap[taxonomy.color] || '#ef7fa6';
+
+    ctx.strokeStyle = fitness > 0.48 ? '#7fb86b' : '#8e6a45';
+    ctx.lineWidth = Math.max(1.2, 2.8 * scale);
+    ctx.beginPath();
+    ctx.moveTo(x, baseY);
+    ctx.bezierCurveTo(x - 8 * scale, baseY - stemH * 0.35, x + 6 * scale, baseY - stemH * 0.74, x, bloomY);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(103, 154, 82, .82)';
+    ctx.beginPath();
+    ctx.ellipse(x - 10 * scale, baseY - stemH * 0.45, 13 * scale, 5 * scale, -0.7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + 12 * scale, baseY - stemH * 0.58, 11 * scale, 4.5 * scale, 0.55, 0, Math.PI * 2);
+    ctx.fill();
+
+    const petals = taxonomy.plant_type === 'bulb' ? 6 : taxonomy.plant_type === 'shrub' ? 10 : 7;
+    for (let i = 0; i < petals; i++) {
+        const a = (i / petals) * Math.PI * 2;
+        ctx.save();
+        ctx.translate(x, bloomY);
+        ctx.rotate(a);
+        ctx.fillStyle = petalColor;
+        ctx.globalAlpha = 0.65 + fitness * 0.3;
+        ctx.beginPath();
+        ctx.ellipse(0, -8 * scale, 4.6 * scale, 10.5 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#e4c76f';
+    ctx.beginPath();
+    ctx.arc(x, bloomY, 4.4 * scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(200, 180, 125, .35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, baseY + 1);
+    ctx.bezierCurveTo(x - 15, baseY + 18, x - 24, baseY + 32, x - 34, baseY + 45);
+    ctx.moveTo(x, baseY + 1);
+    ctx.bezierCurveTo(x + 13, baseY + 18, x + 26, baseY + 31, x + 38, baseY + 44);
+    ctx.stroke();
+}
+
+// Ecosystem Integration
+function initEcosystem() {
+    const canvas = document.getElementById('ecoCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    function draw() {
+        if(activeMode !== 'ecosystem') return;
+        drawBiomeBackground(ctx, canvas.width, canvas.height);
+        const summary = ecosystemSummary();
+        ecosystem.population
+            .slice()
+            .sort((a, b) => a.y - b.y)
+            .slice(0, 150)
+            .forEach(plant => drawEcosystemPlant(ctx, plant, canvas.width, canvas.height));
+
+        ecosystem.bees.forEach(bee => {
+            const x = (bee.x % canvas.width + canvas.width) % canvas.width;
+            const y = 80 + ((bee.y % 260 + 260) % 260);
+            ctx.fillStyle = 'rgba(230, 196, 85, .9)';
+            ctx.beginPath();
+            ctx.ellipse(x, y, 5, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(230, 245, 220, .45)';
+            ctx.beginPath();
+            ctx.ellipse(x - 4, y - 4, 4, 2.2, -0.7, 0, Math.PI * 2);
+            ctx.ellipse(x + 4, y - 4, 4, 2.2, 0.7, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        document.getElementById('ecoStats').innerHTML = `
+            Temperature: ${ecosystem.climate.temperature.toFixed(1)}°C<br>
+            Sunlight: ${(ecosystem.climate.sunlight * 100).toFixed(0)}%<br>
+            Humidity: ${ecosystem.climate.humidity.toFixed(0)}%<br>
+            Population: ${summary.population}<br>
+            Shannon diversity: ${summary.biodiversity}%<br>
+            Richness: ${summary.richness} families<br>
+            Avg fitness: ${(summary.avgFitness * 100).toFixed(0)}%<br>
+            Density pressure: ${(summary.density * 100).toFixed(0)}%
+        `;
+        syncEcosystemIndicators(summary);
+        runEcosystemTick();
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+function updateClimate(type, val) {
+    if(type === 'temp') ecosystem.climate.temperature = parseFloat(val);
+    if(type === 'hum') ecosystem.climate.humidity = parseFloat(val);
+    if(type === 'sun') {
+        ecosystem.climate.sunlight = parseFloat(val) / 100;
+        ecosystem.climate.manualSunlight = parseFloat(val) / 100;
+    }
+    if(type === 'soil') {
+        const fertility = parseFloat(val) / 100;
+        ecosystem.soil.nitrogen = fertility;
+        ecosystem.soil.phosphorus = fertility;
+        ecosystem.soil.potassium = fertility;
+    }
+    syncEcosystemIndicators();
+}
+
+// Evolution Integration
+function generateRandomSpecimen() {
+    if (!evolutionLab) evolutionLab = new EvolutionLab();
+    const genome = new Genome();
+    evolutionLab.population[0] = genome;
+    const display = document.getElementById('evo-display');
+    display.innerHTML = ProceduralSVG.generate(genome, 300);
+    document.getElementById('genome-info').innerHTML = `Generation: ${evolutionLab.generation}<br>Random mutation specimen${formatGeneParameters(genome)}`;
+}
+
+function initEvolution() {
+    if (!evolutionLab) evolutionLab = new EvolutionLab();
+    const summary = evolutionLab.summary();
+    const display = document.getElementById('evo-display');
+    display.innerHTML = ProceduralSVG.generate(summary.bestGenome, 300);
+    document.getElementById('genome-info').innerHTML = formatEvolutionSummary(summary);
+}
+
+function runEvolutionStep() {
+    if (!evolutionLab) evolutionLab = new EvolutionLab();
+    const summary = evolutionLab.step();
+    document.getElementById('evo-display').innerHTML = ProceduralSVG.generate(summary.bestGenome, 300);
+    document.getElementById('genome-info').innerHTML = formatEvolutionSummary(summary);
+}
+
+function formatEvolutionSummary(summary) {
+    return `
+      Generation: ${summary.generation}<br>
+      Best fitness: ${(summary.bestFitness * 100).toFixed(1)}%<br>
+      Mean fitness: ${(summary.avgFitness * 100).toFixed(1)}%<br>
+      Genetic diversity: ${(summary.diversity * 100).toFixed(1)}%<br>
+      ${formatGeneParameters(summary.bestGenome)}
+    `;
+}
+
+function formatGeneParameters(genome) {
+    const labels = {
+      petal_count: 'Petal count',
+      petal_shape: 'Petal shape',
+      stem_height: 'Stem height',
+      leaf_shape: 'Leaf shape',
+      flower_diameter: 'Flower diameter',
+      petal_curvature: 'Petal curvature',
+      symmetry: 'Symmetry',
+      primary_hue: 'Primary hue',
+      secondary_hue: 'Secondary hue',
+      pigment_intensity: 'Pigment intensity',
+      uv_pattern: 'UV pattern',
+      cold_resistance: 'Cold resistance',
+      heat_resistance: 'Heat resistance',
+      water_requirement: 'Water requirement',
+      sunlight_preference: 'Sunlight preference',
+      pollinator_type: 'Pollinator type',
+      fragrance_strength: 'Fragrance strength',
+      nectar_volume: 'Nectar volume',
+      flower_open_time: 'Flower open time'
+    };
+    return `<div class="metric-row">${Object.entries(genome.genes).map(([key, value]) => `
+      <div class="metric"><b>${labels[key] || key}</b>${(value * 100).toFixed(1)}%</div>
+    `).join('')}</div>`;
+}
+
+// Growth Lab Integration
+function syncLabEnvironment() {
+    lab.light = Number(document.getElementById('labLight').value) / 100;
+    lab.water = Number(document.getElementById('labWater').value) / 100;
+    lab.temperature = Number(document.getElementById('labTemp').value);
+    lab.nutrients = Number(document.getElementById('labNutrients').value) / 100;
+    setText('labLightValue', `${(lab.light * 100).toFixed(0)}%`);
+    setText('labWaterValue', `${(lab.water * 100).toFixed(0)}%`);
+    setText('labTempValue', `${lab.temperature.toFixed(0)}°C`);
+    setText('labNutrientsValue', `${(lab.nutrients * 100).toFixed(0)}%`);
+}
+
+function initLab() {
+    const grid = document.getElementById('lab-grid');
+    const f = getSelectedLabSpecies();
+    if(!f) return;
+    syncLabEnvironment();
+    grid.innerHTML = '';
+    const analysis = lab.calculateGrowth(f);
+    const item = document.createElement('div');
+    item.className = 'card';
+    item.innerHTML = `
+        <div style="padding:1rem;text-align:center">${BloomTaxonomy.renderSpeciesSvg(f, 150)}</div>
+        <div style="padding:1.2rem">
+            <h3 style="font-family:'Cormorant Garamond',serif">${f.name}</h3>
+            <div style="font-size:.72rem;color:var(--text3);margin-bottom:.8rem">${f.taxonomy.family} · ${f.taxonomy.climate} · ${f.taxonomy.lifecycle}</div>
+            <div class="vital-bar"><div class="vital-fill" id="fill-active" style="width:${analysis.score * 100}%"></div></div>
+            <div style="font-size:.75rem;margin-top:8px;color:var(--text3)" id="stat-active">Vitality: ${(analysis.score * 100).toFixed(0)}%</div>
+            <div style="font-size:.78rem;margin-top:1rem;color:var(--text2)" id="lab-detail">
+                Stage: ${analysis.stage}<br>
+                Limiting factor: ${analysis.limitingFactor}<br>
+                Ideal temp: ${analysis.traits.idealTemp}°C · Water need: ${(analysis.traits.waterNeed * 100).toFixed(0)}%
+            </div>
+            <div class="metric-row" id="lab-metrics">${formatLabMetrics(analysis)}</div>
+        </div>
+    `;
+    grid.appendChild(item);
+
+    if(!window.labInterval) {
+        window.labInterval = setInterval(() => {
+            if(activeMode === 'lab') {
+                syncLabEnvironment();
+                const active = getSelectedLabSpecies();
+                const growth = lab.calculateGrowth(active);
+                const fill = document.getElementById('fill-active');
+                const stat = document.getElementById('stat-active');
+                const detail = document.getElementById('lab-detail');
+                if(fill) {
+                    fill.style.width = (growth.score * 100) + '%';
+                    fill.style.background = growth.score > 0.5 ? 'var(--accent)' : 'var(--rose)';
+                }
+                if(stat) stat.innerText = `Vitality: ${(growth.score * 100).toFixed(0)}%`;
+                const metrics = document.getElementById('lab-metrics');
+                if(metrics) metrics.innerHTML = formatLabMetrics(growth);
+                if(detail) detail.innerHTML = `Stage: ${growth.stage}<br>Limiting factor: ${growth.limitingFactor}<br>Ideal temp: ${growth.traits.idealTemp}°C · Water need: ${(growth.traits.waterNeed * 100).toFixed(0)}%`;
+            }
+        }, 1000);
+    }
+}
+
+function formatLabMetrics(analysis) {
+    const c = analysis.components;
+    return `
+      <div class="metric"><b>Photosynthesis</b>${(c.photosynthesis * 100).toFixed(1)}%</div>
+      <div class="metric"><b>Resource fit</b>${(c.resourceFit * 100).toFixed(1)}%</div>
+      <div class="metric"><b>Respiration</b>${(c.respiration * 100).toFixed(1)}%</div>
+      <div class="metric"><b>Stress load</b>${(c.stressLoad * 100).toFixed(1)}%</div>
+      <div class="metric"><b>Temperature fit</b>${(c.tempFit * 100).toFixed(1)}%</div>
+      <div class="metric"><b>Water fit</b>${(c.waterFit * 100).toFixed(1)}%</div>
+    `;
+}
+
+window.onload = init;
+</script>
+</body>
+</html>

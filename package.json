@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node tools/static-server.js",
+    "test": "playwright test tests/unified_simulators.spec.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}
