@@ -5,12 +5,16 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package files
+# Copy package files
 COPY package.json package-lock.json* ./
+
+# Copy tools directory explicitly to ensure it is included in the image
+COPY tools ./tools
 
 # Install dependencies
 RUN npm install
 
-# Copy application files
+# Copy remaining application files
 COPY . .
 
 # Expose port 7860 (default for Hugging Face Spaces)
