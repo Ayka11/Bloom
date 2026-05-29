@@ -103,13 +103,27 @@ class ConvergentLawDetector {
 // on a lat/lon projection — blended on top of the V3 planet canvas.
 
 class AwarenessFieldRenderer {
-    constructor(W = 128, H = 64) {
+    constructor(W = 160, H = 80) {
         this.W = W; this.H = H;
         const n = W * H;
         this.u = new Float32Array(n).fill(1);
         this.v = new Float32Array(n).fill(0);
         this.canvas = document.createElement('canvas');
         this.canvas.width = W; this.canvas.height = H;
+        this._age = 0;
+        // Pre-seed with random consciousness hotspots so something is visible immediately
+        const seeds = [[0,-60,0.8],[20,10,0.6],[30,80,0.5],[-15,145,0.4],[40,-100,0.55],[50,10,0.6]];
+        seeds.forEach(([lat,lon,s]) => {
+            const x = Math.round(((lon+180)/360)*W);
+            const y = Math.round(((90-lat)/180)*H);
+            const r = 4;
+            for (let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++) {
+                const fx=((x+dx+W)%W), fy=Math.max(0,Math.min(H-1,y+dy));
+                this.v[fy*W+fx]=Math.min(1,this.v[fy*W+fx]+s*Math.exp(-(dx*dx+dy*dy)/(r*r)));
+            }
+        });
+        // Warm up field
+        for (let i = 0; i < 60; i++) this.step(0.035, 0.060, 1);
     }
 
     seed(hotspots) {
@@ -149,21 +163,32 @@ class AwarenessFieldRenderer {
         }
     }
 
-    toCanvas(hue = 240, alpha = 0.35) {
-        const { W, H, v, canvas } = this;
+    toCanvas(hue = 260, alpha = 0.5) {
+        const { W, H, u, v, canvas } = this;
+        this._age++;
         const ctx = canvas.getContext('2d');
         const img = ctx.createImageData(W, H);
+        // Hue → RGB helper (0-360)
+        const hsl2rgb = (h, s, l) => {
+            s /= 100; l /= 100;
+            const k = n => (n + h/30) % 12;
+            const a = s * Math.min(l, 1-l);
+            const f = n => l - a * Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+            return [Math.round(f(0)*255), Math.round(f(8)*255), Math.round(f(4)*255)];
+        };
         for (let i = 0; i < W*H; i++) {
-            const t = Math.min(1, v[i]*2);
-            const a = Math.floor(t * 255 * alpha * 3);
-            // Simple hue → RGB for awareness tint
-            const r = Math.round(Math.sin(hue/60)*128+100);
-            const g = Math.round(Math.sin((hue-120)/60)*80+60);
-            const b = Math.round(Math.sin((hue-240)/60)*200+180);
-            img.data[i*4]   = Math.min(255,Math.max(0,r));
-            img.data[i*4+1] = Math.min(255,Math.max(0,g));
-            img.data[i*4+2] = Math.min(255,Math.max(0,b));
-            img.data[i*4+3] = Math.min(255, a);
+            const act = Math.min(1, v[i] * 2.5);  // activator field intensity
+            const inh = Math.min(1, (1 - u[i]) * 3); // inhibitor complement
+            if (act < 0.02) { img.data[i*4+3] = 0; continue; }
+            // Shift hue based on field value — creates multi-color patterns
+            const h = (hue + act * 60 + inh * 30) % 360;
+            const s = 80 + act * 20;
+            const l = 35 + act * 30;
+            const [r, g, b] = hsl2rgb(h, s, l);
+            img.data[i*4]   = r;
+            img.data[i*4+1] = g;
+            img.data[i*4+2] = b;
+            img.data[i*4+3] = Math.min(255, Math.round(act * 255 * alpha * 2.2));
         }
         ctx.putImageData(img, 0, 0);
         return canvas;

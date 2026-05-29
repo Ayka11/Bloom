@@ -1,17 +1,20 @@
 ---
-title: Bloom — Universal Life Intelligence Platform
-emoji: 🌍
+title: Bloom — Complete Botanical Companion
+emoji: 🌿
 colorFrom: green
-colorTo: blue
+colorTo: teal
 sdk: docker
 app_port: 7860
 pinned: true
 license: mit
+short_description: 1,460+ species across 29 plant families — botanical encyclopedia + planetary biosphere + 9-version simulation engine.
 ---
 
-# Bloom — Universal Life Intelligence Platform
+# Bloom — Complete Botanical Companion
 
-Bloom is a browser-based simulation spanning nine versions: from a hand-curated botanical encyclopedia to a self-modifying autonomous reality engine. Plants evolve, climates change, oceans acidify, civilisations rise, parallel universes diverge, consciousness emerges, and the simulation rewrites its own equations — all in real time, all in a single HTML page served by a Node.js static server.
+**1,460+ botanical species · 29 plant families · 9 simulation versions**
+
+Bloom is a browser-based platform combining a complete botanical encyclopedia with a multi-layer planetary simulation. Browse **46 hand-illustrated species** across **29 plant families** (Rosaceae to Passifloraceae), explore **1,404 procedural taxonomy entries**, then dive into a living Earth biosphere, parallel universes, and a simulation that rewrites its own physical laws — all in a single HTML page served by a zero-dependency Node.js server.
 
 ---
 
@@ -19,7 +22,7 @@ Bloom is a browser-based simulation spanning nine versions: from a hand-curated 
 
 | Version | Name | Core concept | Status |
 |---------|------|--------------|--------|
-| **V1** | Botanical Encyclopedia | 130+ curated species, SVG illustrations, care guides | ✅ Live |
+| **V1** | Botanical Encyclopedia | 46 curated + 1,404 procedural species, 29 families, SVG illustrations | ✅ Live |
 | **V2** | Ecosystem Simulator | Genome engine, pollination network, knowledge graph | ✅ Live |
 | **V3** | Earth Biosphere OS | Full planetary simulation, 72 climate cells, Claude AI agents | ✅ Live |
 | **V4** | Morphogenesis Lab | Genome → reaction-diffusion → Bezier petal → L-system pipeline | ✅ Live |
@@ -409,45 +412,96 @@ Four Claude-powered agents analyse the live simulation. Each query includes the 
 
 ## Species Library
 
-### V1 — 31 Curated Species
+### Botanical Library — 1,460+ Species across 30 Plant Families
 
-| # | Common Name | Latin Name | Family | Climate |
-|---|-------------|-----------|--------|---------|
-| 1 | Rose | *Rosa damascena* | Rosaceae | Temperate |
-| 2 | Lavender | *Lavandula angustifolia* | Lamiaceae | Mediterranean |
-| 3 | Lotus | *Nelumbo nucifera* | Nelumbonaceae | Tropical |
-| 4 | Orchid | *Phalaenopsis amabilis* | Orchidaceae | Tropical |
-| 5 | Aloe Vera | *Aloe barbadensis* | Asphodelaceae | Arid |
-| 6 | Ranunculus | *Ranunculus asiaticus* | Ranunculaceae | Mediterranean |
-| 7 | Nasturtium | *Tropaeolum majus* | Tropaeolaceae | Subtropical |
-| 8 | Bleeding Heart | *Lamprocapnos spectabilis* | Papaveraceae | Temperate |
-| 9 | Edelweiss | *Leontopodium nivale* | Asteraceae | Alpine |
-| 10 | Plumeria | *Plumeria rubra* | Apocynaceae | Tropical |
-| 11 | Water Hyacinth | *Eichhornia crassipes* | Pontederiaceae | Tropical |
-| 12 | Sunflower | *Helianthus annuus* | Asteraceae | Temperate |
-| 13 | Iris | *Iris germanica* | Iridaceae | Mediterranean |
-| 14 | Dahlia | *Dahlia pinnata* | Asteraceae | Subtropical |
-| 15 | Hibiscus | *Hibiscus rosa-sinensis* | Malvaceae | Tropical |
-| 16 | Delphinium | *Delphinium elatum* | Ranunculaceae | Temperate |
-| 17 | Chrysanthemum | *Chrysanthemum morifolium* | Asteraceae | Temperate |
-| 18 | Passionflower | *Passiflora incarnata* | Passifloraceae | Subtropical |
-| 19 | Lupine | *Lupinus polyphyllus* | Fabaceae | Temperate |
-| 20 | Magnolia | *Magnolia grandiflora* | Magnoliaceae | Subtropical |
-| 21 | Crocus | *Crocus sativus* | Iridaceae | Mediterranean |
-| 22 | Jasmine | *Jasminum officinale* | Oleaceae | Subtropical |
-| 23 | Gypsophila | *Gypsophila paniculata* | Caryophyllaceae | Temperate |
-| 24 | Anemone | *Anemone coronaria* | Ranunculaceae | Mediterranean |
-| 25 | Agapanthus | *Agapanthus africanus* | Amaryllidaceae | Subtropical |
-| 26 | Echinacea | *Echinacea purpurea* | Asteraceae | Temperate |
-| 27 | Fritillary | *Fritillaria imperialis* | Liliaceae | Temperate |
-| 28 | Calendula | *Calendula officinalis* | Asteraceae | Mediterranean |
-| 29 | Acacia | *Acacia dealbata* | Fabaceae | Subtropical |
-| 30 | Dianthus | *Dianthus caryophyllus* | Caryophyllaceae | Mediterranean |
-| 31 | Salvia | *Salvia officinalis* | Lamiaceae | Mediterranean |
+The library combines **46 hand-curated illustrated species** (with SVG artwork, care guides, medicinal facts, and seasonal data) and **1,404 procedural taxonomy entries** (covering 702 genus/category pairs).
 
-### Taxonomy Library — 1,404 Procedural Species
+**30 plant families represented** — browsable via the **Plant Family** filter toggle:
 
-Trimmed from 10,000 to 1,404 entries (680 KB vs 4.8 MB original). Keeps 2 representative entries per genus/category combination, covering all 702 unique genus/category pairs across 20+ families (Rosaceae, Asteraceae, Orchidaceae, Fabaceae, Lamiaceae, Solanaceae, Iridaceae, Amaryllidaceae, Liliaceae, Malvaceae…) and all categories (succulent, wild, garden, herbal, aquatic, alpine, tropical).
+| # | Family | Representative genera | Lifestyle |
+|---|--------|-----------------------|-----------|
+| 1 | **Rosaceae** | Rosa, Prunus, Potentilla, Fragaria | Garden/Wild |
+| 2 | **Asteraceae** | Helianthus, Dahlia, Echinacea, Calendula, Zinnia | Garden/Wild/Herbal |
+| 3 | **Fabaceae** | Lupinus, Acacia, Wisteria, Trifolium | Wild/Garden |
+| 4 | **Orchidaceae** | Phalaenopsis, Dendrobium, Cattleya, Vanda | Tropical |
+| 5 | **Lamiaceae** | Lavandula, Salvia, Mentha, Thymus | Herbal |
+| 6 | **Solanaceae** | Solanum, Petunia, Nicotiana, Datura | Garden/Wild |
+| 7 | **Ranunculaceae** | Ranunculus, Anemone, Delphinium, Helleborus | Garden/Wild |
+| 8 | **Iridaceae** | Iris, Crocus, Freesia, Gladiolus | Garden/Wild |
+| 9 | **Amaryllidaceae** | Galanthus, Narcissus, Allium, Hyacinthoides | Garden/Wild |
+| 10 | **Malvaceae** | Hibiscus, Alcea, Malva | Tropical/Garden |
+| 11 | **Liliaceae** | Lilium, Tulipa, Fritillaria | Garden |
+| 12 | **Brassicaceae** | Arabis, Iberis, Lunaria | Wild/Garden |
+| 13 | **Apiaceae** | Anthriscus, Daucus, Foeniculum | Herbal/Wild |
+| 14 | **Cactaceae** | Echinocereus, Echinopsis, Carnegiea | Succulent |
+| 15 | **Crassulaceae** | Sedum, Echeveria, Sempervivum | Succulent |
+| 16 | **Araceae** | Anthurium, Zantedeschia, Spathiphyllum | Tropical |
+| 17 | **Ericaceae** | Rhododendron, Calluna, Vaccinium | Wild/Alpine |
+| 18 | **Oleaceae** | Jasminum, Forsythia, Syringa | Garden/Herbal |
+| 19 | **Bromeliaceae** | Ananas, Tillandsia, Guzmania | Tropical |
+| 20 | **Caryophyllaceae** | Dianthus, Gypsophila, Lychnis | Garden |
+| 21 | **Papaveraceae** | Papaver, Meconopsis, Lamprocapnos | Wild |
+| 22 | **Apocynaceae** | Vinca, Nerium, Plumeria | Tropical/Garden |
+| 23 | **Hydrangeaceae** | Hydrangea | Garden |
+| 24 | **Magnoliaceae** | Magnolia, Liriodendron | Garden/Wild |
+| 25 | **Campanulaceae** | Campanula, Lobelia | Garden/Wild |
+| 26 | **Asparagaceae** | Hyacinthus, Convallaria, Asparagus | Garden |
+| 27 | **Nelumbonaceae** | Nelumbo | Aquatic |
+| 28 | **Asphodelaceae** | Aloe | Succulent |
+| 29 | **Passifloraceae** | Passiflora | Wild/Tropical |
+| 30 | **Nymphaeaceae** | Nymphaea | Aquatic |
+
+Filter by **Habitat** (Garden / Herbal / Wild / Tropical / Aquatic / Succulent / Alpine) or by **Plant Family** — toggle between modes with the Habitat / Plant Family buttons above the grid.
+
+---
+
+## Deploy to Hugging Face Spaces
+
+### Quick Deploy (Upload Files)
+
+1. Go to [huggingface.co/new-space](https://huggingface.co/new-space)
+2. Choose **Docker** as the SDK
+3. Upload every file from this directory (use the Files tab → "Add file" → "Upload files")
+4. HF Spaces auto-detects `Dockerfile` and builds the container — deployment takes ~2 minutes
+
+### Deploy via Git
+
+```bash
+git clone https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME
+# Copy all project files into the cloned repo
+cp -r Bloom-feature-pollination-simulator-*/* YOUR_SPACE_NAME/
+cd YOUR_SPACE_NAME
+git add .
+git commit -m "Deploy Bloom simulator"
+git push
+```
+
+### What the Dockerfile does
+
+```dockerfile
+FROM node:20-alpine     # Minimal Node.js image (~100 MB)
+WORKDIR /app
+COPY . .                # Copy all static files
+EXPOSE 7860             # HF Spaces standard port
+ENV PORT=7860
+CMD ["node", "static-server.js"]   # Zero-dependency static server
+```
+
+No `npm install` needed — the app has zero runtime dependencies.
+
+### Files to deploy
+
+All files in this directory. The critical ones:
+
+| File | Purpose |
+|------|---------|
+| `Dockerfile` | Container build spec |
+| `static-server.js` | Node.js server (port 7860, host 0.0.0.0) |
+| `index.html` | Complete application |
+| `bloom-data.js` | 30 curated species |
+| `taxonomy-data.js` | 1,404 procedural species (680 KB) |
+| `bloom-*.js` | Simulation engines V2–V9 |
+| `bloom-style.css` | Stylesheet |
 
 ---
 
@@ -472,7 +526,7 @@ Trimmed from 10,000 to 1,404 entries (680 KB vs 4.8 MB original). Keeps 2 repres
 | File | Size | Purpose |
 |------|------|---------|
 | `index.html` | ~330 KB | Complete app shell + all UI sections V1–V9 |
-| `bloom-data.js` | 60 KB | V1 curated species with SVGs |
+| `bloom-data.js` | 60 KB | V1 — 30 curated species with SVGs across 17 families |
 | `taxonomy-data.js` | 680 KB | V1/V2 procedural species library |
 | `bloom-app.js` | 12 KB | V1 UI: filters, search, modals, favourites |
 | `bloom-simulator.js` | 8 KB | V1 basic climate + soil engine |

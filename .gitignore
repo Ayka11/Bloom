@@ -1,10 +1,5 @@
-node_modules/
+.edge-profile/
 *.log
-server.log
-*.png
-*.jpg
-*.jpeg
-*.gif
-verify_pollination.py
-.DS_Store
-Thumbs.db
+node_modules/
+*.py
+pollination_verification.png

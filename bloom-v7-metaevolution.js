@@ -459,15 +459,44 @@ class V7Engine {
     getDimGenes()        { return this.dimGenes; }
 
     renderDimFlower(canvas, genome) {
-        if (!genome) return;
         const { MorphologyInterpreter } = window.BloomV4 || {};
-        if (!MorphologyInterpreter) return;
-        const params = new MorphologyInterpreter(genome).interpret();
         const ctx = canvas.getContext('2d');
         const W = canvas.width, H = canvas.height;
         ctx.clearRect(0, 0, W, H);
-        ctx.fillStyle = '#080f09'; ctx.fillRect(0, 0, W, H);
+        // Background — deep botanical dark
+        const bg = ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
+        bg.addColorStop(0,'#0c1a0e'); bg.addColorStop(1,'#050c07');
+        ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+        if (!genome || !MorphologyInterpreter) {
+            // Show placeholder with animated glyph to indicate it's waiting
+            const t = (this.tick || 0) * 0.04;
+            ctx.strokeStyle = `rgba(100,180,100,${0.2 + Math.sin(t)*0.1})`;
+            ctx.lineWidth = 1;
+            for (let i=0;i<6;i++) {
+                const a = (i/6)*Math.PI*2 + t;
+                const r = Math.min(W,H)*0.30;
+                ctx.beginPath();
+                ctx.moveTo(W/2,H/2);
+                ctx.lineTo(W/2+Math.cos(a)*r, H/2+Math.sin(a)*r*0.85);
+                ctx.stroke();
+            }
+            ctx.fillStyle='rgba(100,180,100,0.5)'; ctx.font='11px Jost,sans-serif';
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText('Generate a genome in V4 to render', W/2, H/2+50);
+            ctx.fillText('Dimensional Morphogenesis', W/2, H/2+64);
+            return;
+        }
+        const params = new MorphologyInterpreter(genome).interpret();
         DimensionalMorphogenesis.render(ctx, W/2, H/2, Math.min(W,H)*0.38, params, this.dimGenes);
+
+        // Label overlay
+        ctx.fillStyle='rgba(160,120,60,0.5)'; ctx.font='9px monospace';
+        ctx.textAlign='left'; ctx.textBaseline='top';
+        const geneNames=['Warp','Drift','Fractal','Mirror','Wave'];
+        this.dimGenes.forEach((v,i)=>{
+            ctx.fillText(`${geneNames[i]}: ${v.toFixed(2)}`, 6, 6+i*12);
+        });
     }
 
     exportState() {

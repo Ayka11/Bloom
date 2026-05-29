@@ -10,35 +10,41 @@
 // ─── REALISTIC EARTH PALETTE ─────────────────────────────────────────────────
 
 const V3_PALETTE = {
-    // Ocean: deep navy at poles, vivid blue-cyan at tropics
-    ocean_deep_cold: '#06193a',
-    ocean_cold:      '#0b2d6e',
-    ocean_mid:       '#1155a8',
-    ocean_tropical:  '#0e7ac4',
-    ocean_shallow:   '#1c9ed6',
-    // Land biomes — photorealistic satellite tones
-    ice:             '#e8f4ff',
-    ice_glow:        '#c8e0ff',
-    tundra:          '#a0b090',
-    boreal:          '#2a6035',
-    temperate:       '#4a8c3f',
-    tropical:        '#1a7a2a',
-    savanna:         '#b8952a',
-    desert:          '#d4a84a',
-    desert_rock:     '#b07840',
-    wetland:         '#2a8a60',
-    montane:         '#7a7a8a',
-    montane_snow:    '#d8dde8',
-    urban:           '#787880',
-    farmland:        '#a8a04a',
+    // Ocean: satellite-accurate deep-water color gradient
+    ocean_deep_cold: '#03122a',
+    ocean_cold:      '#082260',
+    ocean_mid:       '#0e4a9e',
+    ocean_tropical:  '#0a6ab8',
+    ocean_shallow:   '#1a90cc',
+    ocean_reef:      '#0ab8c0',
+    // Land biomes — NASA Blue Marble satellite tones
+    ice:             '#ecf4ff',
+    ice_glow:        '#d4eaff',
+    tundra:          '#8a9878',
+    boreal:          '#265530',
+    temperate:       '#3d7a34',
+    temperate_dry:   '#7aaa55',
+    tropical:        '#156820',
+    tropical_dense:  '#0a5018',
+    savanna:         '#b09028',
+    savanna_dry:     '#c8a840',
+    desert:          '#c8983a',
+    desert_rock:     '#a06830',
+    desert_sand:     '#d4b060',
+    wetland:         '#228850',
+    montane:         '#6a6a78',
+    montane_snow:    '#ccd4e0',
+    urban:           '#707078',
+    farmland:        '#9a9038',
+    arabia:          '#c4904a',
     // Health overlays
-    health_good:     'rgba(40,200,70,0.25)',
-    health_med:      'rgba(220,180,30,0.28)',
-    health_bad:      'rgba(210,60,40,0.30)',
-    // Atmosphere
-    atmo_inner:      'rgba(60,140,255,0.45)',
-    atmo_mid:        'rgba(40,100,220,0.22)',
-    atmo_outer:      'rgba(20,60,190,0)',
+    health_good:     'rgba(40,200,70,0.22)',
+    health_med:      'rgba(220,180,30,0.25)',
+    health_bad:      'rgba(210,60,40,0.28)',
+    // Atmosphere — realistic Rayleigh scattering
+    atmo_inner:      'rgba(55,135,255,0.48)',
+    atmo_mid:        'rgba(38,95,220,0.22)',
+    atmo_outer:      'rgba(18,55,190,0)',
 };
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -85,34 +91,67 @@ class PlanetRenderer {
             this._stars.push({ x: sx, y: sy, a: 0.25 + (Math.sin(i * 2.1) * 0.5 + 0.5) * 0.65, outside });
         }
 
-        // Earth landmasses — lon/lat polygon outlines (simplified but recognisable)
-        // Each point: [longitude°, latitude°] — converted to canvas at render time
-        // lon: -180→+180 (west→east), lat: -90→+90 (south→north)
+        // Earth landmasses — higher-density lon/lat polygon outlines for realism
+        // lon: -180→+180 (W→E), lat: -90→+90 (S→N)
         this._landmasses = [
-            // North America
+            // North America — more detailed coastal outline
             { name:'north_america', biome:'temperate',
-              pts:[[-168,71],[-140,70],[-90,72],[-60,63],[-52,47],[-66,44],[-82,29],[-90,20],[-104,19],[-120,23],[-118,34],[-124,48],[-168,59]] },
+              pts:[[-168,71],[-153,71],[-140,70],[-120,69],[-96,72],[-82,72],[-66,69],[-60,63],
+                   [-64,47],[-66,44],[-70,42],[-75,38],[-76,35],[-80,32],[-81,29],[-90,20],
+                   [-87,16],[-92,16],[-104,19],[-110,23],[-120,23],[-117,32],[-122,37],[-124,48],
+                   [-130,55],[-140,60],[-153,59],[-168,59],[-168,71]] },
             // Greenland
             { name:'greenland', biome:'tundra',
-              pts:[[-73,83],[-30,83],[-18,77],[-17,70],[-38,65],[-50,66],[-58,75],[-73,83]] },
-            // South America
+              pts:[[-73,83],[-55,83],[-30,83],[-18,77],[-17,70],[-22,68],[-30,65],[-38,65],
+                   [-44,63],[-50,66],[-58,75],[-68,80],[-73,83]] },
+            // South America — Amazon bulge and Andes coast
             { name:'south_america', biome:'tropical',
-              pts:[[-80,12],[-60,12],[-35,5],[-35,-10],[-50,-30],[-68,-55],[-75,-50],[-80,-40],[-80,-10],[-80,12]] },
-            // Europe
+              pts:[[-77,12],[-72,12],[-63,12],[-52,8],[-35,5],[-35,-5],[-38,-10],[-40,-22],
+                   [-48,-28],[-50,-30],[-52,-34],[-58,-38],[-65,-42],[-68,-55],[-74,-50],
+                   [-76,-45],[-80,-40],[-80,-28],[-80,-18],[-78,-8],[-77,0],[-77,12]] },
+            // Europe — Iberian, Italian, Scandinavian peninsulas
             { name:'europe', biome:'temperate',
-              pts:[[0,51],[15,60],[30,70],[28,65],[20,55],[25,45],[15,38],[5,36],[-10,36],[-8,44],[0,51]] },
-            // Africa
+              pts:[[-10,36],[-5,36],[5,36],[10,38],[15,38],[18,40],[15,44],[14,41],[16,38],
+                   [20,38],[22,38],[26,41],[28,42],[28,46],[26,49],[22,55],[18,59],[15,60],
+                   [20,64],[25,68],[28,71],[30,70],[32,65],[28,60],[28,56],[22,55],[20,54],
+                   [14,54],[9,55],[5,56],[3,53],[0,51],[-2,49],[-4,48],[-8,44],[-10,40],[-10,36]] },
+            // Africa — realistic horn, Congo basin outline
             { name:'africa', biome:'savanna',
-              pts:[[-18,15],[15,38],[38,37],[50,12],[43,-12],[35,-35],[18,-35],[12,-18],[8,4],[-18,15]] },
-            // Asia (main)
+              pts:[[-17,15],[-15,20],[-17,27],[-14,32],[0,37],[10,37],[15,38],[25,37],[32,31],
+                   [36,22],[43,12],[50,12],[51,8],[44,2],[41,-2],[40,-10],[36,-18],[34,-28],
+                   [28,-35],[22,-35],[17,-35],[12,-28],[10,-18],[8,-5],[8,4],[2,6],[-2,6],
+                   [-8,5],[-16,12],[-17,15]] },
+            // Asia — main continent, Arabian peninsula, Indian subcontinent, SE Asia
             { name:'asia', biome:'boreal',
-              pts:[[35,70],[80,73],[140,72],[168,64],[135,43],[120,22],[100,10],[80,10],[60,23],[45,38],[35,38],[28,44],[28,60],[35,70]] },
-            // Australia
+              pts:[[35,70],[62,72],[80,73],[100,73],[120,72],[140,72],[155,68],[163,64],[168,64],
+                   [160,58],[135,47],[135,43],[130,42],[122,38],[120,30],[122,22],[108,20],[100,10],
+                   [104,2],[110,-2],[108,-6],[116,-8],[126,4],[130,8],[136,12],[140,14],[144,13],
+                   [100,10],[95,16],[88,22],[80,28],[72,23],[62,22],[58,22],[57,26],[60,23],
+                   [56,26],[50,28],[45,29],[44,34],[38,37],[36,36],[35,38],[28,44],[28,60],
+                   [36,68],[35,70]] },
+            // Arabian Peninsula
+            { name:'arabia', biome:'desert',
+              pts:[[37,30],[43,14],[50,12],[57,22],[59,24],[56,26],[50,28],[44,34],[38,37],[36,36],[37,30]] },
+            // Indian Subcontinent
+            { name:'india', biome:'savanna',
+              pts:[[68,24],[73,19],[77,12],[80,10],[80,15],[82,22],[88,22],[92,24],[88,26],[80,28],[72,23],[68,24]] },
+            // SE Asia / Indochina
+            { name:'se_asia', biome:'tropical',
+              pts:[[100,20],[104,16],[108,12],[105,10],[100,2],[104,-2],[110,-6],[116,-8],[108,4],[104,4],[100,10],[96,16],[100,20]] },
+            // Australia — realistic Great Australian Bight
             { name:'australia', biome:'desert',
-              pts:[[114,-22],[122,-18],[136,-12],[142,-10],[148,-20],[154,-28],[148,-38],[138,-38],[128,-34],[114,-32],[114,-22]] },
-            // Antarctica
+              pts:[[114,-22],[120,-18],[126,-14],[132,-12],[136,-12],[140,-12],[142,-10],[145,-14],
+                   [148,-20],[151,-24],[154,-28],[153,-34],[148,-38],[142,-38],[138,-38],[132,-35],
+                   [128,-34],[120,-34],[116,-34],[114,-32],[113,-28],[114,-22]] },
+            // New Zealand (South Island)
+            { name:'nz', biome:'temperate',
+              pts:[[166,-46],[168,-44],[170,-42],[172,-42],[174,-44],[172,-46],[168,-46],[166,-46]] },
+            // Japan
+            { name:'japan', biome:'temperate',
+              pts:[[130,32],[132,34],[136,36],[140,38],[141,40],[140,43],[134,44],[130,43],[130,40],[130,32]] },
+            // Antarctica — solid southern cap
             { name:'antarctica', biome:'tundra',
-              pts:[[-180,-70],[0,-68],[180,-70],[180,-90],[-180,-90],[-180,-70]] },
+              pts:[[-180,-65],[0,-62],[60,-64],[120,-65],[180,-65],[180,-90],[-180,-90],[-180,-65]] },
         ];
     }
 
@@ -220,54 +259,91 @@ class PlanetRenderer {
         ctx.globalAlpha = 1;
     }
 
-    // ── Atmosphere halo — Rayleigh scattering glow ────────────────────────────
+    // ── Atmosphere halo — realistic multi-layer Rayleigh scattering glow ─────────
     _drawAtmosphereHalo(ctx, planetState) {
         const co2    = parseFloat(planetState?.climate?.atmosphere?.co2_ppm ?? 421);
-        const warmth = Math.min(1, (co2 - 280) / 600);
-        // Rayleigh: blue-dominant on the thin edge, shifts warmer with GHG loading
-        const haloR  = this.radius * 1.14;
+        const warmth = Math.min(1, (co2 - 280) / 700);
+        const temp   = parseFloat(planetState?.climate?.global_temp ?? 14);
+        // Halo radius: thicker atmosphere at higher CO2
+        const haloR  = this.radius * (1.13 + warmth * 0.04);
 
-        // Outer diffuse blue glow
-        const g = ctx.createRadialGradient(this.cx, this.cy, this.radius * 0.92, this.cx, this.cy, haloR);
-        g.addColorStop(0,    `rgba(80,160,255,${0.42 + warmth * 0.18})`);
-        g.addColorStop(0.35, `rgba(50,120,240,${0.22 + warmth * 0.10})`);
-        g.addColorStop(0.70, `rgba(30,80,200,${0.08})`);
-        g.addColorStop(1,    'rgba(10,30,120,0)');
-        ctx.beginPath();
-        ctx.arc(this.cx, this.cy, haloR, 0, Math.PI * 2);
-        ctx.fillStyle = g;
-        ctx.fill();
+        // Layer 1: Deep outer glow (scattered blue-violet)
+        const outerG = ctx.createRadialGradient(this.cx, this.cy, this.radius * 0.90, this.cx, this.cy, haloR * 1.08);
+        outerG.addColorStop(0,   `rgba(60,130,255,${0.35 + warmth * 0.12})`);
+        outerG.addColorStop(0.25,`rgba(40,100,230,${0.20 + warmth * 0.08})`);
+        outerG.addColorStop(0.60,`rgba(25,70,200,0.07)`);
+        outerG.addColorStop(1,   'rgba(10,30,140,0)');
+        ctx.beginPath(); ctx.arc(this.cx, this.cy, haloR * 1.08, 0, Math.PI * 2);
+        ctx.fillStyle = outerG; ctx.fill();
 
-        // Limb brightening: thin bright ring at planet edge
-        const limbG = ctx.createRadialGradient(this.cx, this.cy, this.radius * 0.96, this.cx, this.cy, this.radius * 1.04);
-        limbG.addColorStop(0,   'rgba(120,200,255,0)');
-        limbG.addColorStop(0.5, `rgba(100,180,255,${0.30 + warmth * 0.12})`);
-        limbG.addColorStop(1,   'rgba(60,120,220,0)');
-        ctx.beginPath();
-        ctx.arc(this.cx, this.cy, this.radius * 1.04, 0, Math.PI * 2);
-        ctx.fillStyle = limbG;
-        ctx.fill();
+        // Layer 2: Thin Rayleigh limb — bright cyan-blue ring exactly at planet edge
+        const limbR = this.radius * 1.005;
+        const limbG = ctx.createRadialGradient(this.cx, this.cy, limbR * 0.97, this.cx, this.cy, limbR * 1.055);
+        limbG.addColorStop(0,   'rgba(130,210,255,0)');
+        limbG.addColorStop(0.35,`rgba(100,190,255,${0.38 + warmth * 0.14})`);
+        limbG.addColorStop(0.65,`rgba(70,150,240,${0.22 + warmth * 0.08})`);
+        limbG.addColorStop(1,   'rgba(40,100,210,0)');
+        ctx.beginPath(); ctx.arc(this.cx, this.cy, limbR * 1.06, 0, Math.PI * 2);
+        ctx.fillStyle = limbG; ctx.fill();
+
+        // Layer 3: GHG haze — slight orange-brown tint at very high CO2
+        if (warmth > 0.3) {
+            const hazeG = ctx.createRadialGradient(this.cx, this.cy, this.radius * 0.94, this.cx, this.cy, this.radius * 1.06);
+            hazeG.addColorStop(0,   `rgba(220,160,40,${(warmth - 0.3) * 0.25})`);
+            hazeG.addColorStop(0.5, `rgba(180,100,20,${(warmth - 0.3) * 0.10})`);
+            hazeG.addColorStop(1,   'rgba(0,0,0,0)');
+            ctx.beginPath(); ctx.arc(this.cx, this.cy, this.radius * 1.06, 0, Math.PI * 2);
+            ctx.fillStyle = hazeG; ctx.fill();
+        }
     }
 
-    // ── Ocean base — realistic depth-based colouring ──────────────────────────
+    // ── Ocean base — realistic satellite-view depth-based colouring ─────────────
     _drawOceanBase(ctx, planetState) {
         const temp   = parseFloat(planetState?.climate?.global_temp ?? 14);
-        const warmth = Math.max(0, Math.min(1, (temp - 2) / 30));
+        const warmth = Math.max(0, Math.min(1, (temp - 1) / 32));
+        const ph     = parseFloat(planetState?.ocean?.surface_ph ?? 8.1);
+        // Acidification tints ocean slightly greener
+        const acidTint = Math.max(0, (8.2 - ph) / 0.8);
 
-        // Deep ocean gradient from polar dark blue to tropical teal
-        const g = ctx.createRadialGradient(
-            this.cx - this.radius * 0.05, this.cy - this.radius * 0.05, 0,
-            this.cx, this.cy, this.radius
-        );
-        // Pole-edge deep dark navy
-        g.addColorStop(0,   lerpColor(V3_PALETTE.ocean_mid,        V3_PALETTE.ocean_tropical,  warmth));
-        g.addColorStop(0.45,lerpColor(V3_PALETTE.ocean_cold,       V3_PALETTE.ocean_mid,        warmth));
-        g.addColorStop(0.75,lerpColor(V3_PALETTE.ocean_deep_cold,  V3_PALETTE.ocean_cold,       warmth * 0.6));
-        g.addColorStop(1,   V3_PALETTE.ocean_deep_cold);
-        ctx.fillStyle = g;
+        // Base fill — deep dark navy
         ctx.beginPath();
         ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = V3_PALETTE.ocean_deep_cold;
         ctx.fill();
+
+        // Tropical band overlay — vivid blue near equator
+        const tropG = ctx.createLinearGradient(this.cx, this.cy - this.radius, this.cx, this.cy + this.radius);
+        const tropMid   = lerpColor('#062260', '#0860b8', warmth);
+        const tropEquat = lerpColor('#0a4aa0', '#0a6ab4', warmth);
+        tropG.addColorStop(0,    V3_PALETTE.ocean_cold);
+        tropG.addColorStop(0.20, tropMid);
+        tropG.addColorStop(0.38, tropEquat);
+        tropG.addColorStop(0.50, lerpColor(V3_PALETTE.ocean_mid, V3_PALETTE.ocean_tropical, warmth));
+        tropG.addColorStop(0.62, tropEquat);
+        tropG.addColorStop(0.80, tropMid);
+        tropG.addColorStop(1,    V3_PALETTE.ocean_cold);
+        ctx.beginPath();
+        ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = tropG;
+        ctx.fill();
+
+        // Shallow coastal waters slightly lighter
+        const shallowG = ctx.createRadialGradient(this.cx, this.cy, this.radius * 0.88, this.cx, this.cy, this.radius);
+        shallowG.addColorStop(0,   'rgba(0,0,0,0)');
+        shallowG.addColorStop(0.6, 'rgba(10,80,140,0.08)');
+        shallowG.addColorStop(1,   `rgba(28,160,200,${0.05 + warmth * 0.06})`);
+        ctx.beginPath();
+        ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = shallowG;
+        ctx.fill();
+
+        // Ocean acidification tint — slight green-brown hue
+        if (acidTint > 0.05) {
+            ctx.beginPath();
+            ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(80,120,60,${acidTint * 0.12})`;
+            ctx.fill();
+        }
     }
 
     // ── Ocean sheen — subtle specular + current lines ─────────────────────────
@@ -301,73 +377,126 @@ class PlanetRenderer {
         }
     }
 
-    // ── Continents — orthographic-projected landmasses with climate tinting ────
+    // ── Continents — orthographic-projected landmasses with realistic per-biome coloring ──
     _drawContinents(ctx, planetState, biosphereState) {
         const biomass_Gt      = parseFloat(biosphereState?.flora_biomass_Gt ?? 450);
-        const greenness       = Math.min(1.3, biomass_Gt / 450);
+        const greenness       = Math.min(1.4, biomass_Gt / 440);
         const temp            = parseFloat(planetState?.climate?.global_temp ?? 14);
-        const desertification = Math.max(0, (temp - 16) * 0.04);
-        const iceFrac         = parseFloat(planetState?.climate?.ice_fraction ?? 3.5);
-        // In geological/planetary time, ice ages / hothouse alternations
-        const timeMode = this._timeMode || 'ecological';
-        const glacialTint = (timeMode === 'geological' || timeMode === 'planetary')
-            ? Math.abs(Math.sin(this.rotation * 0.002)) * 0.4 : 0;
+        const desertification = Math.max(0, (temp - 15.5) * 0.055);
+        const co2             = parseFloat(planetState?.climate?.atmosphere?.co2_ppm ?? 421);
+        const timeMode        = this._timeMode || 'ecological';
+        const glacialTint     = (timeMode === 'geological' || timeMode === 'planetary')
+            ? Math.abs(Math.sin(this.rotation * 0.0025)) * 0.45 : 0;
 
+        // Biome base colors — more realistic satellite palette
         const biomeColor = {
-            temperate: V3_PALETTE.temperate,
-            tropical:  V3_PALETTE.tropical,
-            savanna:   V3_PALETTE.savanna,
-            boreal:    V3_PALETTE.boreal,
-            tundra:    V3_PALETTE.tundra,
-            desert:    V3_PALETTE.desert,
-            wetland:   V3_PALETTE.wetland,
-            montane:   V3_PALETTE.montane,
+            temperate:  V3_PALETTE.temperate,
+            tropical:   V3_PALETTE.tropical,
+            savanna:    V3_PALETTE.savanna,
+            boreal:     V3_PALETTE.boreal,
+            tundra:     V3_PALETTE.tundra,
+            desert:     V3_PALETTE.desert,
+            wetland:    V3_PALETTE.wetland,
+            montane:    V3_PALETTE.montane,
+            arabia:     V3_PALETTE.arabia,
+        };
+        // Per-landmass color overrides for accuracy
+        const nameColor = {
+            north_america: V3_PALETTE.temperate,
+            south_america: V3_PALETTE.tropical_dense,
+            europe:        V3_PALETTE.temperate,
+            africa:        V3_PALETTE.savanna,
+            asia:          V3_PALETTE.boreal,
+            arabia:        V3_PALETTE.desert_sand,
+            india:         V3_PALETTE.savanna_dry,
+            se_asia:       V3_PALETTE.tropical,
+            australia:     V3_PALETTE.desert_rock,
+            nz:            V3_PALETTE.temperate,
+            japan:         V3_PALETTE.temperate,
+            greenland:     V3_PALETTE.tundra,
+            antarctica:    V3_PALETTE.ice,
         };
 
         this._landmasses.forEach(land => {
             const projected = land.pts.map(([lon, lat]) => this._project(lon, lat));
             const visiblePts = projected.filter(p => p.visible);
-            if (visiblePts.length === 0) return;
+            if (visiblePts.length < 2) return;
 
             const avgFade = visiblePts.reduce((s, p) => s + p.fade, 0) / visiblePts.length;
-            if (avgFade < 0.01) return;
+            if (avgFade < 0.02) return;
 
             ctx.save();
-            ctx.globalAlpha = Math.min(0.97, avgFade * 1.15);
+            ctx.globalAlpha = Math.min(0.98, avgFade * 1.18);
 
+            // Build path — use moveTo at large z-gap to avoid wrap-around artifacts
             ctx.beginPath();
-            // Only connect consecutive visible points; lift pen at big visibility breaks
+            let started = false;
             projected.forEach((p, i) => {
-                if (i === 0) { ctx.moveTo(p.x, p.y); return; }
-                const prev = projected[i - 1];
-                // Skip edge if both points on far side
-                if (!p.visible && !prev.visible) return;
-                ctx.lineTo(p.x, p.y);
+                const prev = i > 0 ? projected[i-1] : null;
+                const bigGap = prev && Math.abs(p.x - prev.x) > this.radius * 0.8;
+                if (!started || bigGap) {
+                    ctx.moveTo(p.x, p.y);
+                    started = true;
+                } else {
+                    ctx.lineTo(p.x, p.y);
+                }
             });
             ctx.closePath();
 
-            ctx.fillStyle = biomeColor[land.biome] || V3_PALETTE.temperate;
+            // Base biome fill
+            const baseColor = nameColor[land.name] || biomeColor[land.biome] || V3_PALETTE.temperate;
+            ctx.fillStyle = baseColor;
             ctx.fill();
 
-            // Vegetation tint
-            if (land.biome !== 'desert' && land.biome !== 'tundra' && greenness > 0.3) {
-                ctx.fillStyle = `rgba(30,180,50,${Math.min(0.30, 0.10 * greenness - desertification * 0.04)})`;
-                ctx.fill();
+            // Realistic vegetation greening overlay (proportional to biomass)
+            const isVeg = land.biome !== 'desert' && land.biome !== 'tundra' &&
+                          land.name !== 'greenland' && land.name !== 'antarctica' &&
+                          land.name !== 'arabia';
+            if (isVeg && greenness > 0.25) {
+                const vegAlpha = Math.min(0.32, 0.08 * greenness - desertification * 0.05);
+                if (vegAlpha > 0) {
+                    ctx.fillStyle = `rgba(28,165,48,${vegAlpha})`;
+                    ctx.fill();
+                }
             }
-            // Desert heat tint from warming
-            if (desertification > 0.05 && (land.biome === 'savanna' || land.biome === 'desert')) {
-                ctx.fillStyle = `rgba(200,140,30,${desertification * 0.35})`;
-                ctx.fill();
+
+            // Desert expansion tint from warming
+            if (desertification > 0.04) {
+                const desertable = land.biome === 'savanna' || land.biome === 'desert' ||
+                                   land.name === 'africa' || land.name === 'arabia';
+                if (desertable) {
+                    ctx.fillStyle = `rgba(190,130,30,${desertification * 0.40})`;
+                    ctx.fill();
+                }
             }
-            // Glacial ice sheet overlay (geological time)
-            if (glacialTint > 0.05) {
-                ctx.fillStyle = `rgba(200,230,255,${glacialTint * avgFade})`;
+
+            // CO₂ greening bonus: elevated CO₂ slightly increases vegetation density
+            if (co2 > 400 && isVeg) {
+                const bonus = Math.min(0.08, (co2 - 400) / 5000);
+                ctx.fillStyle = `rgba(40,200,60,${bonus})`;
                 ctx.fill();
             }
 
-            // Terrain edge shadow for 3-D depth
-            ctx.strokeStyle = 'rgba(0,0,0,0.22)';
-            ctx.lineWidth   = 0.6;
+            // Geological ice age tint (glacial periods in deep-time modes)
+            if (glacialTint > 0.04) {
+                ctx.fillStyle = `rgba(200,228,255,${glacialTint * avgFade * 0.85})`;
+                ctx.fill();
+            }
+
+            // Terrain shading: subtle radial shadow to show 3-D spherical relief
+            const landGrad = ctx.createRadialGradient(
+                this.cx - this.radius * 0.15, this.cy - this.radius * 0.10, 0,
+                this.cx, this.cy, this.radius
+            );
+            landGrad.addColorStop(0,   'rgba(255,255,255,0.06)');
+            landGrad.addColorStop(0.5, 'rgba(0,0,0,0)');
+            landGrad.addColorStop(1,   'rgba(0,0,0,0.18)');
+            ctx.fillStyle = landGrad;
+            ctx.fill();
+
+            // Coast shadow line
+            ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+            ctx.lineWidth   = 0.7;
             ctx.stroke();
 
             ctx.restore();
@@ -549,97 +678,139 @@ class PlanetRenderer {
         ctx.restore();
     }
 
-    // ── Overlay heat-maps — latitude-graded, visually distinct per mode ──────
+    // ── Overlay heat-maps — latitude-graded, visually striking per mode ─────────
     _drawOverlayLayer(ctx, planetState, biosphereState, civilizationState) {
         if (this.overlayMode === 'none') return;
 
         ctx.save();
-        ctx.globalCompositeOperation = 'source-atop';
+
+        const fill = (style) => {
+            ctx.fillStyle = style;
+            ctx.beginPath();
+            ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+        };
 
         if (this.overlayMode === 'temperature') {
-            // Warm tropics → cool poles gradient, shifted by global temp
             const temp  = parseFloat(planetState?.climate?.global_temp ?? 14);
-            const shift = (temp - 14) / 20;   // positive = warmer, red band widens
-            // Vertical gradient: hot equator (red-orange) to cold poles (blue)
+            const anom  = parseFloat(planetState?.climate?.temp_anomaly ?? (temp - 14));
+            // Use anomaly to drive color intensity — cool-to-hot
+            const shift = Math.max(-0.5, Math.min(1, anom / 6));
+            // Vertical gradient: cold poles (blue) ↔ warm equator (orange-red)
             const g = ctx.createLinearGradient(this.cx, this.cy - this.radius, this.cx, this.cy + this.radius);
-            g.addColorStop(0,    `rgba(80,130,255,${0.32 + shift * 0.1})`);  // N pole — blue
-            g.addColorStop(0.25, `rgba(60,180,200,${0.20})`);                 // sub-arctic
-            g.addColorStop(0.50, `rgba(255,${Math.max(40,120-Math.round(shift*160))},0,${0.28 + shift * 0.18})`); // equator
-            g.addColorStop(0.75, `rgba(60,180,200,${0.20})`);
-            g.addColorStop(1,    `rgba(80,130,255,${0.32 + shift * 0.1})`);  // S pole
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
-            ctx.fill();
-
-        } else if (this.overlayMode === 'carbon') {
-            // CO₂ shown as a atmospheric orange-brown haze, stronger at mid-latitudes
-            const co2 = parseFloat(planetState?.climate?.atmosphere?.co2_ppm ?? 421);
-            const t   = Math.max(0, Math.min(1, (co2 - 280) / 520));
-            // Radial gradient — heavier at equatorial band, lighter at poles
-            const g = ctx.createRadialGradient(this.cx, this.cy, 0, this.cx, this.cy, this.radius);
-            g.addColorStop(0,    `rgba(255,140,0,${t * 0.35})`);
-            g.addColorStop(0.55, `rgba(200,90,0,${t * 0.28})`);
-            g.addColorStop(0.85, `rgba(120,50,0,${t * 0.15})`);
-            g.addColorStop(1,    'rgba(0,0,0,0)');
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
-            ctx.fill();
-            // Extra CO₂ ring at the top of atmosphere
-            if (t > 0.3) {
-                ctx.strokeStyle = `rgba(255,160,30,${t * 0.22})`;
-                ctx.lineWidth   = 4 * t;
-                ctx.beginPath();
-                ctx.arc(this.cx, this.cy, this.radius * 0.96, 0, Math.PI * 2);
+            const eqR = Math.min(255, 200 + Math.round(shift * 55));
+            const eqG = Math.max(20,  100 - Math.round(shift * 80));
+            g.addColorStop(0,    `rgba(40,90,255,${0.38 + shift * 0.08})`);   // N pole
+            g.addColorStop(0.18, `rgba(30,160,210,${0.25})`);                  // sub-arctic
+            g.addColorStop(0.32, `rgba(60,200,140,${0.18 + shift * 0.04})`);  // N temperate
+            g.addColorStop(0.50, `rgba(${eqR},${eqG},0,${0.38 + shift * 0.20})`); // equator
+            g.addColorStop(0.68, `rgba(60,200,140,${0.18 + shift * 0.04})`);  // S temperate
+            g.addColorStop(0.82, `rgba(30,160,210,${0.25})`);
+            g.addColorStop(1,    `rgba(40,90,255,${0.38 + shift * 0.08})`);   // S pole
+            fill(g);
+            // Anomaly ring — shows warming clearly
+            if (Math.abs(anom) > 0.5) {
+                const ringAlpha = Math.min(0.35, Math.abs(anom) / 8);
+                ctx.strokeStyle = anom > 0 ? `rgba(255,80,0,${ringAlpha})` : `rgba(80,140,255,${ringAlpha})`;
+                ctx.lineWidth   = 3;
+                ctx.beginPath(); ctx.arc(this.cx, this.cy, this.radius * 0.95, 0, Math.PI * 2);
                 ctx.stroke();
             }
 
-        } else if (this.overlayMode === 'civilization') {
-            // Human pressure: dense mid-latitude red band + bright city-region patches
-            const bdp = parseFloat(civilizationState?.civilization?.biodiversity_pressure ?? 65) / 100;
-            const pop = parseFloat(civilizationState?.civilization?.population_B ?? 8.1);
-            // Latitude band where population is concentrated (20–60° N/S)
+        } else if (this.overlayMode === 'carbon') {
+            const co2 = parseFloat(planetState?.climate?.atmosphere?.co2_ppm ?? 421);
+            const t   = Math.max(0, Math.min(1, (co2 - 280) / 600));
+            // Orange-brown atmospheric haze, brightest at mid-latitudes where emissions concentrate
             const g = ctx.createLinearGradient(this.cx, this.cy - this.radius, this.cx, this.cy + this.radius);
-            g.addColorStop(0,    `rgba(220,50,20,${bdp * 0.08})`);   // far N
-            g.addColorStop(0.22, `rgba(220,50,20,${bdp * 0.38})`);   // N temperate
-            g.addColorStop(0.35, `rgba(255,100,0,${bdp * 0.28})`);   // N tropical
-            g.addColorStop(0.50, `rgba(255,60,20,${bdp * 0.20})`);   // equator
-            g.addColorStop(0.65, `rgba(255,100,0,${bdp * 0.28})`);   // S tropical
-            g.addColorStop(0.78, `rgba(220,50,20,${bdp * 0.32})`);   // S temperate
-            g.addColorStop(1,    `rgba(220,50,20,${bdp * 0.08})`);   // far S
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
-            ctx.fill();
-            // Deforestation hot-spots (tropical belt flicker)
-            const defor = parseFloat(civilizationState?.civilization?.deforestation_rate ?? 0.01);
-            if (defor > 0.001) {
-                const flash = 0.08 + Math.abs(Math.sin(this.rotation * 4)) * 0.10;
-                ctx.fillStyle = `rgba(255,50,0,${flash * Math.min(1, defor * 50)})`;
-                // Tropical band ~15° lat
-                const trop  = this.cy + (15 / 90) * this.radius;
-                const bandH = (10 / 90) * this.radius;
-                ctx.fillRect(this.cx - this.radius, trop - bandH, this.radius * 2, bandH * 2);
+            g.addColorStop(0,    `rgba(200,120,30,${t * 0.18})`);   // N pole (lighter)
+            g.addColorStop(0.20, `rgba(240,140,20,${t * 0.32})`);   // N emissions belt
+            g.addColorStop(0.40, `rgba(255,100,0,${t * 0.26})`);    // N tropics
+            g.addColorStop(0.50, `rgba(200,80,0,${t * 0.22})`);     // equator
+            g.addColorStop(0.60, `rgba(255,100,0,${t * 0.26})`);    // S tropics
+            g.addColorStop(0.80, `rgba(220,130,30,${t * 0.28})`);   // S emissions
+            g.addColorStop(1,    `rgba(200,120,30,${t * 0.18})`);
+            fill(g);
+            // Atmospheric CO₂ band ring
+            if (t > 0.15) {
+                const ringW = 3 + t * 5;
+                const ringA = t * 0.28;
+                ctx.strokeStyle = `rgba(255,150,30,${ringA})`;
+                ctx.lineWidth   = ringW;
+                ctx.beginPath(); ctx.arc(this.cx, this.cy, this.radius * 0.965, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            // CH4 hotspots (permafrost at high latitudes)
+            const ch4 = parseFloat(planetState?.climate?.atmosphere?.methane_ppb ?? 1923);
+            if (ch4 > 1800) {
+                const ch4t = Math.min(1, (ch4 - 1800) / 1200);
+                // Arctic permafrost region
+                const permG = ctx.createRadialGradient(this.cx, this.cy - this.radius * 0.82, 0,
+                    this.cx, this.cy - this.radius * 0.82, this.radius * 0.28);
+                permG.addColorStop(0, `rgba(180,80,200,${ch4t * 0.40})`);
+                permG.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.beginPath(); ctx.arc(this.cx, this.cy - this.radius * 0.82, this.radius * 0.28, 0, Math.PI * 2);
+                ctx.fillStyle = permG; ctx.fill();
             }
 
-        } else {   // biosphere
-            // Soil/vegetation health: green (good) → yellow → red gradient
-            const soil    = parseFloat(biosphereState?.fungal?.soil_health ?? 0.75);
-            const biomass = parseFloat(biosphereState?.flora_biomass_Gt ?? 450);
-            const health  = Math.min(1, (soil * 0.6 + (biomass / 600) * 0.4));
-            // Color: vivid green for healthy, amber for stressed, crimson for failing
-            const r = health > 0.6 ? Math.round((1 - health) * 2 * 200) : 220;
-            const g2= health > 0.6 ? 200 : Math.round(health * 2 * 200);
-            const b2= 30;
-            const grd = ctx.createRadialGradient(this.cx, this.cy - this.radius * 0.1, 0, this.cx, this.cy, this.radius);
-            grd.addColorStop(0,    `rgba(${r},${g2},${b2},${0.08 + (1 - health) * 0.20})`);
-            grd.addColorStop(0.6,  `rgba(${r},${g2},${b2},${0.20 + (1 - health) * 0.15})`);
-            grd.addColorStop(1,    `rgba(${r},${g2},${b2},0.05)`);
-            ctx.fillStyle = grd;
-            ctx.beginPath();
-            ctx.arc(this.cx, this.cy, this.radius, 0, Math.PI * 2);
-            ctx.fill();
+        } else if (this.overlayMode === 'civilization') {
+            const bdp = parseFloat(civilizationState?.civilization?.biodiversity_pressure ?? 65) / 100;
+            const renew = parseFloat(civilizationState?.civilization?.renewable_pct ?? 20) / 100;
+            // Intensity inversely proportional to renewables — greener world = less pressure
+            const intensity = bdp * (1 - renew * 0.4);
+            const g = ctx.createLinearGradient(this.cx, this.cy - this.radius, this.cx, this.cy + this.radius);
+            g.addColorStop(0,    `rgba(200,40,10,${intensity * 0.06})`);  // far N
+            g.addColorStop(0.18, `rgba(230,60,10,${intensity * 0.42})`);  // N industrial belt
+            g.addColorStop(0.32, `rgba(255,90,0,${intensity * 0.34})`);   // N tropical
+            g.addColorStop(0.50, `rgba(220,50,10,${intensity * 0.22})`);  // equator
+            g.addColorStop(0.68, `rgba(255,90,0,${intensity * 0.34})`);   // S tropical
+            g.addColorStop(0.82, `rgba(220,60,20,${intensity * 0.36})`);  // S industrial
+            g.addColorStop(1,    `rgba(200,40,10,${intensity * 0.06})`);
+            fill(g);
+            // Deforestation hotspot — Amazon / Congo pulse
+            const defor = parseFloat(civilizationState?.civilization?.deforestation_rate ?? 0.01);
+            if (defor > 0.0005) {
+                const flash = 0.12 + Math.abs(Math.sin(this.rotation * 3.5)) * 0.14;
+                const deforAlpha = flash * Math.min(1, defor * 60);
+                // Amazon
+                const amazon = this._project(-62, -5);
+                if (amazon.visible) {
+                    ctx.fillStyle = `rgba(255,50,0,${deforAlpha})`;
+                    ctx.beginPath(); ctx.arc(amazon.x, amazon.y, this.radius * 0.12, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                // Congo
+                const congo = this._project(24, 0);
+                if (congo.visible) {
+                    ctx.fillStyle = `rgba(255,80,0,${deforAlpha * 0.7})`;
+                    ctx.beginPath(); ctx.arc(congo.x, congo.y, this.radius * 0.09, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+        } else {   // biosphere health
+            const soil    = parseFloat(biosphereState?.fungal?.soil_health   ?? 0.75);
+            const biomass = parseFloat(biosphereState?.flora_biomass_Gt      ?? 450);
+            const pollin  = parseFloat(biosphereState?.fauna?.pollinator_biomass_kg ?? 1e8) / 2e8;
+            const health  = Math.min(1, (soil * 0.45 + (biomass / 600) * 0.35 + Math.min(1, pollin) * 0.20));
+            // Vivid green (healthy) → amber (stressed) → crimson (failing)
+            let rC, gC;
+            if (health >= 0.6) { rC = Math.round((1 - health) * 2.5 * 220); gC = 210; }
+            else               { rC = 220; gC = Math.round(health * 1.67 * 210); }
+            const alpha1 = 0.10 + (1 - health) * 0.25;
+            const alpha2 = 0.22 + (1 - health) * 0.18;
+            const grd = ctx.createRadialGradient(this.cx, this.cy - this.radius * 0.05, 0, this.cx, this.cy, this.radius);
+            grd.addColorStop(0,   `rgba(${rC},${gC},28,${alpha1})`);
+            grd.addColorStop(0.55,`rgba(${rC},${gC},28,${alpha2})`);
+            grd.addColorStop(1,   `rgba(${rC},${gC},28,0.04)`);
+            fill(grd);
+            // Extra band over tropical forests if biomass is high
+            if (biomass > 480 && health > 0.6) {
+                const tropG = ctx.createLinearGradient(this.cx, this.cy - this.radius * 0.3, this.cx, this.cy + this.radius * 0.3);
+                tropG.addColorStop(0,   'rgba(20,220,60,0)');
+                tropG.addColorStop(0.5, `rgba(20,200,50,${Math.min(0.18, (biomass-480)/400)})`);
+                tropG.addColorStop(1,   'rgba(20,220,60,0)');
+                fill(tropG);
+            }
         }
 
         ctx.restore();

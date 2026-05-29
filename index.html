@@ -182,6 +182,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   <div class="logo">Bloom<sup>Botanical</sup></div>
   <div class="nav-links">
     <a href="#fotd">Flower of the Day</a>
+    <a href="#families">29 Families</a>
     <a href="#collection">Collection</a>
     <a href="#seasonal">Seasonal</a>
     <a href="#care">Care Tips</a>
@@ -208,13 +209,14 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   <div class="hero-floaters" id="hf"></div>
   <div class="hero-badge">🌿 Universal Life Intelligence Platform</div>
   <h1>Where <em>Life</em><br>Becomes Intelligence</h1>
-  <p class="hero-sub">Over 1,500 botanical species across 9 simulation layers — from illustrated care guides and medicinal herbs to planetary biospheres, parallel universes, and a simulation that rewrites its own equations.</p>
+  <p class="hero-sub">Over 1,460 botanical species across <strong style="color:var(--accent)">29 plant families</strong> — from hand-illustrated care guides and medicinal herbs to planetary biospheres, parallel universes, and a simulation that rewrites its own equations.</p>
   <div class="hero-ctas">
     <button class="btn-p" onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">Explore Collection</button>
     <button class="btn-g" onclick="document.getElementById('bloom-v3').scrollIntoView({behavior:'smooth'})">Launch Biosphere</button>
   </div>
   <div class="hero-stats">
-    <div><div class="stat-n" id="hero-stat-species">1,500+</div><div class="stat-l">Species</div></div>
+    <div><div class="stat-n" id="hero-stat-species">1,460+</div><div class="stat-l">Species</div></div>
+    <div><div class="stat-n">29</div><div class="stat-l">Plant Families</div></div>
     <div><div class="stat-n" id="hero-stat-versions">9</div><div class="stat-l">Sim Versions</div></div>
     <div><div class="stat-n" id="hero-stat-facts">500+</div><div class="stat-l">Fun Facts</div></div>
   </div>
@@ -234,6 +236,192 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
     </div>
   </div>
 </section>
+
+<style>
+/* ── Plant Families Showcase ── */
+#families {
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 5rem 2.5rem 2rem;
+}
+.fam-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 2rem;
+}
+.fam-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px 12px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.fam-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--fam-color, #9fd878) 0%, transparent 60%);
+  opacity: .06;
+  transition: opacity .2s;
+}
+.fam-card:hover { border-color: var(--fam-color, var(--accent)); transform: translateY(-2px); }
+.fam-card:hover::before { opacity: .13; }
+.fam-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--fam-color, var(--accent2));
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+.fam-latin {
+  font-size: .65rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 7px;
+}
+.fam-species {
+  font-size: .72rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.fam-count {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: .6rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--fam-color, var(--accent));
+  opacity: .7;
+}
+.fam-icon {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+  display: block;
+}
+@media(max-width:760px){ .fam-grid { grid-template-columns: repeat(2,1fr); gap:8px; } }
+</style>
+
+<section id="families">
+  <div class="sec-label">Taxonomy</div>
+  <h2 class="sec-title">29 Plant <em>Families</em></h2>
+  <p class="sec-sub" style="max-width:620px;">From ancient Magnoliaceae to hyper-diverse Asteraceae — every botanical family is filterable, searchable, and linked to real species in the library. Click any family to browse its members.</p>
+  <div class="fam-grid" id="fam-grid"></div>
+</section>
+
+<script>
+(function(){
+const FAM_DATA = [
+  { key:'rosaceae',       label:'Rose Family',       latin:'Rosaceae',        icon:'🌹', color:'#e8709a',
+    count:192, species:'Rosa · Prunus · Potentilla · Fragaria · Spiraea · Rubus',
+    desc:'The family of roses, cherries, apples, and strawberries. Over 4,800 species worldwide.' },
+  { key:'asteraceae',     label:'Daisy Family',      latin:'Asteraceae',      icon:'🌼', color:'#f5c430',
+    count:192, species:'Helianthus · Dahlia · Echinacea · Calendula · Zinnia · Tagetes',
+    desc:'Largest flowering plant family with 32,000+ species. Each "flower" is actually dozens of florets.' },
+  { key:'fabaceae',       label:'Legume Family',     latin:'Fabaceae',        icon:'🌿', color:'#7abf5e',
+    count:168, species:'Lupinus · Acacia · Wisteria · Trifolium · Glycine · Cercis',
+    desc:'Nitrogen-fixing powerhouses: peas, beans, acacias, and wisterias. ~19,500 species.' },
+  { key:'orchidaceae',    label:'Orchid Family',     latin:'Orchidaceae',     icon:'💜', color:'#b07ee8',
+    count:144, species:'Phalaenopsis · Dendrobium · Cattleya · Oncidium · Vanda · Cymbidium',
+    desc:'Largest plant family by species count: 28,000+ species on every continent except Antarctica.' },
+  { key:'lamiaceae',      label:'Mint Family',       latin:'Lamiaceae',       icon:'🌿', color:'#5ec8a0',
+    count:144, species:'Lavandula · Salvia · Mentha · Thymus · Rosmarinus · Ocimum',
+    desc:'Aromatic herbs and ornamentals. Square stems and opposite leaves are the family hallmark.' },
+  { key:'solanaceae',     label:'Nightshade Family', latin:'Solanaceae',      icon:'🍅', color:'#ff7c4a',
+    count:144, species:'Solanum · Petunia · Nicotiana · Datura · Atropa · Capsicum',
+    desc:'From deadly nightshade to garden petunias and tomatoes. 2,700 species with potent alkaloids.' },
+  { key:'ranunculaceae',  label:'Buttercup Family',  latin:'Ranunculaceae',   icon:'🌺', color:'#f0a030',
+    count:120, species:'Ranunculus · Anemone · Delphinium · Helleborus · Clematis · Aquilegia',
+    desc:'Ancient family of 2,500 species. Many contain toxic alkaloids; all beloved by gardeners.' },
+  { key:'iridaceae',      label:'Iris Family',       latin:'Iridaceae',       icon:'💙', color:'#6080e0',
+    count:120, species:'Iris · Crocus · Freesia · Gladiolus · Sisyrinchium',
+    desc:'2,000 species of bulbs and corms. The family name comes from Iris, Greek goddess of the rainbow.' },
+  { key:'amaryllidaceae', label:'Amaryllis Family',  latin:'Amaryllidaceae',  icon:'🤍', color:'#d4eaa0',
+    count:120, species:'Galanthus · Narcissus · Allium · Hippeastrum · Agapanthus · Hyacinthoides',
+    desc:'1,600 species including snowdrops, daffodils, and onions. Many contain toxic alkaloids.' },
+  { key:'malvaceae',      label:'Mallow Family',     latin:'Malvaceae',       icon:'🌺', color:'#e84040',
+    count:120, species:'Hibiscus · Alcea · Malva · Gossypium · Lavatera',
+    desc:'4,200 species including hibiscus, hollyhocks, and cotton. Distinctive staminal columns.' },
+  { key:'liliaceae',      label:'Lily Family',       latin:'Liliaceae',       icon:'🌸', color:'#f8b0d0',
+    count:96,  species:'Lilium · Tulipa · Fritillaria · Erythronium',
+    desc:'600 species of true lilies and tulips. Revised taxonomy removed many former members.' },
+  { key:'brassicaceae',   label:'Mustard Family',    latin:'Brassicaceae',    icon:'🌼', color:'#f0e040',
+    count:96,  species:'Arabis · Iberis · Lunaria · Alyssum · Matthiola',
+    desc:'4,000 species including cabbages, mustards, and many alpine flowers.' },
+  { key:'apiaceae',       label:'Carrot Family',     latin:'Apiaceae',        icon:'🌿', color:'#90c860',
+    count:96,  species:'Anthriscus · Daucus · Foeniculum · Eryngium · Astrantia',
+    desc:'Umbellifer family with hollow stems: carrots, fennel, cow parsley, and sea holly. 3,700 species.' },
+  { key:'cactaceae',      label:'Cactus Family',     latin:'Cactaceae',       icon:'🌵', color:'#58b870',
+    count:96,  species:'Echinocereus · Echinopsis · Carnegiea · Opuntia · Mammillaria',
+    desc:'1,750 species adapted to arid extremes. Native exclusively to the Americas (with one exception).' },
+  { key:'crassulaceae',   label:'Stonecrop Family',  latin:'Crassulaceae',    icon:'💚', color:'#70d890',
+    count:96,  species:'Sedum · Echeveria · Sempervivum · Kalanchoe · Crassula',
+    desc:'1,400 CAM-photosynthesis succulents built for drought. Rosette forms are iconic worldwide.' },
+  { key:'araceae',        label:'Arum Family',       latin:'Araceae',         icon:'🌿', color:'#40c890',
+    count:96,  species:'Anthurium · Zantedeschia · Philodendron · Spathiphyllum · Alocasia',
+    desc:'3,750 species of arums and aroids. Distinctive spathe-and-spadix flower structure.' },
+  { key:'ericaceae',      label:'Heath Family',      latin:'Ericaceae',       icon:'🌸', color:'#d890e0',
+    count:96,  species:'Rhododendron · Calluna · Erica · Vaccinium · Kalmia',
+    desc:'4,000 species of heathers, rhododendrons, and blueberries. Typically acid-soil specialists.' },
+  { key:'oleaceae',       label:'Olive Family',      latin:'Oleaceae',        icon:'🤍', color:'#e0f0c0',
+    count:96,  species:'Jasminum · Forsythia · Syringa · Ligustrum · Fraxinus',
+    desc:'700 species of olives, jasmines, lilacs, and ashes. Many with intensely fragrant flowers.' },
+  { key:'bromeliaceae',   label:'Bromeliad Family',  latin:'Bromeliaceae',    icon:'🍍', color:'#f0a840',
+    count:72,  species:'Ananas · Tillandsia · Guzmania · Vriesea · Billbergia',
+    desc:'3,400 species nearly all native to the Americas. Pineapple is the only edible member.' },
+  { key:'caryophyllaceae',label:'Pink Family',       latin:'Caryophyllaceae', icon:'🌸', color:'#f090b0',
+    count:72,  species:'Dianthus · Gypsophila · Lychnis · Silene · Saponaria',
+    desc:'2,600 species of pinks and carnations. Distinctive notched petals and swollen nodes.' },
+  { key:'papaveraceae',   label:'Poppy Family',      latin:'Papaveraceae',    icon:'🌺', color:'#e84030',
+    count:72,  species:'Papaver · Meconopsis · Lamprocapnos · Eschscholzia · Chelidonium',
+    desc:'800 species with milky or coloured latex. Includes iconic poppies and bleeding heart.' },
+  { key:'apocynaceae',    label:'Dogbane Family',    latin:'Apocynaceae',     icon:'🌸', color:'#f8c8a0',
+    count:72,  species:'Vinca · Nerium · Plumeria · Adenium · Allamanda · Catharanthus',
+    desc:'5,350 species including oleanders, plumerias, and the source of vincristine (cancer drug).' },
+  { key:'hydrangeaceae',  label:'Hydrangea Family',  latin:'Hydrangeaceae',   icon:'💙', color:'#90a8f0',
+    count:48,  species:'Hydrangea · Philadelphus · Deutzia',
+    desc:'260 species of hydrangeas and mock oranges. Flower colour shifts with soil pH in some species.' },
+  { key:'magnoliaceae',   label:'Magnolia Family',   latin:'Magnoliaceae',    icon:'🤍', color:'#f0e8d0',
+    count:48,  species:'Magnolia · Liriodendron · Michelia',
+    desc:'One of the most ancient flowering plant families — 300 species that predate bees by millions of years.' },
+  { key:'campanulaceae',  label:'Bellflower Family', latin:'Campanulaceae',   icon:'🔔', color:'#8090e0',
+    count:48,  species:'Campanula · Lobelia · Platycodon · Adenophora',
+    desc:'2,400 species of bellflowers and lobelias. Named for the bell-shaped campanula flowers.' },
+  { key:'asparagaceae',   label:'Asparagus Family',  latin:'Asparagaceae',    icon:'🌱', color:'#78c878',
+    count:48,  species:'Hyacinthus · Convallaria · Asparagus · Muscari · Scilla',
+    desc:'2,900 species after recent reorganisation absorbed former Hyacinthaceae into this family.' },
+  { key:'nelumbonaceae',  label:'Lotus Family',      latin:'Nelumbonaceae',   icon:'🪷', color:'#f0b0c8',
+    count:12,  species:'Nelumbo nucifera · Nelumbo lutea',
+    desc:'Just 2 species — the sacred lotus (Asia) and American lotus. Among the most isolated families.' },
+  { key:'asphodelaceae',  label:'Asphodel Family',   latin:'Asphodelaceae',   icon:'🌵', color:'#90d870',
+    count:24,  species:'Aloe · Kniphofia · Gasteria · Haworthia · Asphodelus',
+    desc:'800 species of aloes, red hot pokers, and asphodels — drought-adapted medicinal plants.' },
+  { key:'passifloraceae', label:'Passionflower Family',latin:'Passifloraceae',icon:'💜', color:'#c080e0',
+    count:24,  species:'Passiflora incarnata · Passiflora edulis · Passiflora caerulea',
+    desc:'700 species of climbing vines. Named by missionaries who saw Christian symbolism in the flowers.' },
+];
+
+const grid = document.getElementById('fam-grid');
+if (grid) {
+  grid.innerHTML = FAM_DATA.map(f => `
+    <div class="fam-card" style="--fam-color:${f.color}"
+         onclick="setFilterMode('family');setFilter('${f.key}');document.getElementById('collection').scrollIntoView({behavior:'smooth'})"
+         title="Browse ${f.label} species">
+      <span class="fam-count">${f.count} spp.</span>
+      <span class="fam-icon">${f.icon}</span>
+      <div class="fam-name">${f.label}</div>
+      <div class="fam-latin">${f.latin}</div>
+      <div class="fam-species">${f.species.split(' · ').slice(0,3).join(' · ')}</div>
+    </div>`).join('');
+}
+})();
+</script>
 
 <section id="collection">
   <div class="sec-label">The Collection</div>
@@ -2331,7 +2519,85 @@ const flowers = [
 <!-- 10,000 species from flowers_10000_taxonomy.json — merged into flowers[] -->
 <script src="taxonomy-data.js"></script>
 <script>
-const cats = ['all','herbal','garden','wild','tropical','aquatic','succulent','alpine'];
+// Lifestyle categories (original 8)
+const LIFESTYLE_CATS = ['all','herbal','garden','wild','tropical','aquatic','succulent','alpine'];
+
+// The 29 botanical plant families represented across the full species library
+const FAMILY_CATS = [
+  'rosaceae','asteraceae','fabaceae','orchidaceae','lamiaceae',
+  'solanaceae','ranunculaceae','iridaceae','amaryllidaceae','malvaceae',
+  'liliaceae','brassicaceae','apiaceae','cactaceae','crassulaceae',
+  'araceae','ericaceae','oleaceae','bromeliaceae','caryophyllaceae',
+  'papaveraceae','apocynaceae','hydrangeaceae','magnoliaceae','campanulaceae',
+  'asparagaceae','nelumbonaceae','asphodelaceae','passifloraceae',
+];
+
+// Genus → family lookup for taxonomy enrichment
+const GENUS_FAMILY = {
+  Rosa:'rosaceae',Prunus:'rosaceae',Malus:'rosaceae',Pyrus:'rosaceae',
+  Rubus:'rosaceae',Fragaria:'rosaceae',Spiraea:'rosaceae',Potentilla:'rosaceae',
+  Helianthus:'asteraceae',Bellis:'asteraceae',Chrysanthemum:'asteraceae',
+  Dahlia:'asteraceae',Calendula:'asteraceae',Tagetes:'asteraceae',
+  Zinnia:'asteraceae',Artemisia:'asteraceae',Aster:'asteraceae',
+  Echinacea:'asteraceae',Leucanthemum:'asteraceae',Centaurea:'asteraceae',
+  Phalaenopsis:'orchidaceae',Dendrobium:'orchidaceae',Cattleya:'orchidaceae',
+  Oncidium:'orchidaceae',Vanda:'orchidaceae',Cymbidium:'orchidaceae',
+  Acacia:'fabaceae',Lupinus:'fabaceae',Glycine:'fabaceae',Trifolium:'fabaceae',
+  Pisum:'fabaceae',Phaseolus:'fabaceae',Cercis:'fabaceae',Wisteria:'fabaceae',
+  Lavandula:'lamiaceae',Salvia:'lamiaceae',Mentha:'lamiaceae',
+  Rosmarinus:'lamiaceae',Thymus:'lamiaceae',Ocimum:'lamiaceae',
+  Solanum:'solanaceae',Petunia:'solanaceae',Nicotiana:'solanaceae',
+  Atropa:'solanaceae',Datura:'solanaceae',Capsicum:'solanaceae',
+  Ranunculus:'ranunculaceae',Anemone:'ranunculaceae',Delphinium:'ranunculaceae',
+  Clematis:'ranunculaceae',Helleborus:'ranunculaceae',Aquilegia:'ranunculaceae',
+  Iris:'iridaceae',Crocus:'iridaceae',Freesia:'iridaceae',Gladiolus:'iridaceae',
+  Galanthus:'amaryllidaceae',Narcissus:'amaryllidaceae',Allium:'amaryllidaceae',
+  Hippeastrum:'amaryllidaceae',Agapanthus:'amaryllidaceae',Hyacinthoides:'amaryllidaceae',
+  Hibiscus:'malvaceae',Alcea:'malvaceae',Malva:'malvaceae',Gossypium:'malvaceae',
+  Lilium:'liliaceae',Tulipa:'liliaceae',Fritillaria:'liliaceae',
+  Arabis:'brassicaceae',Iberis:'brassicaceae',Lunaria:'brassicaceae',
+  Anthriscus:'apiaceae',Daucus:'apiaceae',Foeniculum:'apiaceae',
+  Echinocereus:'cactaceae',Echinopsis:'cactaceae',Carnegiea:'cactaceae',
+  Opuntia:'cactaceae',Mammillaria:'cactaceae',
+  Sedum:'crassulaceae',Echeveria:'crassulaceae',Sempervivum:'crassulaceae',
+  Aloe:'asphodelaceae',
+  Anthurium:'araceae',Zantedeschia:'araceae',Philodendron:'araceae',Spathiphyllum:'araceae',
+  Rhododendron:'ericaceae',Calluna:'ericaceae',Erica:'ericaceae',Vaccinium:'ericaceae',
+  Jasminum:'oleaceae',Forsythia:'oleaceae',Syringa:'oleaceae',Ligustrum:'oleaceae',
+  Ananas:'bromeliaceae',Tillandsia:'bromeliaceae',Guzmania:'bromeliaceae',
+  Dianthus:'caryophyllaceae',Gypsophila:'caryophyllaceae',Lychnis:'caryophyllaceae',
+  Papaver:'papaveraceae',Eschscholzia:'papaveraceae',Meconopsis:'papaveraceae',
+  Lamprocapnos:'papaveraceae',
+  Vinca:'apocynaceae',Nerium:'apocynaceae',Plumeria:'apocynaceae',
+  Hydrangea:'hydrangeaceae',
+  Magnolia:'magnoliaceae',Liriodendron:'magnoliaceae',
+  Campanula:'campanulaceae',Lobelia:'campanulaceae',
+  Nelumbo:'nelumbonaceae',
+  Nymphaea:'nymphaeaceae',
+  Passiflora:'passifloraceae',
+  Hyacinthus:'asparagaceae',Asparagus:'asparagaceae',Convallaria:'asparagaceae',
+};
+
+// Map each family to a display name with proper capitalisation
+const FAMILY_DISPLAY = {
+  rosaceae:'Rosaceae',asteraceae:'Asteraceae',fabaceae:'Fabaceae',
+  orchidaceae:'Orchidaceae',lamiaceae:'Lamiaceae',solanaceae:'Solanaceae',
+  ranunculaceae:'Ranunculaceae',iridaceae:'Iridaceae',amaryllidaceae:'Amaryllidaceae',
+  malvaceae:'Malvaceae',liliaceae:'Liliaceae',brassicaceae:'Brassicaceae',
+  apiaceae:'Apiaceae',cactaceae:'Cactaceae',crassulaceae:'Crassulaceae',
+  araceae:'Araceae',ericaceae:'Ericaceae',oleaceae:'Oleaceae',
+  bromeliaceae:'Bromeliaceae',caryophyllaceae:'Caryophyllaceae',
+  papaveraceae:'Papaveraceae',apocynaceae:'Apocynaceae',
+  hydrangeaceae:'Hydrangeaceae',magnoliaceae:'Magnoliaceae',
+  campanulaceae:'Campanulaceae',asparagaceae:'Asparagaceae',
+  nelumbonaceae:'Nelumbonaceae',asphodelaceae:'Asphodelaceae',
+  passifloraceae:'Passifloraceae',nymphaeaceae:'Nymphaeaceae',
+};
+
+// Current filter mode: 'lifestyle' or 'family'
+let filterMode = 'lifestyle';
+let cats = LIFESTYLE_CATS;
+
 const seasonMeta = [
   {name:'Spring', key:'sp', icon:'🌸'},
   {name:'Summer', key:'su', icon:'☀️'},
@@ -2363,15 +2629,45 @@ function seasonsForFlower(f){
     .map(item => item.name);
 }
 
+// Enrich every curated flower with a family tag derived from its Latin name's genus
+(function enrichFamilyTags(){
+  flowers.forEach(f => {
+    if (!f.family) {
+      const genus = (f.latin || '').split(' ')[0];
+      f.family = GENUS_FAMILY[genus] || null;
+    } else {
+      f.family = f.family.toLowerCase();
+    }
+    // Ensure family appears in tags for filter matching
+    if (f.family && !f.tags.includes(f.family)) {
+      f.tags = [...f.tags, f.family];
+    }
+  });
+  // Also enrich taxonomy flowers
+  if (typeof TAXONOMY_FLOWERS !== 'undefined') {
+    TAXONOMY_FLOWERS.forEach(f => {
+      const genus = (f.latin || '').split(' ')[0];
+      const fam = GENUS_FAMILY[genus] || null;
+      if (fam) {
+        f.family = fam;
+        if (!f.tags) f.tags = [];
+        if (!f.tags.includes(fam)) f.tags = [...f.tags, fam];
+      }
+    });
+  }
+})();
+
 function updateSummaryCopy(){
   // Total species = curated V1 set + taxonomy library
   const taxCount   = (typeof TAXONOMY_FLOWERS !== 'undefined') ? TAXONOMY_FLOWERS.length : 0;
   const totalSpecies = flowers.length + taxCount;
   const factsTotal = flowers.reduce((sum, flower) => sum + (flower.facts?.length || 0), 0);
-  const cats       = new Set([
-    ...flowers.map(f => f.cat),
-    ...(typeof TAXONOMY_FLOWERS !== 'undefined' ? TAXONOMY_FLOWERS.map(f => f.cat) : [])
+  // Count unique families across all species
+  const allFamilies = new Set([
+    ...flowers.filter(f=>f.family).map(f=>f.family),
+    ...(typeof TAXONOMY_FLOWERS !== 'undefined' ? TAXONOMY_FLOWERS.filter(f=>f.family).map(f=>f.family) : [])
   ]);
+  const familyCount = allFamilies.size || FAMILY_CATS.length;
 
   // Hero stats (by id so we don't collide with V3 .stat-n elements)
   const heroSpecies  = document.getElementById('hero-stat-species');
@@ -2383,7 +2679,7 @@ function updateSummaryCopy(){
 
   const heroSub = document.querySelector('.hero-sub');
   if (heroSub) {
-    heroSub.textContent = `Over ${totalSpecies.toLocaleString()} botanical species across ${cats.size} plant families — from illustrated care guides and medicinal herbs to planetary biospheres, parallel universes, and a simulation that rewrites its own equations.`;
+    heroSub.textContent = `Over ${totalSpecies.toLocaleString()} botanical species across ${familyCount} plant families — from illustrated care guides and medicinal herbs to planetary biospheres, parallel universes, and a simulation that rewrites its own equations.`;
   }
 
   const collectionSub = document.getElementById('collection-sub') || document.querySelector('#collection .sec-sub');
@@ -2414,7 +2710,7 @@ function renderGrid(){
   g.innerHTML='';
   let matches = 0;
   flowers.forEach((f,i)=>{
-    const mf=active==='all'||f.tags.includes(active)||f.cat===active;
+    const mf=active==='all'||f.tags.includes(active)||f.cat===active||f.family===active;
     const mq=!q||f.name.toLowerCase().includes(q)||f.latin.toLowerCase().includes(q)||f.desc.toLowerCase().includes(q);
     if(!mf||!mq)return;
     const d=document.createElement('div');
@@ -2431,7 +2727,24 @@ function renderGrid(){
 }
 
 function renderFilters(){
-  document.getElementById('fb').innerHTML=cats.map(c=>`<button class="fb ${c===active?'on':''}" onclick="setFilter('${c}')">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('');
+  const container = document.getElementById('fb');
+  if (!container) return;
+  // Mode toggle buttons
+  const modeHTML = `<button class="fb ${filterMode==='lifestyle'?'on':''}" style="font-weight:600;margin-right:6px;" onclick="setFilterMode('lifestyle')">Habitat</button><button class="fb ${filterMode==='family'?'on':''}" style="font-weight:600;margin-right:10px;border-color:var(--accent2);" onclick="setFilterMode('family')">Plant Family</button>`;
+  // Filter chips
+  const filterHTML = cats.map(c => {
+    const label = filterMode === 'family' ? (FAMILY_DISPLAY[c] || c) : (c.charAt(0).toUpperCase() + c.slice(1));
+    return `<button class="fb ${c===active?'on':''}" onclick="setFilter('${c}')">${label}</button>`;
+  }).join('');
+  container.innerHTML = modeHTML + filterHTML;
+}
+
+function setFilterMode(mode){
+  filterMode = mode;
+  cats = mode === 'family' ? ['all', ...FAMILY_CATS] : LIFESTYLE_CATS;
+  active = 'all';
+  renderFilters();
+  renderGrid();
 }
 
 function setFilter(f){active=f;renderFilters();renderGrid()}
@@ -3867,8 +4180,14 @@ bloomV2.start();
     const bioState = biosphere.update(dtYears, planet.climate, planet.ocean, planet.terrain, civ);
     const evoState = evolution.update(dtYears, planet, biosphere, civ);
 
-    // Render every frame
-    renderer.render(pSnap, bioState, evoState, civState);
+    // Render every frame — include intelligence state for mycelial/tipping/health overlays
+    let intelSnap = null;
+    if (window.bloomV3Intelligence) {
+      try {
+        intelSnap = window.bloomV3Intelligence.update(realDt, planet, biosphere, civilization);
+      } catch(e) { /* intelligence update is optional — don't crash render loop */ }
+    }
+    renderer.render(pSnap, bioState, evoState, civState, intelSnap);
 
     // DOM + sparklines: frame 1 immediately, then ~4fps
     if (frameCount === 1 || frameCount % 15 === 0) {
@@ -3876,6 +4195,28 @@ bloomV2.start();
       sparklines.record(pSnap, bioState, evoState);
       sparklines.renderSparklines();
     }
+
+    // Publish V3 state globally so V5-V9 master loop can consume real Earth data
+    window.bloomV3State = {
+      temperature:        parseFloat(pSnap?.climate?.global_temp          ?? 14),
+      temperatureAnomaly: parseFloat(pSnap?.climate?.temp_anomaly         ?? 0.5),
+      co2:                parseFloat(pSnap?.climate?.atmosphere?.co2_ppm  ?? 421),
+      oceanPH:            parseFloat(pSnap?.ocean?.surface_ph             ?? 8.05),
+      biodiversityIndex:  Math.min(1, parseFloat(bioState?.flora_biomass_Gt ?? 450) / 600),
+      speciesCount:       parseInt((evoState?.evolution?.total_species ?? '8700000').toString().replace(/,/g,'')) || 8700000,
+      mycorrhizalDensity: parseFloat(intelSnap?.mycelial?.network_density_pct ?? 80) / 100,
+      foodWebComplexity:  Math.min(1, parseInt(bioState?.food_web?.total_links ?? 50) / 80),
+      pollinatorHealth:   Math.min(1, parseFloat(bioState?.fauna?.pollinator_biomass_kg ?? 1e8) / 1.5e8),
+      oceanHealth:        Math.min(1, Math.max(0, (parseFloat(pSnap?.ocean?.surface_ph ?? 8.1) - 7.6) / 0.6)),
+      soilHealth:         parseFloat(bioState?.fungal?.soil_health         ?? 0.75),
+      civLevel:           Math.min(1, parseFloat(civState?.civilization?.emissions_Gt_yr ?? 37) / 60),
+      extinctionRate:     parseFloat(evoState?.evolution?.extinction?.extinction_rate_yr ?? 2),
+      speciationRate:     parseFloat(evoState?.evolution?.speciation_rate  ?? 0.01),
+      humidity:           parseFloat(pSnap?.climate?.humidity              ?? 0.55),
+      florabiomass:       parseFloat(bioState?.flora_biomass_Gt            ?? 450),
+      tippingWarnings:    intelSnap?.nervous?.tipping_warnings             ?? 0,
+      lpi:                parseFloat(intelSnap?.health?.composite_lpi      ?? 75),
+    };
 
     requestAnimationFrame(planetaryLoop);
   }
@@ -5165,6 +5506,8 @@ window.v4LoadPreset = function(name) {
 // ── CORE: apply a genome object everywhere ────────────────────────
 function _applyGenome(genome, label) {
   sandbox.setGenome(genome);
+  // Expose genome globally so V7 Dimensional Morphogenesis and V9 can read it
+  window.bloomV4Genome = genome;
   _refreshAllSliders(genome);
   updateRDParams(genome);
   syncJSONConsole();
@@ -5365,17 +5708,62 @@ window.v4SemanticSearch = function() {
   const live    = (typeof bloomV2 !== 'undefined' && bloomV2.evolution) ? bloomV2.evolution.species : [];
   const results = semSearch.search(query, live);
   if (!results.length) { el.innerHTML = '<em style="color:#3a6a8a;">No matches. Try different terms.</em>'; return; }
-  el.innerHTML = results.map(({ s, score }) => {
+  // Store results for click-to-load
+  window._v4SemResults = results;
+  el.innerHTML = results.map(({ s, score }, idx) => {
     const name   = s.name || s.commonName || '?';
     const latin  = s.latin || '';
     const cat    = s.cat || s.biome || '';
     const dot    = s.color ? `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};margin-right:3px;vertical-align:middle;"></span>` : '';
     const src    = s._live ? '<span style="font-size:9px;color:#6aaaff;margin-left:3px;">V2</span>' : '<span style="font-size:9px;color:#3a6a8a;margin-left:3px;">Lib</span>';
-    return `<div class="v4-sem-hit">
+    return `<div class="v4-sem-hit" style="cursor:pointer;" onclick="v4LoadSpeciesFromSearch(${idx})" title="Click to generate morphogenesis from this species">
       <div>${dot}<strong style="color:#a0c8f0">${name}</strong>${src}${latin ? `<span style="font-size:10px;font-style:italic;color:#4a7a9a;"> · ${latin}</span>` : ''}${cat ? `<br><span style="font-size:10px;color:#3a6a8a;">${cat}</span>` : ''}</div>
-      <span class="v4-sem-score">${score}✦</span>
+      <span class="v4-sem-score">${score}✦ <span style="font-size:8px;color:#3a6a8a;">click to load</span></span>
     </div>`;
   }).join('');
+
+  // Attach click handler
+  window.v4LoadSpeciesFromSearch = function(idx) {
+    const res = window._v4SemResults && window._v4SemResults[idx];
+    if (!res) return;
+    const sp = res.s;
+    // Convert species attributes to a genome
+    pushUndo(sandbox.currentGenome);
+    let g;
+    if (sp._live) {
+      g = sandbox.fromLiveSpecies(sp);
+    } else {
+      // Build genome from taxonomy species attributes
+      g = sandbox.randomGenome();
+      // Encode color into pigmentation
+      if (sp.color) {
+        const hueMatch = sp.color.match(/hsl\((\d+)/);
+        if (hueMatch) { const h = parseInt(hueMatch[1])/360; g.pigmentation[0]=h; g.pigmentation[1]=h*0.9; }
+      }
+      // Encode biome/habitat into adaptation
+      const biome = (sp.biome||'').toLowerCase();
+      if (biome.includes('desert'))   { g.adaptation[1]=0.9; g.adaptation[2]=0.8; }
+      if (biome.includes('alpine'))   { g.adaptation[0]=0.1; g.adaptation[2]=0.9; }
+      if (biome.includes('tropical')) { g.adaptation[0]=0.9; g.morphology[0]=0.85; }
+      if (biome.includes('aquatic'))  { g.morphology[2]=0.1; g.adaptation[3]=0.7; }
+      // Encode lifecycle
+      const lc = (sp.lifecycle||'').toLowerCase();
+      if (lc.includes('annual'))    g.reproduction[0]=0.9;
+      if (lc.includes('perennial')) g.reproduction[0]=0.2;
+      // Encode max petal count from species if available
+      if (sp.petalCount) g.morphology[1] = Math.min(1, sp.petalCount/14);
+    }
+    const label = sp.name || sp.commonName || 'Species';
+    _applyGenome(g, label);
+    document.getElementById('v4-genome-source').textContent = label;
+    // Scroll to canvas
+    document.getElementById('v4-morph-canvas').scrollIntoView({ behavior:'smooth', block:'center' });
+    // Highlight the clicked row
+    document.querySelectorAll('.v4-sem-hit').forEach((el,i) => {
+      el.style.borderColor = i===idx ? '#6aaaff' : '';
+      el.style.background  = i===idx ? 'rgba(100,170,255,0.08)' : '';
+    });
+  };
 };
 
 window.v2SemanticSearch = function() {
@@ -5976,7 +6364,28 @@ const v9 = new V9Engine();
 
 // ── Wire canvases ──────────────────────────────────────────────────
 const mapCanvas = document.getElementById('v5-map-canvas');
-if (mapCanvas) { v5.renderer = new MultiverseRenderer(mapCanvas); mapCanvas.onclick = e => { const rect=mapCanvas.getBoundingClientRect(); const x=(e.clientX-rect.left)*(mapCanvas.width/rect.width); const y=(e.clientY-rect.top)*(mapCanvas.height/rect.height); const id=v5.renderer.hitTest(x,y); if(id){v5.selectUniverse(id);refreshV5State();} }; }
+if (mapCanvas) {
+  // Sync pixel dimensions to CSS layout dimensions so the canvas fills its panel
+  const syncMapSize = () => {
+    const rect = mapCanvas.getBoundingClientRect();
+    if (rect.width > 10) {
+      mapCanvas.width  = Math.round(rect.width);
+      mapCanvas.height = mapCanvas.height || 260;
+    }
+  };
+  syncMapSize();
+  window.addEventListener('resize', syncMapSize);
+  v5.renderer = new MultiverseRenderer(mapCanvas);
+  mapCanvas.onclick = e => {
+    const rect = mapCanvas.getBoundingClientRect();
+    const scaleX = mapCanvas.width / rect.width;
+    const scaleY = mapCanvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top)  * scaleY;
+    const id = v5.renderer.hitTest(x, y);
+    if (id) { v5.selectUniverse(id); refreshV5State(); }
+  };
+}
 
 const ciCanvas = document.getElementById('v6-ci-canvas');
 if (ciCanvas) v6.renderer = new ConsciousnessRenderer(ciCanvas);
@@ -6241,9 +6650,17 @@ function refreshV7() {
   if (brEl) brEl.innerHTML = tl.getBranches().slice(-5).reverse().map(b =>
     `<div class="vx-log-row">⑂ ${b.label} (tick ${b.fromTick})</div>`).join('');
 
-  // Dim flower
+  // Dim flower — use V4 genome if available, else generate via a scratch off-screen canvas
+  if (!window.bloomV4Genome && window.BloomV4 && window.BloomV4.MorphogenesisEngine) {
+    try {
+      const offscreen = document.createElement('canvas');
+      offscreen.width = 1; offscreen.height = 1;
+      const eng = new window.BloomV4.MorphogenesisEngine(offscreen);
+      window.bloomV4Genome = eng.randomGenome();
+    } catch(e) { /* ignore */ }
+  }
   const genome = window.bloomV4Genome;
-  if (genome) v7.renderDimFlower(document.getElementById('v7-dim-canvas'), genome);
+  v7.renderDimFlower(document.getElementById('v7-dim-canvas'), genome);
 }
 
 function renderRKG(canvas, { nodes, edges }) {
@@ -6288,7 +6705,9 @@ function refreshV8() {
   set('v8-law-count', laws.length+' laws');
   const ll = document.getElementById('v8-laws-list');
   if (ll) {
-    if (!laws.length) return;
+    if (!laws.length) {
+      ll.innerHTML = '<div style="font-size:11px;color:#7a3a50;font-style:italic;">Observing ' + v5.pool.getAll().length + ' universes… laws emerge when the same pattern appears in 3+ realities independently. Patterns: ' + window.BloomV8.PATTERN_DETECTORS.map(p=>'<span style="color:#ff9aaa88">'+p.label.slice(0,22)+'</span>').join(' · ') + '</div>';
+    } else {
     ll.innerHTML = laws.map(law => `
       <div class="v8-law-chip">
         <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
@@ -6298,6 +6717,7 @@ function refreshV8() {
         <div style="font-size:10px;opacity:.7;margin-bottom:3px;">${law.desc}</div>
         <div class="v8-law-bar"><div class="v8-law-bar-fill" style="width:${(law.strength*100).toFixed(0)}%"></div></div>
       </div>`).join('');
+    }
   }
 
   const agents = v8.intelNet.getAgents();
@@ -6307,12 +6727,34 @@ function refreshV8() {
   if (il) il.innerHTML = insights.slice(0,8).map(ins =>
     `<div class="vx-log-row">${ins.texts.join(' ')}</div>`).join('');
 
-  // Awareness field
+  // Awareness field — render RD consciousness field scaled to full canvas
   const awc = document.getElementById('v8-awareness-canvas');
   if (awc) {
-    const ctx = awc.getContext('2d'); const W=awc.width,H=awc.height;
-    ctx.clearRect(0,0,W,H); ctx.fillStyle='#100516'; ctx.fillRect(0,0,W,H);
-    v8.renderAwarenessOn(awc, 280, 0.6);
+    // Sync canvas pixel size from CSS layout on first render
+    if (awc.width < 100) { awc.width = awc.offsetWidth || 520; }
+    const ctx = awc.getContext('2d'); const W=awc.width, H=awc.height;
+    ctx.clearRect(0,0,W,H);
+    // Dark background with subtle nebula gradient
+    const bg = ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'#100516'); bg.addColorStop(0.5,'#08020f'); bg.addColorStop(1,'#150520');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    // Step RD field
+    v8.awarenessField.step(0.035, 0.062, 2);
+    // Render field canvas and scale it up
+    const fieldCv = v8.awarenessField.toCanvas(270, 0.55);
+    ctx.save();
+    ctx.imageSmoothingEnabled = false; // pixelart crisp upscale (shows Turing patterns better)
+    ctx.drawImage(fieldCv, 0, 0, W, H);
+    // Overlay: soft vignette
+    const vig = ctx.createRadialGradient(W/2,H/2,H*0.2, W/2,H/2,H*0.8);
+    vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,0.55)');
+    ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+    // Labels
+    ctx.fillStyle='rgba(200,150,255,0.6)'; ctx.font='bold 10px Jost,monospace'; ctx.textAlign='center';
+    ctx.fillText('CONSCIOUSNESS FIELD — Gray-Scott Reaction-Diffusion', W/2, 14);
+    ctx.fillStyle='rgba(160,100,220,0.4)'; ctx.font='9px Jost,monospace';
+    ctx.fillText('activator (purple) ↔ inhibitor (dark) · seeded from planetary awareness hotspots', W/2, H-6);
+    ctx.restore();
   }
 
   set('v8-cloud-count', v8.getCloud().length ? v8.getCloud().length+' states' : 'Click Explore');
@@ -6475,9 +6917,17 @@ const masterLoop = setInterval(() => {
     refreshV7();
   }
 
-  // V8: feed universe states
+  // V8: feed universe states — enrich with V3 Earth data so cross-universe patterns can fire
   const universes = v5.pool.getAll().map(u => ({
-    id: u.id, name: u.name, state: { ...u.state, consciousnessIndex: u.state.consciousnessIndex||0 }
+    id: u.id, name: u.name,
+    state: {
+      ...u.state,
+      consciousnessIndex: u.state.consciousnessIndex || 0,
+      // Blend in V3 Earth state so pattern detectors have real-world grounding
+      mycorrhizalDensity: (u.state.biodiversityIndex > 0.6)
+        ? (v3s.mycorrhizalDensity || 0.78)       // rich biospheres = dense mycelium
+        : (v3s.mycorrhizalDensity || 0.5) * 0.7,
+    }
   }));
   v8.update(universes, window.bloomV6State);
   if (masterTick % 2 === 0) refreshV8();
@@ -6487,6 +6937,35 @@ const masterLoop = setInterval(() => {
   if (masterTick % 2 === 0) refreshV9();
 
 }, 500);
+
+// Pre-seed 5 universes so V8 law detection has enough realities immediately
+while (v5.pool.getAll().length < 5) v5.spawnUniverse();
+// Set universe initial states to realistic values matching Earth-like conditions
+// (avoids 200-tick CO2 runaway that destroys biodiversity before laws can form)
+v5.pool.getAll().forEach((u, i) => {
+  const seeds = [
+    { co2: 430, temperature: 14.8, biodiversityIndex: 0.74, speciesCount: 180, oceanPH: 8.05, civLevel: 0.18 },
+    { co2: 455, temperature: 15.6, biodiversityIndex: 0.71, speciesCount: 160, oceanPH: 8.02, civLevel: 0.22 },
+    { co2: 420, temperature: 14.2, biodiversityIndex: 0.78, speciesCount: 220, oceanPH: 8.10, civLevel: 0.12 },
+    { co2: 480, temperature: 16.1, biodiversityIndex: 0.65, speciesCount: 140, oceanPH: 7.98, civLevel: 0.30 },
+    { co2: 410, temperature: 13.8, biodiversityIndex: 0.80, speciesCount: 240, oceanPH: 8.12, civLevel: 0.08 },
+  ];
+  const s = seeds[i] || seeds[0];
+  Object.assign(u.state, s,
+    { mycorrhizalDensity: 0.78, florabiomass: 400 + i*30, temperatureAnomaly: s.temperature - 14 }
+  );
+});
+
+// Prime V8 law detector with the seeded states immediately (before first master tick)
+// Feed each universe 5× so 3+ universes trigger each pattern = laws form on load
+for (let _prime = 0; _prime < 5; _prime++) {
+  const primeUnivs = v5.pool.getAll().map(u => ({
+    id: u.id, name: u.name,
+    state: { ...u.state, consciousnessIndex: u.state.consciousnessIndex || 0,
+             mycorrhizalDensity: 0.78 }
+  }));
+  v8.update(primeUnivs, null);
+}
 
 // Boot V5 sim loop
 v5.start(400);

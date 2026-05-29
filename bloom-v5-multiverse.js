@@ -432,91 +432,211 @@ class MultiverseRenderer {
 
     render(pool, selected = null) {
         const { canvas: cv, ctx } = this;
-        const W = cv.width, H = cv.height;
+        // Use display size if canvas CSS width differs from pixel width
+        const W = cv.width  || cv.offsetWidth  || 520;
+        const H = cv.height || cv.offsetHeight || 260;
         ctx.clearRect(0, 0, W, H);
 
-        // Background
-        ctx.fillStyle = '#030810';
-        ctx.fillRect(0, 0, W, H);
+        // Deep space background with subtle nebula
+        const bg = ctx.createRadialGradient(W*0.5, H*0.4, 0, W*0.5, H*0.5, Math.max(W,H)*0.8);
+        bg.addColorStop(0, '#060d1e');
+        bg.addColorStop(0.5, '#030810');
+        bg.addColorStop(1, '#010204');
+        ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
 
-        // Grid lines
-        ctx.strokeStyle = 'rgba(20,40,80,0.3)';
-        ctx.lineWidth = 1;
-        for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-        for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+        // Subtle star field
+        ctx.save();
+        for (let i = 0; i < 120; i++) {
+            const sx = (Math.sin(i * 7.31 + 1.2) * 0.5 + 0.5) * W;
+            const sy = (Math.cos(i * 13.7 + 2.4) * 0.5 + 0.5) * H;
+            const a  = 0.15 + (Math.sin(i * 2.1) * 0.5 + 0.5) * 0.5;
+            ctx.globalAlpha = a;
+            ctx.fillStyle = i % 5 === 0 ? '#ffe8c8' : '#c8d8ff';
+            ctx.fillRect(sx|0, sy|0, i % 7 === 0 ? 2 : 1, i % 7 === 0 ? 2 : 1);
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
 
         const universes = pool.getAll();
-        if (!universes.length) return;
+        if (!universes.length) {
+            ctx.fillStyle = '#2a4a6a'; ctx.font = '13px Jost,sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('No universes — click Spawn Universe', W/2, H/2);
+            return;
+        }
 
         this._nodes = [];
-        const cols = Math.ceil(Math.sqrt(universes.length));
+        const cols  = Math.min(universes.length, Math.ceil(Math.sqrt(universes.length * (W/H))));
+        const rows  = Math.ceil(universes.length / cols);
         const cellW = W / cols;
-        const cellH = H / Math.ceil(universes.length / cols);
+        const cellH = H / rows;
 
         universes.forEach((u, idx) => {
             const col = idx % cols;
             const row = Math.floor(idx / cols);
             const cx  = cellW * col + cellW / 2;
             const cy  = cellH * row + cellH / 2;
-            const r   = Math.min(cellW, cellH) * 0.32 * (0.5 + u.state.biodiversityIndex * 0.5);
+            // Radius: sized to fill cell, modulated by biodiversity
+            const maxR = Math.min(cellW, cellH) * 0.36;
+            const r    = maxR * (0.55 + (u.state.biodiversityIndex || 0.5) * 0.45);
 
             this._nodes.push({ id: u.id, cx, cy, r });
 
-            // Glow based on consciousness
-            const ci = u.state.consciousnessIndex || 0;
-            if (ci > 0.01) {
-                const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 1.8);
-                glow.addColorStop(0, `hsla(${180 + ci*120},80%,60%,${ci * 0.4})`);
+            const temp    = u.state.temperature || 15;
+            const ci      = u.state.consciousnessIndex || 0;
+            const bio     = u.state.biodiversityIndex   || 0.5;
+            const co2     = u.state.co2                 || 420;
+            // Hue: 200 (ice-blue) at cold → 30 (orange) at hot
+            const tempHue = Math.max(15, Math.min(220, 220 - (temp - 5) * 7));
+
+            // Outer consciousness glow ring
+            if (ci > 0.005) {
+                const glowR = r * 1.7;
+                const glow  = ctx.createRadialGradient(cx, cy, r * 0.8, cx, cy, glowR);
+                glow.addColorStop(0, `hsla(${200 + ci*100},90%,65%,${ci * 0.55})`);
                 glow.addColorStop(1, 'transparent');
-                ctx.beginPath(); ctx.arc(cx, cy, r*1.8, 0, Math.PI*2);
+                ctx.beginPath(); ctx.arc(cx, cy, glowR, 0, Math.PI*2);
                 ctx.fillStyle = glow; ctx.fill();
             }
 
-            // Planet body — colour by temperature
-            const temp = u.state.temperature || 15;
-            const tempHue = Math.max(0, Math.min(240, 240 - (temp - 10) * 8));
-            const grad = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
-            grad.addColorStop(0, `hsl(${tempHue},70%,65%)`);
-            grad.addColorStop(0.6, `hsl(${tempHue},60%,35%)`);
-            grad.addColorStop(1, `hsl(${tempHue},50%,15%)`);
+            // Atmospheric halo (thin blue ring around planet)
+            const atmoG = ctx.createRadialGradient(cx, cy, r*0.92, cx, cy, r*1.10);
+            atmoG.addColorStop(0,   `rgba(80,160,255,${0.30 + (co2-280)/1800*0.15})`);
+            atmoG.addColorStop(0.5, `rgba(50,120,220,0.12)`);
+            atmoG.addColorStop(1,   'transparent');
+            ctx.beginPath(); ctx.arc(cx, cy, r*1.10, 0, Math.PI*2);
+            ctx.fillStyle = atmoG; ctx.fill();
+
+            // Planet sphere with realistic lighting
+            const grad = ctx.createRadialGradient(cx - r*0.28, cy - r*0.28, r*0.05, cx, cy, r);
+            grad.addColorStop(0,    `hsl(${tempHue},65%,68%)`);
+            grad.addColorStop(0.35, `hsl(${tempHue},58%,42%)`);
+            grad.addColorStop(0.75, `hsl(${tempHue},50%,22%)`);
+            grad.addColorStop(1,    `hsl(${tempHue},40%,10%)`);
             ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
             ctx.fillStyle = grad; ctx.fill();
+
+            // Green vegetation band at temperate latitudes (biodiversity tint)
+            if (bio > 0.2 && !u.collapsed) {
+                const vegG = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+                vegG.addColorStop(0,   `rgba(30,180,60,${bio * 0.28})`);
+                vegG.addColorStop(0.7, `rgba(20,120,40,${bio * 0.15})`);
+                vegG.addColorStop(1,   'transparent');
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+                ctx.fillStyle = vegG; ctx.fill();
+            }
+
+            // Ice caps at poles (high-latitude white arcs)
+            if (temp < 20 && !u.collapsed) {
+                const iceFrac = Math.max(0, (20 - temp) / 30);
+                ctx.save();
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+                ctx.fillStyle = `rgba(200,230,255,${iceFrac * 0.55})`;
+                ctx.fillRect(cx - r, cy - r, r*2, r * (0.1 + iceFrac * 0.22)); // N cap
+                ctx.fillRect(cx - r, cy + r*(0.68 - iceFrac*0.22), r*2, r * (0.1 + iceFrac*0.22)); // S cap
+                ctx.restore();
+            }
+
+            // Day/night terminator (dark half)
+            const nightG = ctx.createRadialGradient(cx + r*0.5, cy, 0, cx, cy, r);
+            nightG.addColorStop(0,    'rgba(0,0,0,0)');
+            nightG.addColorStop(0.42, 'rgba(0,0,0,0)');
+            nightG.addColorStop(0.58, 'rgba(0,0,0,0.35)');
+            nightG.addColorStop(1,    'rgba(0,0,0,0.72)');
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+            ctx.fillStyle = nightG; ctx.fill();
+
+            // Specular highlight
+            const specG = ctx.createRadialGradient(cx - r*0.30, cy - r*0.30, 0, cx - r*0.05, cy - r*0.05, r*0.6);
+            specG.addColorStop(0,   'rgba(255,255,255,0.20)');
+            specG.addColorStop(0.4, 'rgba(255,255,255,0.05)');
+            specG.addColorStop(1,   'rgba(255,255,255,0)');
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+            ctx.fillStyle = specG; ctx.fill();
+
+            // Edge limb darkening
+            const limbG = ctx.createRadialGradient(cx, cy, r*0.70, cx, cy, r);
+            limbG.addColorStop(0, 'rgba(0,0,0,0)');
+            limbG.addColorStop(1, 'rgba(0,0,0,0.60)');
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+            ctx.fillStyle = limbG; ctx.fill();
 
             // Collapsed overlay
             if (u.collapsed) {
                 ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-                ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fill();
-                ctx.fillStyle = '#ff6060'; ctx.font = `${r*0.4}px sans-serif`;
+                ctx.fillStyle = 'rgba(0,0,0,0.78)'; ctx.fill();
+                ctx.fillStyle = '#ff6060';
+                ctx.font = `bold ${Math.max(11, r*0.45)}px sans-serif`;
                 ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.fillText('✕', cx, cy);
+                ctx.font = `${Math.max(8, r*0.2)}px Jost,sans-serif`;
+                ctx.fillStyle = '#ff9090';
+                ctx.fillText(u.state.lastEvent || 'Collapsed', cx, cy + r*0.42);
             }
 
-            // Selection ring
+            // Selection ring (animated)
             if (selected === u.id) {
-                ctx.beginPath(); ctx.arc(cx, cy, r + 4, 0, Math.PI*2);
-                ctx.strokeStyle = '#6aaaff'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.beginPath(); ctx.arc(cx, cy, r + 3.5, 0, Math.PI*2);
+                ctx.strokeStyle = '#6aaaff'; ctx.lineWidth = 2.5; ctx.stroke();
+                // Outer pulsing ring
+                ctx.beginPath(); ctx.arc(cx, cy, r + 7, 0, Math.PI*2);
+                ctx.strokeStyle = 'rgba(100,170,255,0.3)'; ctx.lineWidth = 1.5; ctx.stroke();
             }
 
             // Name label
-            ctx.fillStyle = u.collapsed ? '#ff6060' : '#7aaad0';
-            ctx.font = `${Math.max(9, r*0.25)}px 'Jost',sans-serif`;
+            const fsize = Math.max(9, Math.min(12, r * 0.28));
+            ctx.fillStyle = u.collapsed ? '#ff7070' : (selected === u.id ? '#a0d0ff' : '#6aaad0');
+            ctx.font = `${fsize}px 'Jost',sans-serif`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             ctx.fillText(u.name, cx, cy + r + 4);
 
-            // Mini sparkline (biodiversity) beneath name
+            // Key stats beneath name
+            if (!u.collapsed && r > 22) {
+                const statsY = cy + r + fsize + 6;
+                ctx.font = `${Math.max(7, fsize*0.72)}px 'Jost',monospace`;
+                ctx.fillStyle = `hsl(${tempHue},60%,55%)`;
+                ctx.fillText(`${temp.toFixed(1)}°C`, cx, statsY);
+                ctx.fillStyle = '#6aff9a88';
+                ctx.fillText(`${u.state.speciesCount} sp`, cx, statsY + fsize * 0.85);
+            }
+
+            // Biodiversity sparkline beneath stats
             const hist = u.history.biodiversity;
-            if (hist.length > 4) {
-                const sparkW = r * 1.6, sparkH = 12;
-                const sx = cx - sparkW/2, sy = cy + r + 18;
+            if (hist.length > 4 && r > 18) {
+                const sparkW = r * 1.8, sparkH = 10;
+                const sparkY  = cy + r + fsize*2 + (r > 22 ? fsize*1.8 : 0) + 7;
+                const sx = cx - sparkW/2;
                 ctx.beginPath();
-                hist.slice(-30).forEach((v, i, arr) => {
+                hist.slice(-40).forEach((v, i, arr) => {
                     const px = sx + (i / (arr.length-1)) * sparkW;
-                    const py = sy + sparkH - v * sparkH;
+                    const py = sparkY + sparkH - v * sparkH;
                     i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
                 });
-                ctx.strokeStyle = `hsl(${tempHue},70%,60%)`; ctx.lineWidth = 1; ctx.stroke();
+                ctx.strokeStyle = `hsla(${tempHue},70%,60%,0.7)`; ctx.lineWidth = 1; ctx.stroke();
+                // Axis
+                ctx.strokeStyle = 'rgba(100,160,255,0.12)'; ctx.lineWidth = 0.5;
+                ctx.beginPath(); ctx.moveTo(sx, sparkY + sparkH/2); ctx.lineTo(sx+sparkW, sparkY + sparkH/2); ctx.stroke();
             }
         });
+
+        // Legend bar at bottom
+        ctx.save();
+        ctx.font = '8px Jost,monospace'; ctx.textBaseline = 'middle';
+        const legendItems = [
+            { col:'#6aaaff', label:'selected' },
+            { col:'#6aff9a', label:'alive' },
+            { col:'#ff6060', label:'collapsed' },
+        ];
+        let lx = 8;
+        legendItems.forEach(li => {
+            ctx.fillStyle = li.col; ctx.fillRect(lx, H-10, 7, 7);
+            ctx.fillStyle = '#3a5a7a'; ctx.fillText(li.label, lx+9, H-7);
+            lx += 50;
+        });
+        ctx.fillStyle = '#1a3a5a';
+        ctx.fillText('size=biodiversity · color=temp · glow=consciousness', W - 8, H-7);
+        ctx.textAlign = 'right';
+        ctx.restore();
     }
 
     // Return universe id at canvas coords, or null
