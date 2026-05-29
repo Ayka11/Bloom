@@ -1,0 +1,10 @@
+node_modules/
+*.log
+server.log
+*.png
+*.jpg
+*.jpeg
+*.gif
+verify_pollination.py
+.DS_Store
+Thumbs.db
