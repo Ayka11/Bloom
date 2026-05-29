@@ -186,6 +186,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
     <a href="#seasonal">Seasonal</a>
     <a href="#care">Care Tips</a>
     <a href="#glossary">Botanical Glossary</a>
+    <a href="#ecosystem">Ecosystem</a>
     <a href="#favorites">Favourites</a>
     <a href="#nav-expanded">More</a>
   </div>
@@ -268,6 +269,59 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem" id="glossary-grid"></div>
 </section>
 
+<section id="ecosystem" style="max-width:1340px;margin:0 auto;padding:5rem 2.5rem">
+  <div class="sec-label" style="letter-spacing:.22em;font-size:.7rem;color:var(--accent2);margin-bottom:.7rem;">Live Simulation</div>
+  <h2 class="sec-title" style="font-size:2.5rem;line-height:1.1;margin-bottom:.5rem;">Plant <em>Ecosystem</em></h2>
+  <p class="sec-sub" style="font-size:1.05rem;color:var(--text2);margin-bottom:2.2rem;max-width:600px;">Experience a real-time botanical biosphere where climate, soil, and plant growth interact dynamically.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:1.5rem;margin-top:1.5rem">
+    <div class="ic">
+      <div class="ic-label">Climate Engine</div>
+      <div class="info-row"><span class="ik">Season</span><span class="iv" id="sim-season">--</span></div>
+      <div class="info-row"><span class="ik">Temperature</span><span class="iv" id="sim-temp">--</span></div>
+      <div class="info-row"><span class="ik">Sunlight</span><span class="iv" id="sim-sun">--</span></div>
+      <div class="info-row"><span class="ik">Rainfall</span><span class="iv" id="sim-rain">--</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">Soil Chemistry</div>
+      <div class="info-row"><span class="ik">Nitrogen</span><span class="iv" id="sim-nitro">--</span></div>
+      <div class="info-row"><span class="ik">Phosphorus</span><span class="iv" id="sim-phos">--</span></div>
+      <div class="info-row"><span class="ik">Potassium</span><span class="iv" id="sim-potas">--</span></div>
+      <div class="info-row"><span class="ik">Soil pH</span><span class="iv" id="sim-ph">--</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">Growth Simulator</div>
+      <div class="info-row"><span class="ik">Total Biomass</span><span class="iv" id="sim-biomass">--</span></div>
+      <div class="info-row"><span class="ik">Growth Rate</span><span class="iv" id="sim-rate">--</span></div>
+      <div class="info-row"><span class="ik">Environmental Stress</span><span class="iv" id="sim-stress">--</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">Pollination Simulator</div>
+      <div class="info-row"><span class="ik">Pollinator Activity</span><span class="iv" id="sim-p-activity">--</span></div>
+      <div class="info-row"><span class="ik">Pollination Success</span><span class="iv" id="sim-p-success">--</span></div>
+      <div class="info-row"><span class="ik">Pollinator Density</span><span class="iv" id="sim-p-density">--</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">Hydrology System</div>
+      <div class="info-row"><span class="ik">Groundwater Level</span><span class="iv" id="sim-h-ground">--</span></div>
+      <div class="info-row"><span class="ik">Net Water Flow</span><span class="iv" id="sim-h-flow">--</span></div>
+      <div class="info-row"><span class="ik">Evaporation Rate</span><span class="iv" id="sim-h-evap">--</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">World Generator</div>
+      <div class="info-row"><span class="ik">Regional Occurrences</span><span class="iv" id="sim-w-occ">--</span></div>
+      <div class="info-row"><span class="ik">Active Biome</span><span class="iv" id="sim-w-biome">--</span></div>
+      <div class="info-row"><span class="ik">Taxonomic Backbone</span><span class="iv">GBIF Backbone</span></div>
+    </div>
+    <div class="ic">
+      <div class="ic-label">Population Dynamics</div>
+      <div class="info-row"><span class="ik">Population Size</span><span class="iv" id="sim-pop-size">--</span></div>
+      <div class="info-row"><span class="ik">Growth Trend</span><span class="iv" id="sim-pop-trend">--</span></div>
+      <div class="info-row"><span class="ik">Capacity (K)</span><span class="iv" id="sim-pop-cap">--</span></div>
+    </div>
+  </div>
+</section>
+
 <section id="favorites" style="max-width:1340px;margin:0 auto;padding:0 2.5rem 5rem">
   <div class="sec-label" style="letter-spacing:.22em;font-size:.7rem;color:var(--accent2);margin-bottom:.7rem;">Your Collection</div>
   <h2 class="sec-title" style="font-size:2.5rem;line-height:1.1;margin-bottom:.5rem;">Saved <em>Favourites</em></h2>
@@ -290,6 +344,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;color
   </div>
 </div>
 
+<script src="bloom-simulator.js"></script>
 <script>
 /* ─────────────────────────────────────────────
    REALISTIC BOTANICAL SVG ILLUSTRATIONS
@@ -2182,11 +2237,75 @@ const glossary=[
     </div>`).join('');
 })();
 
+function initEcosystem() {
+  if (typeof bloomSimulator === "undefined") return;
+
+  bloomSimulator.addListener(state => {
+    const elSeason = document.getElementById("sim-season");
+    const elTemp = document.getElementById("sim-temp");
+    const elSun = document.getElementById("sim-sun");
+    const elRain = document.getElementById("sim-rain");
+    const elNitro = document.getElementById("sim-nitro");
+    const elPhos = document.getElementById("sim-phos");
+    const elPotas = document.getElementById("sim-potas");
+    const elPh = document.getElementById("sim-ph");
+    const elBiomass = document.getElementById("sim-biomass");
+    const elRate = document.getElementById("sim-rate");
+    const elStress = document.getElementById("sim-stress");
+    const elPActivity = document.getElementById("sim-p-activity");
+    const elPSuccess = document.getElementById("sim-p-success");
+    const elPDensity = document.getElementById("sim-p-density");
+    const elHGround = document.getElementById("sim-h-ground");
+    const elHFlow = document.getElementById("sim-h-flow");
+    const elHEvap = document.getElementById("sim-h-evap");
+    const elWOcc = document.getElementById("sim-w-occ");
+    const elWBiome = document.getElementById("sim-w-biome");
+    const elPopSize = document.getElementById("sim-pop-size");
+    const elPopTrend = document.getElementById("sim-pop-trend");
+    const elPopCap = document.getElementById("sim-pop-cap");
+
+    if (elSeason) elSeason.textContent = state.climate.season;
+    if (elTemp) elTemp.textContent = `${state.climate.temperature.toFixed(1)}°C`;
+    if (elSun) elSun.textContent = `${(state.climate.sunlight * 100).toFixed(0)}%`;
+    if (elRain) elRain.textContent = `${state.climate.rainfall.toFixed(1)}mm`;
+
+    if (elNitro) elNitro.textContent = state.soil.nitrogen.toFixed(2);
+    if (elPhos) elPhos.textContent = state.soil.phosphorus.toFixed(2);
+    if (elPotas) elPotas.textContent = state.soil.potassium.toFixed(2);
+    if (elPh) elPh.textContent = state.soil.ph.toFixed(1);
+
+    if (elBiomass) elBiomass.textContent = `${state.growth.biomass.toFixed(2)} units`;
+    if (elRate) elRate.textContent = `${state.growth.growthRate.toFixed(3)} units/s`;
+    if (elStress) elStress.textContent = `${(state.growth.stress * 100).toFixed(0)}%`;
+
+    if (elPActivity) elPActivity.textContent = `${(state.pollination.pollinatorActivity * 100).toFixed(0)}%`;
+    if (elPSuccess) elPSuccess.textContent = `${(state.pollination.pollinationSuccess * 100).toFixed(1)}%`;
+    if (elPDensity) elPDensity.textContent = `${(state.pollination.pollinatorDensity * 100).toFixed(0)}%`;
+
+    if (elHGround) elHGround.textContent = `${state.hydrology.groundwater.toFixed(1)} mm`;
+    if (elHFlow) elHFlow.textContent = `${state.hydrology.waterFlow.toFixed(2)} mm/s`;
+    if (elHEvap) elHEvap.textContent = `${state.hydrology.evaporation.toFixed(2)} mm/s`;
+
+    if (elWOcc && typeof flowers !== "undefined") {
+        const regions = [...new Set(flowers.map(f => f.occurrence?.region).filter(Boolean))];
+        elWOcc.textContent = `${regions.length} Regions`;
+    }
+    if (elWBiome) elWBiome.textContent = state.climate.temperature > 25 ? "Tropical" : "Temperate";
+
+    if (elPopSize) elPopSize.textContent = `${state.population.populationSize.toFixed(0)} organisms`;
+    if (elPopTrend) elPopTrend.textContent = `${state.population.dNdt > 0 ? "📈" : "📉"} ${state.population.dNdt.toFixed(2)}/s`;
+    if (elPopCap) elPopCap.textContent = `${state.population.carryingCapacity_K} K`;
+  });
+
+  bloomSimulator.start();
+}
+
 updateSummaryCopy();
 renderSeasonal();
 renderFilters();
 renderGrid();
 renderFavs();
+initEcosystem();
 </script>
 </body>
 </html>
